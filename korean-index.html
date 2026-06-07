@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAIM 국어 창작 플랫폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FDFAF5;
+  --ink: #1A1208;
+  --ink2: #4A3820;
+  --ink3: #9C8060;
+  --accent: #8B4513;
+  --accent2: #7A8F3A;
+  --gold: #C8A84B;
+  --border: #E8DCC8;
+  --r: 1.5rem;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── 한지 배경 ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, rgba(200,168,75,.07) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 90% 80%, rgba(139,69,19,.06) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(122,143,58,.04) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 44px, rgba(139,69,19,.018) 44px, rgba(139,69,19,.018) 45px),
+    repeating-linear-gradient(90deg, transparent, transparent 44px, rgba(139,69,19,.012) 44px, rgba(139,69,19,.012) 45px);
+}
+
+/* ── 떠다니는 문자들 ── */
+.float-char {
+  position: fixed;
+  font-family: 'Nanum Myeongjo', serif;
+  color: rgba(139,69,19,.06);
+  pointer-events: none; z-index: 0;
+  animation: floatChar ease-in-out infinite;
+}
+@keyframes floatChar {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-18px) rotate(5deg); }
+}
+
+/* ── 래퍼 ── */
+.wrapper {
+  position: relative; z-index: 10;
+  max-width: 720px; margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+/* ── 히어로 ── */
+.hero {
+  text-align: center;
+  padding: 52px 0 36px;
+  animation: fadeDown .7s ease both;
+}
+@keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+.hero-emblem {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: white; border: 2px solid var(--border);
+  border-radius: 99px; padding: 7px 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(139,69,19,.08);
+}
+.hero-emblem .e-logo {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1rem; color: var(--accent); font-weight: 700;
+  letter-spacing: .1em;
+}
+.hero-emblem .e-badge {
+  background: rgba(139,69,19,.08); color: var(--accent);
+  border-radius: 99px; padding: 3px 12px;
+  font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+}
+
+.hero h1 {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: clamp(2.2rem, 8vw, 3.2rem);
+  font-weight: 800; line-height: 1.2;
+  color: var(--ink); margin-bottom: 14px;
+}
+.hero h1 .point {
+  color: var(--accent);
+  border-bottom: 3px solid var(--gold);
+  padding-bottom: 2px;
+}
+.hero-desc {
+  font-size: .95rem; color: var(--ink3);
+  line-height: 1.85; max-width: 440px; margin: 0 auto 22px;
+}
+
+.eaim-row {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+}
+.eaim-pill {
+  padding: 5px 16px; border-radius: 99px; font-size: .76rem; font-weight: 700;
+}
+.eaim-pill:nth-child(1){background:#FEF9EE;color:#A07000;border:1.5px solid #F0DDA0}
+.eaim-pill:nth-child(2){background:#F0FDF4;color:#1A6A3A;border:1.5px solid #B0E8C0}
+.eaim-pill:nth-child(3){background:#EFF6FF;color:#1A40B0;border:1.5px solid #BFDBFE}
+.eaim-pill:nth-child(4){background:#FAF5FF;color:#6A20A0;border:1.5px solid #DDD6FE}
+
+/* ── 정보 스트립 ── */
+.info-strip {
+  background: white; border: 2px solid var(--border);
+  border-radius: var(--r); padding: 18px 24px;
+  display: flex; gap: 0; align-items: center; justify-content: center;
+  margin-bottom: 32px; flex-wrap: wrap;
+  box-shadow: 0 2px 12px rgba(139,69,19,.06);
+  animation: cardIn .6s .15s ease both;
+}
+.info-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 0 20px; text-align: center;
+}
+.info-icon { font-size: 1.5rem; }
+.info-val {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: .95rem; font-weight: 700; color: var(--ink2);
+}
+.info-lbl { font-size: .68rem; color: var(--ink3); font-weight: 700; letter-spacing: .04em; }
+.info-div { width: 1px; height: 36px; background: var(--border); }
+
+/* ── 섹션 라벨 ── */
+.section-label {
+  text-align: center; margin: 0 0 20px;
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1.2rem; color: var(--ink2); font-weight: 700;
+}
+.section-label::before, .section-label::after {
+  content: ' — '; color: var(--gold);
+}
+
+/* ── 앱 카드 ── */
+@keyframes cardIn { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+.app-card {
+  display: block; text-decoration: none;
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 6px 28px rgba(139,69,19,.1);
+  margin-bottom: 20px;
+  transition: transform .25s, box-shadow .25s;
+  border: 1.5px solid var(--border);
+}
+.app-card:nth-child(1){ animation: cardIn .6s .2s ease both; }
+.app-card:nth-child(2){ animation: cardIn .6s .32s ease both; }
+.app-card:hover {
+  transform: translateY(-5px) scale(1.008);
+  box-shadow: 0 14px 44px rgba(139,69,19,.16);
+}
+.app-card:active { transform: scale(.98); }
+
+/* 시 감상 카드 — 짙은 고전 분위기 */
+.card-poetry .card-head {
+  background: linear-gradient(135deg, #2C1810 0%, #4A2818 50%, #2C1810 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-poetry .card-head::before {
+  content: '詩';
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 6rem; color: rgba(200,168,75,.1); pointer-events: none;
+}
+
+/* 글쓰기 카드 — 차분한 초록 */
+.card-writing .card-head {
+  background: linear-gradient(135deg, #1A2E0E 0%, #2A4A1A 55%, #1A2E0E 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-writing .card-head::before {
+  content: '文';
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 6rem; color: rgba(122,143,58,.15); pointer-events: none;
+}
+
+.card-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2);
+  border-radius: 99px; padding: 4px 14px;
+  font-size: .72rem; font-weight: 700; color: rgba(255,255,255,.88);
+  letter-spacing: .06em; margin-bottom: 14px;
+}
+.card-tag .live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+.card-poetry .live-dot { background: #FFBB55; box-shadow: 0 0 6px #FFBB55; }
+.card-writing .live-dot { background: #7ADE8A; box-shadow: 0 0 6px #7ADE8A; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+.card-head h2 {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1.85rem; color: white; margin-bottom: 6px; line-height: 1.15;
+}
+.card-head h2 small {
+  display: block; font-family: 'Noto Sans KR', sans-serif;
+  font-size: .82rem; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 5px;
+}
+.card-head p {
+  font-size: .86rem; color: rgba(255,255,255,.72); line-height: 1.7;
+  max-width: 380px;
+}
+
+.feature-row {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px;
+}
+.feat-pill {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 99px; padding: 4px 12px;
+  font-size: .7rem; color: rgba(255,255,255,.82); font-weight: 700;
+}
+
+.card-body {
+  background: white; padding: 18px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+
+.step-dots { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.step-dot {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .62rem; font-weight: 900;
+}
+.card-poetry .step-dot:nth-child(1){background:#FEF0E0;color:#A05010}
+.card-poetry .step-dot:nth-child(2){background:#FDF8EE;color:#806010}
+.card-poetry .step-dot:nth-child(3){background:#FFF0F8;color:#A02060}
+.card-poetry .step-dot:nth-child(4){background:#F0FFF0;color:#206020}
+.card-poetry .step-dot:nth-child(5){background:#F0F0FF;color:#202080}
+.card-poetry .step-dot:nth-child(6){background:#FFF8E0;color:#806000}
+.card-poetry .step-dot:nth-child(7){background:#E0F8E0;color:#006000}
+
+.card-writing .step-dot:nth-child(1){background:#F0FDF4;color:#15803D}
+.card-writing .step-dot:nth-child(2){background:#ECFDF5;color:#059669}
+.card-writing .step-dot:nth-child(3){background:#F0FFF0;color:#2A7A2A}
+.card-writing .step-dot:nth-child(4){background:#DCFCE7;color:#15803D}
+.card-writing .step-dot:nth-child(5){background:#D1FAE5;color:#047857}
+.card-writing .step-dot:nth-child(6){background:#A7F3D0;color:#065F46}
+.card-writing .step-dot:nth-child(7){background:#6EE7B7;color:#064E3B}
+
+.enter-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 12px; padding: 11px 22px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 900; font-size: .9rem; border: none; cursor: pointer;
+  transition: all .2s; text-decoration: none; white-space: nowrap;
+}
+.card-poetry .enter-btn {
+  background: linear-gradient(135deg, #2C1810, #4A2818);
+  color: var(--gold); box-shadow: 0 4px 14px rgba(44,24,16,.25);
+}
+.card-writing .enter-btn {
+  background: linear-gradient(135deg, #1A2E0E, #2A4A1A);
+  color: #7ADE8A; box-shadow: 0 4px 14px rgba(26,46,14,.25);
+}
+.enter-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+/* ── 교사 스트립 ── */
+.teacher-strip {
+  background: linear-gradient(135deg, #1A1208, #2A1E10);
+  border-radius: var(--r); padding: 18px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-bottom: 28px; flex-wrap: wrap;
+  animation: cardIn .6s .44s ease both;
+  border: 1.5px solid rgba(200,168,75,.2);
+}
+.teacher-strip-text h3 {
+  font-family: 'Nanum Myeongjo', serif;
+  color: var(--gold); font-size: 1rem; margin-bottom: 3px;
+}
+.teacher-strip-text p { font-size: .76rem; color: rgba(200,168,75,.55); }
+.teacher-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.t-btn {
+  padding: 8px 18px; border-radius: 10px; border: none;
+  font-family: 'Noto Sans KR', sans-serif; font-size: .8rem; font-weight: 700;
+  cursor: pointer; transition: all .15s; text-decoration: none;
+  display: inline-block; text-align: center;
+}
+.t-btn-poetry { background: rgba(200,168,75,.2); color: var(--gold); border: 1px solid rgba(200,168,75,.35); }
+.t-btn-writing { background: rgba(122,143,58,.2); color: #7ADE8A; border: 1px solid rgba(122,143,58,.3); }
+.t-btn-guide { background: rgba(255,255,255,.08); color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.12); }
+.t-btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+
+/* ── 푸터 ── */
+footer {
+  text-align: center; padding: 28px 0;
+  font-size: .78rem; color: var(--ink3); line-height: 1.9;
+  animation: cardIn .6s .55s ease both;
+  border-top: 1px solid var(--border);
+}
+footer strong { color: var(--accent); }
+
+@media (max-width: 480px) {
+  .card-body { flex-direction: column; align-items: flex-start; }
+  .enter-btn { width: 100%; justify-content: center; }
+  .teacher-strip { flex-direction: column; }
+  .teacher-btns { width: 100%; }
+  .t-btn { flex: 1; }
+  .info-div { display: none; }
+  .info-strip { gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 떠다니는 한자 장식 -->
+<div class="float-char" style="font-size:8rem;top:8%;left:3%;animation-duration:7s;animation-delay:0s">詩</div>
+<div class="float-char" style="font-size:6rem;top:55%;right:4%;animation-duration:9s;animation-delay:2s">文</div>
+<div class="float-char" style="font-size:5rem;top:80%;left:6%;animation-duration:8s;animation-delay:4s">感</div>
+<div class="float-char" style="font-size:4rem;top:30%;right:7%;animation-duration:6s;animation-delay:1s">創</div>
+
+<div class="wrapper">
+
+  <!-- 히어로 -->
+  <div class="hero">
+    <div class="hero-emblem">
+      <span class="e-logo">EAIM</span>
+      <span class="e-badge">국어 창작 플랫폼</span>
+    </div>
+    <h1>감정으로 <span class="point">읽고</span>,<br>마음으로 <span class="point">쓰다</span></h1>
+    <p class="hero-desc">시를 읽고 느끼고 창작하고,<br>나만의 글을 완성하는 국어 창작 공간입니다.</p>
+    <div class="eaim-row">
+      <span class="eaim-pill">💛 Emotion</span>
+      <span class="eaim-pill">🌿 Artscape</span>
+      <span class="eaim-pill">💙 Interactive</span>
+      <span class="eaim-pill">💜 Musicalization</span>
+    </div>
+  </div>
+
+  <!-- 정보 스트립 -->
+  <div class="info-strip">
+    <div class="info-item">
+      <div class="info-icon">🏫</div>
+      <div class="info-val">중학교</div>
+      <div class="info-lbl">대상</div>
+    </div>
+    <div class="info-div"></div>
+    <div class="info-item">
+      <div class="info-icon">🤖</div>
+      <div class="info-val">Gemini AI</div>
+      <div class="info-lbl">AI 엔진</div>
+    </div>
+    <div class="info-div"></div>
+    <div class="info-item">
+      <div class="info-icon">📱</div>
+      <div class="info-val">모바일 OK</div>
+      <div class="info-lbl">기기</div>
+    </div>
+    <div class="info-div"></div>
+    <div class="info-item">
+      <div class="info-icon">✍️</div>
+      <div class="info-val">2가지 앱</div>
+      <div class="info-lbl">활동</div>
+    </div>
+  </div>
+
+  <!-- 앱 선택 -->
+  <div class="section-label">앱 선택하기</div>
+
+  <!-- 시 감상 & 창작 -->
+  <a href="eaim-korean-poetry.html" class="app-card card-poetry">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 시 감상 · 창작</div>
+      <h2>📜 시 감상 & 창작
+        <small>Poetry Reading & Creative Writing</small>
+      </h2>
+      <p>오늘의 감정을 입력하면 AI가 어울리는 시를 추천해줘요. 읽고, 느끼고, 나만의 시를 써봐요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">🤖 AI 시 추천</span>
+        <span class="feat-pill">🎨 감정 탭 15개</span>
+        <span class="feat-pill">✏️ AI 첨삭</span>
+        <span class="feat-pill">🌸 시 창작</span>
+        <span class="feat-pill">🎵 음악+낭독</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots">
+        <div class="step-dot">S1</div>
+        <div class="step-dot">S2</div>
+        <div class="step-dot">S3</div>
+        <div class="step-dot">S4</div>
+        <div class="step-dot">S5</div>
+        <div class="step-dot">S6</div>
+        <div class="step-dot">S7</div>
+      </div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
+  <!-- 글쓰기 창작 -->
+  <a href="eaim-korean-writing.html" class="app-card card-writing">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 글쓰기 창작</div>
+      <h2>✍️ 글쓰기 창작
+        <small>Creative Writing with AI</small>
+      </h2>
+      <p>일기·생활문·편지·주장·설명·이야기 6가지 장르로 AI와 함께 글을 완성해요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">📝 6가지 장르</span>
+        <span class="feat-pill">💡 AI 글감 추천</span>
+        <span class="feat-pill">🔧 AI 수정·첨삭</span>
+        <span class="feat-pill">✨ AI 이어쓰기</span>
+        <span class="feat-pill">🎵 음악+낭독</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots">
+        <div class="step-dot">S1</div>
+        <div class="step-dot">S2</div>
+        <div class="step-dot">S3</div>
+        <div class="step-dot">S4</div>
+        <div class="step-dot">S5</div>
+        <div class="step-dot">S6</div>
+        <div class="step-dot">S7</div>
+      </div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
+  <!-- 교사 스트립 -->
+  <div class="teacher-strip">
+    <div class="teacher-strip-text">
+      <h3>👩‍🏫 교사 전용 컨트롤</h3>
+      <p>각 앱에서 비밀번호 입력 후 교사 패널 접속 (기본: 1234)</p>
+    </div>
+    <div class="teacher-btns">
+      <a href="eaim-korean-poetry.html" class="t-btn t-btn-poetry">📜 시 앱</a>
+      <a href="eaim-korean-writing.html" class="t-btn t-btn-writing">✍️ 글쓰기 앱</a>
+      <a href="guide.html" class="t-btn t-btn-guide">📖 가이드</a>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <footer>
+    <strong>EAIM 국어 창작 플랫폼</strong> · 박성애 선생님 제작<br>
+    Emotion · Artscape · Interactive · Musicalization<br>
+    <span style="opacity:.6;font-size:.72rem">Powered by Gemini AI · GitHub Pages</span>
+  </footer>
+
+</div>
+</body>
+</html>
