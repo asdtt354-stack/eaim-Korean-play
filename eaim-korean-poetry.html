@@ -442,6 +442,20 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   .music-tabs { flex-wrap: wrap; }
   .recite-controls { flex-direction: column; align-items: stretch; }
 }
+
+/* ── 수노 프롬프트 ── */
+.suno-wrap{background:linear-gradient(135deg,#1A0830,#0A1A2C);border-radius:var(--radius);padding:24px;border:2px solid rgba(212,168,71,.25);box-shadow:0 8px 32px rgba(0,0,0,.2);margin-bottom:16px}
+.suno-title{font-family:'Nanum Myeongjo',serif;font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.suno-section{margin-bottom:14px}
+.suno-label{font-size:.68rem;font-weight:700;color:rgba(212,168,71,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.suno-content{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;font-family:'Nanum Myeongjo',serif;font-size:.88rem;color:rgba(255,255,255,.9);line-height:1.9;white-space:pre-line;min-height:44px}
+.suno-copy-btn{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--gold),#C49020);color:#1C0A00;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;transition:all .2s;margin-top:4px}
+.suno-copy-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,168,71,.4)}
+.genre-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.genre-chip{padding:8px 16px;border-radius:99px;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--ink2);transition:all .2s;user-select:none}
+.genre-chip:hover{transform:scale(1.05)}
+.genre-chip.on{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 3px 12px rgba(139,69,19,.3)}
+.suno-how{background:rgba(212,168,71,.08);border:1.5px solid rgba(212,168,71,.2);border-radius:10px;padding:13px 16px;margin-top:12px;font-size:.78rem;color:rgba(212,168,71,.85);line-height:1.8}
 </style>
 </head>
 <body>
@@ -517,6 +531,7 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   <button class="step-btn" id="sBtn5" onclick="goStep(5)">Step 5<br>나의 시</button>
   <button class="step-btn" id="sBtn6" onclick="goStep(6)">Step 6<br>전체완성</button>
   <button class="step-btn" id="sBtn7" onclick="goStep(7)">Step 7<br>🎵낭독</button>
+  <button class="step-btn" id="sBtn8" onclick="goStep(8)">Step 8<br>🎸수노</button>
 </div>
 
 <main>
@@ -800,6 +815,66 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     </div>
   </div>
 
+
+  <!-- ══ STEP 8: 수노 프롬프트 ══ -->
+  <div class="screen" id="step8">
+    <div class="section-header">
+      <div class="section-num">🎸 Step 8</div>
+      <h2>내 시로 노래 만들기</h2>
+      <p>AI가 내 시를 분석해서 수노 프롬프트를 만들어줘요</p>
+    </div>
+    <div class="card" style="border-color:rgba(212,168,71,.35);background:linear-gradient(135deg,#FFFEF5,#FFF8E0)">
+      <div class="card-title">🌸 내가 쓴 시</div>
+      <div id="suno-poem-preview" style="font-family:'Nanum Myeongjo',serif;font-size:.95rem;color:var(--ink);line-height:2.2;white-space:pre-line;padding:4px 0">(Step 5에서 쓴 시가 여기 표시돼요)</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎵 원하는 음악 스타일 선택</div>
+      <div class="genre-grid">
+        <span class="genre-chip" onclick="toggleGenre(this,'발라드')">🎶 발라드</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'어쿠스틱')">🎸 어쿠스틱</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'인디팝')">🌿 인디팝</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'피아노')">🎹 피아노</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'포크')">🍂 포크</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'K-Pop')">✨ K-Pop</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'국악풍')">🥁 국악풍</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'재즈')">🎷 재즈</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'팝록')">🎤 팝록</span>
+        <span class="genre-chip" onclick="toggleGenre(this,'OST풍')">🎬 OST풍</span>
+      </div>
+      <p style="font-size:.75rem;color:var(--ink3);margin-top:8px">여러 개 선택 가능해요!</p>
+    </div>
+    <button class="btn btn-gold btn-full" onclick="genSunoPrompt()" id="sunoGenBtn" style="margin-bottom:16px;font-size:1rem;padding:15px">
+      🤖 수노 프롬프트 자동 생성!
+    </button>
+    <div id="sunoResultBox" style="display:none">
+      <div class="suno-wrap">
+        <div class="suno-title">🎸 수노 프롬프트 완성!</div>
+        <div class="suno-section">
+          <div class="suno-label">Style & Mood</div>
+          <div class="suno-content" id="sunoStyle"></div>
+        </div>
+        <div class="suno-section">
+          <div class="suno-label">Lyrics (가사)</div>
+          <div class="suno-content" id="sunoLyrics"></div>
+        </div>
+        <div class="suno-section">
+          <div class="suno-label">📋 전체 프롬프트 — 수노에 바로 붙여넣기!</div>
+          <div class="suno-content" id="sunoFull"></div>
+        </div>
+        <button class="suno-copy-btn" onclick="copySunoPrompt()">📋 전체 프롬프트 복사하기!</button>
+        <div class="suno-how">
+          🚀 <strong>수노 사용법</strong><br>
+          1. <a href="https://suno.com" target="_blank" style="color:var(--gold)">suno.com</a> 접속<br>
+          2. Create 클릭 → Custom mode 켜기<br>
+          3. Lyrics 칸에 가사 붙여넣기<br>
+          4. Style of Music 칸에 스타일 입력<br>
+          5. Generate! 🎵
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-full" onclick="genSunoPrompt()" style="margin-top:4px">🔄 다시 생성하기</button>
+    </div>
+  </div>
+
 </main>
 
 <!-- ── 하단 네비 ── -->
@@ -824,6 +899,9 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   </button>
   <button class="nav-btn" id="nav7" onclick="goStep(7)">
     <span class="nav-icon">🎵</span>낭독
+  </button>
+  <button class="nav-btn" id="nav8" onclick="goStep(8)">
+    <span class="nav-icon">🎸</span>수노
   </button>
 </nav>
 
@@ -936,7 +1014,7 @@ function goStep(n){
   currentStep = n;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
-  for(let i=1;i<=7;i++){
+  for(let i=1;i<=8;i++){
     const b=document.getElementById('sBtn'+i);
     const nb=document.getElementById('nav'+i);
     if(b){b.className='step-btn'+(i===n?' active':i<n?' done':'');}
@@ -944,6 +1022,7 @@ function goStep(n){
   }
   if(n===6) buildFinal();
   if(n===7) buildRecite();
+  if(n===8) buildStep8();
   saveActivity();
   window.scrollTo(0,0);
 }
@@ -1326,6 +1405,105 @@ window.addEventListener('load', ()=>{
   if(window.speechSynthesis.onvoiceschanged !== undefined)
     window.speechSynthesis.onvoiceschanged = ()=>{};
 });
+
+// ── Step 8: 수노 프롬프트 ─────────────────────────────────
+let selectedGenres = [];
+
+function toggleGenre(el, genre) {
+  el.classList.toggle('on');
+  if (el.classList.contains('on')) {
+    if (!selectedGenres.includes(genre)) selectedGenres.push(genre);
+  } else {
+    selectedGenres = selectedGenres.filter(g => g !== genre);
+  }
+}
+
+function buildStep8() {
+  const poemTitle = document.getElementById('myPoemTitle').value.trim();
+  const poemText  = document.getElementById('myPoemText').value.trim();
+  const preview = document.getElementById('suno-poem-preview');
+  if (poemText) {
+    preview.textContent = (poemTitle ? poemTitle + '\n\n' : '') + poemText;
+  } else {
+    preview.textContent = '(Step 5에서 나만의 시를 쓰고 오세요!)';
+  }
+  document.getElementById('sunoResultBox').style.display = 'none';
+}
+
+async function genSunoPrompt() {
+  const poemTitle = document.getElementById('myPoemTitle').value.trim();
+  const poemText  = document.getElementById('myPoemText').value.trim();
+  if (!poemText) { alert('먼저 Step 5에서 나만의 시를 써주세요!'); goStep(5); return; }
+
+  const btn = document.getElementById('sunoGenBtn');
+  btn.disabled = true; btn.textContent = '🤖 프롬프트 생성 중...';
+
+  const genres = selectedGenres.length ? selectedGenres.join(', ') : '발라드, 어쿠스틱';
+  const emotion = selectedEmotion || '감성적';
+  const poem = (poemTitle ? poemTitle + '\n\n' : '') + poemText;
+
+  const key = geminiKey || lsGet('gemini_key') || '';
+  if (!key) {
+    const style = genres + ', Korean indie, soft vocal, emotional';
+    document.getElementById('sunoStyle').textContent = 'Style: ' + style;
+    document.getElementById('sunoLyrics').textContent = poem;
+    document.getElementById('sunoFull').textContent = '[Style: ' + style + ']\n[Mood: ' + emotion + ', heartfelt]\n\n[Lyrics]\n' + poem;
+    document.getElementById('sunoResultBox').style.display = 'block';
+    btn.disabled = false; btn.textContent = '🤖 수노 프롬프트 자동 생성!';
+    return;
+  }
+
+  const prompt = `중학생이 쓴 한국어 시를 수노(Suno AI) 음악 프롬프트로 변환해주세요.
+
+시 제목: ${poemTitle || '무제'}
+시 내용:
+${poemText}
+
+감정: ${emotion}
+선호 장르: ${genres}
+
+아래 JSON 형식으로만 응답 (백틱, 마크다운 없이 순수 JSON):
+{
+  "style": "수노 Style 칸 내용 (영어, 쉼표 구분, 120자 이내)",
+  "mood": "분위기 (영어)",
+  "tempo": "빠르기 (영어)",
+  "lyrics": "시를 가사 형식으로 변환 ([Verse] [Chorus] 등 포함, 원문 최대한 유지)",
+  "fullPrompt": "수노에 바로 붙여넣을 완성 프롬프트"
+}`;
+
+  try {
+    const raw = await callGemini(prompt, 800);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(clean);
+    document.getElementById('sunoStyle').textContent = 'Style: ' + result.style + '\nMood: ' + result.mood + '\nTempo: ' + result.tempo;
+    document.getElementById('sunoLyrics').textContent = result.lyrics || poem;
+    document.getElementById('sunoFull').textContent = result.fullPrompt || ('[Style: ' + result.style + ']\n\n[Lyrics]\n' + (result.lyrics || poem));
+    document.getElementById('sunoResultBox').style.display = 'block';
+  } catch(e) {
+    const style = genres + ', Korean, emotional, soft';
+    document.getElementById('sunoStyle').textContent = 'Style: ' + style;
+    document.getElementById('sunoLyrics').textContent = poem;
+    document.getElementById('sunoFull').textContent = '[Style: ' + style + ']\n[Mood: ' + emotion + ']\n\n[Lyrics]\n' + poem;
+    document.getElementById('sunoResultBox').style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = '🤖 수노 프롬프트 자동 생성!';
+}
+
+function copySunoPrompt() {
+  const text = document.getElementById('sunoFull').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('복사됐어요! 수노에 붙여넣기 해보세요~ 🎵');
+  }).catch(() => {
+    const el = document.getElementById('sunoFull');
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    alert('복사됐어요! 🎵');
+  });
+}
+
 </script>
 </body>
 </html>
