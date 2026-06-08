@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAIM 국어 신문 만들기</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1008;--ink2:#4A3010;--ink3:#9A8060;
+  --paper:#FDF8F0;--paper2:#F5EED8;--paper3:#EDE0C0;
+  --accent:#2563EB;--accent2:#1D4ED8;--gold:#C8940A;
+  --mint:#00BF8A;--mint-l:#E0FBF2;
+  --coral:#FF6B5B;--violet:#7B6CF6;
+  --border:#D0C0A0;--r:1rem;
+  --s:0 4px 20px rgba(26,16,8,.1);--sl:0 8px 36px rgba(26,16,8,.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard','Noto Sans KR',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:80px}
+
+/* ── 헤더 ── */
+header{background:linear-gradient(135deg,#1A1A2E,#16213E,#0F3460);
+  padding:14px 18px;border-bottom:3px solid var(--accent);
+  position:sticky;top:0;z-index:100;box-shadow:0 3px 18px rgba(0,0,0,.3)}
+.hi{max-width:800px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Nanum Myeongjo',serif;font-size:1.3rem;color:#fff;display:flex;align-items:center;gap:7px}
+.la{color:#60A5FA}
+.ls{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:1px}
+.nb{background:rgba(96,165,250,.18);border:1.5px solid rgba(96,165,250,.35);border-radius:99px;padding:4px 12px;font-size:.75rem;color:#60A5FA;font-weight:700;display:none}
+.rb{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:4px 10px;font-size:.7rem;color:rgba(255,255,255,.65);cursor:pointer;font-family:inherit}
+
+/* ── 스텝 네비 ── */
+.sn{background:rgba(253,248,240,.96);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);
+  padding:8px 14px;display:none;gap:5px;overflow-x:auto;
+  position:sticky;top:62px;z-index:90;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.sn::-webkit-scrollbar{display:none}
+.sb{flex-shrink:0;padding:6px 12px;border-radius:9px;border:2px solid var(--border);
+  background:white;color:var(--ink3);font-family:inherit;
+  font-size:.72rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;line-height:1.3;text-align:center}
+.sb.on{background:var(--accent);border-color:var(--accent2);color:white;box-shadow:0 4px 12px rgba(37,99,235,.3);transform:translateY(-1px)}
+.sb.dn{background:var(--paper2);border-color:var(--border);color:var(--ink2)}
+.sb.dn::after{content:' ✓'}
+
+/* ── 메인 ── */
+main{max-width:800px;margin:0 auto;padding:20px 14px}
+.tc{display:none;animation:fu .4s ease}
+.tc.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── 카드 ── */
+.cd{background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--s)}
+.ct{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+
+/* ── 입력 ── */
+.ni{width:100%;padding:10px 13px;background:var(--paper);border:2px solid var(--border);border-radius:9px;color:var(--ink);font-family:inherit;font-size:.95rem;font-weight:700;outline:none;transition:border-color .2s}
+.ni:focus{border-color:var(--accent);background:white}
+.ta{width:100%;padding:11px 13px;background:var(--paper);border:2px solid var(--border);border-radius:9px;color:var(--ink);font-family:'Nanum Myeongjo',serif;font-size:.92rem;resize:vertical;outline:none;transition:border-color .2s;line-height:1.9;min-height:120px}
+.ta:focus{border-color:var(--accent);background:white}
+
+/* ── 버튼 ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:9px;border:none;font-family:inherit;font-weight:700;font-size:.86rem;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.bbl{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:0 4px 14px rgba(37,99,235,.28)}
+.bbl:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.4)}
+.bmint{background:linear-gradient(135deg,var(--mint),#009E72);color:white}
+.bgold{background:linear-gradient(135deg,var(--gold),#A07008);color:white}
+.bg2{background:white;color:var(--ink2);border:2px solid var(--border)}
+.bg2:hover{border-color:var(--accent);color:var(--accent)}
+.bfl{width:100%}
+.bsm{padding:7px 13px;font-size:.76rem;border-radius:8px}
+
+/* ── 힌트 ── */
+.hint{background:rgba(37,99,235,.07);border:1.5px solid rgba(37,99,235,.2);border-radius:9px;padding:10px 13px;font-size:.78rem;color:var(--ink2);line-height:1.7;margin-top:9px}
+
+/* ── 입력 탭 ── */
+.input-tabs{display:flex;gap:7px;margin-bottom:14px}
+.itab{flex:1;padding:9px;border-radius:10px;border:2px solid var(--border);background:white;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
+.itab.on{background:var(--accent);border-color:var(--accent2);color:white}
+
+/* ── 포맷 선택 ── */
+.fmt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.fmt-card{border:3px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;background:white;text-align:center}
+.fmt-card:hover{transform:translateY(-2px);box-shadow:var(--s)}
+.fmt-card.sel{border-color:var(--accent);background:rgba(37,99,235,.05);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+
+/* ── 기사 아이템 ── */
+.article-item{background:var(--paper);border:1.5px solid var(--border);border-radius:9px;padding:13px 15px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start}
+.art-del{background:none;border:none;cursor:pointer;color:var(--ink3);flex-shrink:0;padding:4px;transition:color .2s}
+.art-del:hover{color:var(--coral)}
+
+/* ══ 신문 스타일 ══ */
+.newspaper{background:var(--paper);border:2px solid var(--ink2);font-family:'Nanum Myeongjo',serif;overflow:hidden;box-shadow:var(--sl)}
+.np-header{border-bottom:3px double var(--ink2);padding:16px 20px 12px;text-align:center;background:var(--paper2)}
+.np-masthead{font-size:2rem;font-weight:800;letter-spacing:.1em;color:var(--ink)}
+.np-meta{font-size:.72rem;color:var(--ink3);margin-top:4px;display:flex;justify-content:center;gap:16px;font-family:'Pretendard',sans-serif}
+.np-body{padding:16px}
+.np-art-title{font-size:.95rem;font-weight:800;color:var(--ink);margin-bottom:6px;line-height:1.3;border-bottom:1px solid var(--border);padding-bottom:5px}
+.np-art-byline{font-size:.65rem;color:var(--ink3);margin-bottom:8px;font-family:'Pretendard',sans-serif}
+.np-art-body{font-size:.78rem;color:var(--ink2);line-height:1.9}
+.np-section-tag{display:inline-block;background:var(--accent);color:white;font-size:.6rem;padding:2px 7px;border-radius:3px;margin-bottom:6px;font-family:'Pretendard',sans-serif;font-weight:700}
+
+/* 타입1: 조선일보형 */
+.np-t1 .np-body{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink2)}
+.np-t1 .np-col{padding:13px;border-right:1px solid var(--border)}
+.np-t1 .np-col:last-child{border-right:none}
+
+/* 타입2: 2단형 */
+.np-t2{background:white}
+.np-t2 .np-header{background:var(--accent);border-bottom:4px solid var(--accent2)}
+.np-t2 .np-masthead{color:white}
+.np-t2 .np-meta{color:rgba(255,255,255,.65)}
+.np-t2 .np-body{display:grid;grid-template-columns:2fr 1fr;gap:0;border-top:3px solid var(--accent)}
+.np-t2 .np-col{padding:14px;border-right:2px solid rgba(37,99,235,.15)}
+.np-t2 .np-col:last-child{border-right:none;background:rgba(37,99,235,.03)}
+
+/* 타입3: 복고형 */
+.np-t3{background:linear-gradient(135deg,#FFF8E8,#FFF0D0);border:3px double #8B6914}
+.np-t3 .np-header{background:linear-gradient(135deg,#1A1A2E,#16213E);border-bottom:3px solid var(--gold)}
+.np-t3 .np-masthead{color:var(--gold)}
+.np-t3 .np-meta{color:rgba(200,148,10,.6)}
+.np-t3 .np-body{padding:18px}
+
+/* 타입4: 타블로이드형 */
+.np-t4{background:white;border:3px solid var(--coral)}
+.np-t4 .np-header{background:var(--coral);border-bottom:4px solid #C03020}
+.np-t4 .np-masthead{color:white}
+.np-t4 .np-meta{color:rgba(255,255,255,.75)}
+.np-t4 .np-body{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:4px solid var(--coral)}
+.np-t4 .np-col{padding:13px;border-right:2px solid rgba(255,107,91,.15)}
+.np-t4 .np-col:last-child{border-right:none}
+.np-t4 .np-col.full{grid-column:span 2;border-right:none;border-bottom:2px solid rgba(255,107,91,.15)}
+.np-t4 .np-art-title{color:#C03020}
+
+/* ── AI 박스 ── */
+.ai-box{background:rgba(37,99,235,.07);border:1.5px solid rgba(37,99,235,.2);border-radius:11px;padding:13px;margin-top:10px;display:none}
+.ai-label{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:6px}
+.ai-text{font-size:.86rem;color:var(--ink2);line-height:1.85;white-space:pre-line}
+
+/* ── 수노 박스 ── */
+.suno-box{background:linear-gradient(135deg,#1A0808,#0A1A20);border-radius:var(--r);padding:20px;border:2px solid rgba(200,148,10,.25)}
+.suno-label{font-size:.65rem;font-weight:700;color:rgba(200,148,10,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.suno-content{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 13px;font-family:'Nanum Myeongjo',serif;font-size:.88rem;color:rgba(255,255,255,.9);line-height:1.9;white-space:pre-line;margin-bottom:10px}
+
+/* ── 감상문 ── */
+.act-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.act-btn{flex:1;min-width:90px;padding:10px;border-radius:9px;border:none;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.ab-copy{background:var(--paper2);color:var(--ink2);border:2px solid var(--border)}
+.ab-dl{background:linear-gradient(135deg,var(--gold),#A07008);color:white}
+.ab-print{background:linear-gradient(135deg,#2A2A2A,#1A1A1A);color:white}
+
+/* ── 로딩 ── */
+.ld{display:flex;align-items:center;gap:5px;color:var(--ink3);font-size:.8rem;justify-content:center;padding:14px}
+.ld span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:bl 1.2s infinite}
+.ld span:nth-child(2){animation-delay:.2s}.ld span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* ── 모달 ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px}
+.mb{background:var(--paper);border-radius:1.5rem;padding:24px;width:100%;max-width:400px;box-shadow:0 24px 56px rgba(0,0,0,.3);border:1.5px solid var(--border);text-align:center}
+
+/* ── 장르 칩 ── */
+.genre-chip{padding:7px 13px;border-radius:99px;font-size:.78rem;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--ink2);transition:all .15s;display:inline-block;margin:3px}
+.genre-chip.on{background:var(--accent);border-color:var(--accent2);color:white}
+
+@media print{header,.sn,.no-print{display:none!important}body{background:white}.newspaper{box-shadow:none}}
+</style>
+</head>
+<body>
+
+<!-- 모달 -->
+<div id="nm" class="ov">
+  <div class="mb">
+    <div style="font-size:2.8rem;margin-bottom:11px">📰</div>
+    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.4rem;color:var(--accent);margin-bottom:6px">국어 신문 만들기</h2>
+    <p style="font-size:.84rem;color:var(--ink3);margin-bottom:18px">나만의 국어 신문을 만들어봐요!</p>
+    <input type="text" id="sni" placeholder="이름을 입력하세요"
+      style="width:100%;text-align:center;font-size:1.05rem;font-family:inherit;font-weight:700;border:2px solid var(--border);border-radius:.9rem;padding:10px;outline:none;margin-bottom:10px;background:white;transition:border-color .2s"
+      onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+      onkeydown="if(event.key==='Enter')sN()">
+    <select id="sclass" style="width:100%;padding:9px;border:2px solid var(--border);border-radius:.9rem;font-family:inherit;font-weight:700;background:white;outline:none;margin-bottom:14px">
+      <option value="">반 선택</option>
+      <option>1반</option><option>2반</option><option>3반</option>
+      <option>4반</option><option>5반</option><option>6반</option>
+    </select>
+    <button onclick="sN()" class="btn bbl bfl" style="font-size:.95rem;padding:12px">📰 신문 만들기 시작!</button>
+  </div>
+</div>
+
+<!-- 헤더 -->
+<header>
+  <div class="hi">
+    <div>
+      <div class="logo">📰 EAIM <span class="la">국어 신문</span></div>
+      <div class="ls">Korean Newspaper Creator</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span id="wn" class="nb"></span>
+      <button onclick="location.reload()" class="rb">↺</button>
+    </div>
+  </div>
+</header>
+
+<!-- 스텝 네비 -->
+<div class="sn" id="sNav">
+  <button class="sb on" id="sB1" onclick="sT(1)">Step 1<br><span style="font-size:.6rem;opacity:.8">신문설정</span></button>
+  <button class="sb" id="sB2" onclick="sT(2)">Step 2<br><span style="font-size:.6rem;opacity:.8">기사작성</span></button>
+  <button class="sb" id="sB3" onclick="sT(3)">Step 3<br><span style="font-size:.6rem;opacity:.8">완성신문</span></button>
+  <button class="sb" id="sB4" onclick="sT(4)">Step 4<br><span style="font-size:.6rem;opacity:.8">감상문</span></button>
+  <button class="sb" id="sB5" onclick="sT(5)">Step 5<br><span style="font-size:.6rem;opacity:.8">🎸수노</span></button>
+</div>
+
+<main>
+
+<!-- ══ STEP 1 ══ -->
+<div id="tab-1" class="tc on" style="margin-top:16px">
+  <div style="text-align:center;margin-bottom:18px">
+    <span style="background:rgba(37,99,235,.1);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 1</span>
+    <h3 style="font-size:1.3rem;font-weight:900;font-family:'Nanum Myeongjo',serif;margin-top:8px">신문 기본 설정</h3>
+  </div>
+
+  <div class="cd">
+    <div class="ct">📰 신문 이름</div>
+    <input type="text" id="np-name" class="ni" placeholder="예: 자인중 국어신문, 우리반 소식지..." value="우리반 국어신문">
+    <button onclick="aiNameSuggest()" class="btn bg2 bsm" style="margin-top:8px">🤖 이름 추천</button>
+    <div id="name-ai" class="ai-box"><div class="ai-label">💡 신문 이름 추천</div><div class="ai-text" id="name-ai-text"></div></div>
+  </div>
+
+  <div class="cd">
+    <div class="ct">📅 발행 정보</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">발행일</label>
+        <input type="text" id="np-date" class="ni" style="font-size:.88rem">
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">호수</label>
+        <input type="text" id="np-edition" class="ni" value="제 1호" style="font-size:.88rem">
+      </div>
+    </div>
+  </div>
+
+  <div class="cd">
+    <div class="ct">🗞️ 신문 스타일</div>
+    <div class="fmt-grid">
+      <div class="fmt-card sel" onclick="selFmt(1,this)">
+        <div style="font-size:2rem">📰</div>
+        <div style="font-weight:900;font-size:.9rem;margin-top:4px">조선일보형</div>
+        <div style="font-size:.7rem;color:var(--ink3)">클래식 3단 구성</div>
+      </div>
+      <div class="fmt-card" onclick="selFmt(2,this)">
+        <div style="font-size:2rem">📋</div>
+        <div style="font-weight:900;font-size:.9rem;margin-top:4px">2단 컬러형</div>
+        <div style="font-size:.7rem;color:var(--ink3)">메인+사이드 구성</div>
+      </div>
+      <div class="fmt-card" onclick="selFmt(3,this)">
+        <div style="font-size:2rem">📜</div>
+        <div style="font-weight:900;font-size:.9rem;margin-top:4px">복고형</div>
+        <div style="font-size:.7rem;color:var(--ink3)">빈티지 스타일</div>
+      </div>
+      <div class="fmt-card" onclick="selFmt(4,this)">
+        <div style="font-size:2rem">🗞️</div>
+        <div style="font-weight:900;font-size:.9rem;margin-top:4px">타블로이드형</div>
+        <div style="font-size:.7rem;color:var(--ink3)">임팩트 2단</div>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="sT(2)" class="btn bbl bfl" style="font-size:.95rem;padding:13px">📝 기사 작성하러 가기 →</button>
+</div>
+
+<!-- ══ STEP 2 ══ -->
+<div id="tab-2" class="tc" style="margin-top:16px">
+  <div style="text-align:center;margin-bottom:18px">
+    <span style="background:rgba(37,99,235,.1);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 2</span>
+    <h3 style="font-size:1.3rem;font-weight:900;font-family:'Nanum Myeongjo',serif;margin-top:8px">기사 작성</h3>
+  </div>
+
+  <div class="cd" style="border-color:rgba(37,99,235,.25)">
+    <div class="ct">✍️ 기사 추가</div>
+    <div class="input-tabs">
+      <button onclick="switchTab('ai',this)" id="itab-ai" class="itab on">🤖 AI 자동 생성</button>
+      <button onclick="switchTab('manual',this)" id="itab-manual" class="itab">✏️ 직접 입력 (모둠)</button>
+    </div>
+
+    <!-- AI 자동 -->
+    <div id="panel-ai">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">기사 주제</label>
+          <input type="text" id="ai-topic" class="ni" placeholder="예: 독서, 환경, 학교생활..." style="font-size:.88rem">
+        </div>
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">섹션</label>
+          <select id="ai-section" class="ni" style="font-size:.82rem">
+            <option>📰 사회·이슈</option>
+            <option>📚 독서·문학</option>
+            <option>🌱 환경·과학</option>
+            <option>🎨 문화·예술</option>
+            <option>🏫 학교·교육</option>
+            <option>💬 의견·칼럼</option>
+            <option>😊 이야기·수필</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">기사 유형</label>
+          <select id="ai-type" class="ni" style="font-size:.82rem">
+            <option>일반 기사</option>
+            <option>인터뷰</option>
+            <option>칼럼·의견</option>
+            <option>이야기·수필</option>
+            <option>시·짧은 글</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">기사 길이</label>
+          <select id="ai-length" class="ni" style="font-size:.82rem">
+            <option value="short">짧게 (3-4문장)</option>
+            <option value="medium" selected>보통 (5-6문장)</option>
+            <option value="long">길게 (7-8문장)</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="genAiArticle()" id="ai-gen-btn" class="btn bbl bfl" style="font-size:.92rem;padding:12px">🤖 AI 기사 자동 생성!</button>
+      <div id="ai-gen-loading" class="ld" style="display:none"><span></span><span></span><span></span><span style="margin-left:5px">기사 작성 중...</span></div>
+      <div id="ai-gen-result" style="display:none;margin-top:12px">
+        <div style="margin-bottom:8px">
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">제목</label>
+          <input type="text" id="ai-headline" class="ni" style="font-weight:900">
+        </div>
+        <div style="margin-bottom:8px">
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">본문</label>
+          <textarea id="ai-body" class="ta" rows="5"></textarea>
+        </div>
+        <button onclick="addAiArticle()" class="btn bmint bfl" style="font-size:.9rem;padding:12px">📰 신문에 추가!</button>
+      </div>
+    </div>
+
+    <!-- 직접 입력 (모둠) -->
+    <div id="panel-manual" style="display:none">
+      <div class="hint" style="margin-bottom:12px">💡 모둠원이 직접 쓴 글이나 조사한 내용을 입력해요!</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">제목 *</label>
+          <input type="text" id="man-headline" class="ni" placeholder="기사 제목을 입력하세요">
+        </div>
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">섹션</label>
+          <select id="man-section" class="ni" style="font-size:.82rem">
+            <option>📰 사회·이슈</option><option>📚 독서·문학</option>
+            <option>🌱 환경·과학</option><option>🎨 문화·예술</option>
+            <option>🏫 학교·교육</option><option>💬 의견·칼럼</option>
+            <option>😊 이야기·수필</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">기사 본문 *</label>
+          <textarea id="man-body" class="ta" rows="6" placeholder="기사 내용을 입력하세요..."></textarea>
+        </div>
+        <div>
+          <label style="font-size:.72rem;font-weight:700;color:var(--ink3);display:block;margin-bottom:4px">기자 이름</label>
+          <input type="text" id="man-reporter" class="ni" placeholder="기자 이름 (모둠원 이름)" style="font-size:.88rem">
+        </div>
+        <button onclick="addManArticle()" class="btn bbl bfl" style="font-size:.9rem;padding:12px">📰 신문에 추가!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추가된 기사 -->
+  <div class="cd">
+    <div class="ct">📝 추가된 기사 <span id="art-count" style="background:rgba(37,99,235,.1);color:var(--accent);border-radius:99px;padding:2px 10px;font-size:.72rem">0개</span></div>
+    <div id="article-list"><p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">아직 추가된 기사가 없어요!</p></div>
+  </div>
+
+  <button onclick="sT(3)" class="btn bbl bfl" style="font-size:.95rem;padding:13px">📰 신문 완성하기 →</button>
+</div>
+
+<!-- ══ STEP 3 ══ -->
+<div id="tab-3" class="tc" style="margin-top:16px">
+  <div style="text-align:center;margin-bottom:18px">
+    <span style="background:rgba(37,99,235,.1);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 3</span>
+    <h3 style="font-size:1.3rem;font-weight:900;font-family:'Nanum Myeongjo',serif;margin-top:8px">완성된 국어 신문</h3>
+  </div>
+  <div id="newspaper-wrap" style="margin-bottom:14px"></div>
+  <div class="act-row no-print">
+    <button onclick="copyNP()" class="act-btn ab-copy">📋 복사</button>
+    <button onclick="downloadNP()" class="act-btn ab-dl">💾 저장</button>
+    <button onclick="window.print()" class="act-btn ab-print">🖨️ 인쇄</button>
+  </div>
+  <button onclick="sT(4)" class="btn bgold bfl no-print" style="margin-top:10px;font-size:.92rem;padding:13px">✍️ 감상문 쓰기 →</button>
+</div>
+
+<!-- ══ STEP 4 ══ -->
+<div id="tab-4" class="tc" style="margin-top:16px">
+  <div style="text-align:center;margin-bottom:18px">
+    <span style="background:var(--mint-l);color:var(--mint);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 4</span>
+    <h3 style="font-size:1.3rem;font-weight:900;font-family:'Nanum Myeongjo',serif;margin-top:8px">감상문</h3>
+  </div>
+  <div class="cd">
+    <div class="ct">✍️ 신문을 만들고 나서</div>
+    <div class="hint" style="margin-bottom:10px">💡 신문을 만들면서 느낀 점, 배운 점을 자유롭게 써봐요!</div>
+    <textarea id="reflection-text" class="ta" rows="7" placeholder="신문을 만들면서...
+가장 어려웠던 점은...
+새롭게 알게 된 것은...
+다음에는..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button onclick="aiReflection()" class="btn bgold">🤖 AI 첨삭</button>
+      <button onclick="aiReflectionHelp()" class="btn bg2">💡 도움받기</button>
+    </div>
+    <div id="reflection-ai" class="ai-box" style="margin-top:10px">
+      <div class="ai-label">🤖 AI 피드백</div>
+      <div class="ai-text" id="reflection-ai-text"></div>
+    </div>
+  </div>
+  <div class="act-row no-print">
+    <button onclick="copyReflection()" class="act-btn ab-copy">📋 복사</button>
+    <button onclick="downloadAll()" class="act-btn ab-print" style="background:linear-gradient(135deg,var(--accent),var(--accent2))">📦 전체 저장</button>
+  </div>
+  <button onclick="sT(5)" class="btn bgold bfl no-print" style="margin-top:10px;font-size:.92rem;padding:13px">🎸 수노 프롬프트 →</button>
+</div>
+
+<!-- ══ STEP 5 ══ -->
+<div id="tab-5" class="tc" style="margin-top:16px">
+  <div style="text-align:center;margin-bottom:18px">
+    <span style="background:#FFFBEB;color:#B07000;padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 5</span>
+    <h3 style="font-size:1.3rem;font-weight:900;font-family:'Nanum Myeongjo',serif;margin-top:8px">🎸 신문 내용으로 노래 만들기!</h3>
+  </div>
+
+  <div class="cd" style="background:#FFFBEB;border-color:rgba(200,148,10,.3)">
+    <div class="ct" style="color:#B07000">📰 기사들</div>
+    <div id="suno-preview" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+  </div>
+
+  <div class="cd">
+    <div class="ct">🎵 음악 스타일</div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px">
+      <span class="genre-chip on" onclick="toggleGenre(this,'발라드')">💙 발라드</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'K-Pop')">✨ K-Pop</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'acoustic')">🎸 어쿠스틱</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'indie')">🌿 인디</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'folk')">🍂 포크</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'pop')">🎵 팝</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'OST')">🎬 OST</span>
+      <span class="genre-chip" onclick="toggleGenre(this,'국악')">🥁 국악풍</span>
+    </div>
+  </div>
+
+  <button onclick="genSuno()" id="suno-btn" class="btn bgold bfl" style="font-size:.95rem;padding:14px;margin-bottom:14px">🤖 수노 프롬프트 생성!</button>
+
+  <div id="suno-result" style="display:none">
+    <div class="suno-box">
+      <div style="font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:14px">🎸 수노 프롬프트 완성!</div>
+      <div style="margin-bottom:10px">
+        <div class="suno-label">Style & Mood</div>
+        <div class="suno-content" id="suno-style"></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="suno-label">Lyrics</div>
+        <div class="suno-content" id="suno-lyrics"></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="suno-label">📋 전체 프롬프트</div>
+        <div class="suno-content" id="suno-full"></div>
+      </div>
+      <button onclick="copySuno()" style="width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--gold),#A07008);color:#1C0A00;font-family:inherit;font-weight:900;font-size:.9rem;cursor:pointer">📋 전체 복사!</button>
+      <div style="margin-top:10px;background:rgba(255,255,255,.05);border-radius:9px;padding:11px;font-size:.73rem;color:rgba(255,255,255,.6);line-height:1.8">
+        🚀 <a href="https://suno.com" target="_blank" style="color:var(--gold)">suno.com</a> → Create → Custom mode → 붙여넣기 → Generate! 🎵
+      </div>
+    </div>
+    <button onclick="genSuno()" class="btn bg2 bfl" style="margin-top:10px">🔄 다시 생성</button>
+  </div>
+</div>
+
+</main>
+<div style="text-align:center;padding:12px;color:var(--ink3);font-size:.68rem" class="no-print">Designed by Park Seong-ae · EAIM 국어 신문 v1</div>
+
+<script>
+let stuName='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
+let selFmtNum=1, articles=[], sunoGenres=['발라드'];
+
+window.onload=function(){
+  document.getElementById('np-date').value=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+};
+
+function sN(){
+  const n=document.getElementById('sni').value.trim();
+  const c=document.getElementById('sclass').value;
+  if(!n||!c){alert('이름과 반을 입력해주세요!');return;}
+  stuName=n;
+  const nb=document.getElementById('wn');nb.textContent=n+' 님 📰';nb.style.display='';
+  document.getElementById('nm').style.display='none';
+  document.getElementById('sNav').style.display='flex';
+}
+
+async function callGemini(prompt,maxTokens=800){
+  const key=apiKey||localStorage.getItem('eaim_gemini_key')||'';
+  if(!key)throw new Error('NO_KEY');
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens,temperature:0.8}})
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
+// STEP 1
+async function aiNameSuggest(){
+  const el=document.getElementById('name-ai');const txt=document.getElementById('name-ai-text');
+  el.style.display='block';txt.textContent='추천 중...';
+  try{const r=await callGemini('중학교 국어 수업에서 만드는 신문 이름 5개를 추천해주세요. 번호 목록으로만.',200);txt.textContent=r;}
+  catch(e){txt.textContent='API 키를 설정하면 이름을 추천받을 수 있어요.';}
+}
+function selFmt(n,el){selFmtNum=n;document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+
+// STEP 2
+function switchTab(tab,btn){
+  document.getElementById('panel-ai').style.display=tab==='ai'?'block':'none';
+  document.getElementById('panel-manual').style.display=tab==='manual'?'block':'none';
+  document.getElementById('itab-ai').className='itab'+(tab==='ai'?' on':'');
+  document.getElementById('itab-manual').className='itab'+(tab==='manual'?' on':'');
+}
+
+async function genAiArticle(){
+  const topic=document.getElementById('ai-topic').value.trim();
+  if(!topic){alert('기사 주제를 입력해주세요!');return;}
+  const section=document.getElementById('ai-section').value;
+  const type=document.getElementById('ai-type').value;
+  const length=document.getElementById('ai-length').value;
+  const btn=document.getElementById('ai-gen-btn');
+  btn.disabled=true;btn.textContent='🤖 생성 중...';
+  document.getElementById('ai-gen-loading').style.display='flex';
+  document.getElementById('ai-gen-result').style.display='none';
+
+  const lenMap={short:'3-4문장',medium:'5-6문장',long:'7-8문장'};
+  const key=apiKey||localStorage.getItem('eaim_gemini_key')||'';
+  if(!key){
+    document.getElementById('ai-headline').value=topic+' - 특별 기사';
+    document.getElementById('ai-body').value=topic+'에 관한 기사입니다. API 키를 설정하면 AI가 기사를 자동으로 써드려요!';
+    document.getElementById('ai-gen-loading').style.display='none';
+    document.getElementById('ai-gen-result').style.display='block';
+    btn.disabled=false;btn.textContent='🤖 AI 기사 자동 생성!';
+    return;
+  }
+  try{
+    const raw=await callGemini(`중학교 국어 수업 신문에 실을 "${type}" 형식의 기사를 써주세요.
+주제: ${topic} / 섹션: ${section} / 분량: ${lenMap[length]}
+
+순수 JSON만 (백틱 없이):
+{"headline":"제목 (15자 이내)","body":"기사 본문 (${lenMap[length]}, 중학생 수준)","reporter":"기자 이름 제안"}`,400);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const result=JSON.parse(clean);
+    document.getElementById('ai-headline').value=result.headline||topic;
+    document.getElementById('ai-body').value=result.body||'';
+    document.getElementById('ai-gen-result').style.display='block';
+  }catch(e){
+    document.getElementById('ai-headline').value=topic;
+    document.getElementById('ai-body').value='기사 내용을 입력해주세요. API 키를 설정하면 AI가 자동으로 써드려요!';
+    document.getElementById('ai-gen-result').style.display='block';
+  }
+  document.getElementById('ai-gen-loading').style.display='none';
+  btn.disabled=false;btn.textContent='🤖 AI 기사 자동 생성!';
+}
+
+function addAiArticle(){
+  const h=document.getElementById('ai-headline').value.trim();
+  const b=document.getElementById('ai-body').value.trim();
+  if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
+  articles.push({headline:h,body:b,section:document.getElementById('ai-section').value,reporter:'기자 '+stuName});
+  renderList();
+  document.getElementById('ai-topic').value='';document.getElementById('ai-headline').value='';
+  document.getElementById('ai-body').value='';document.getElementById('ai-gen-result').style.display='none';
+  alert(`"${h}" 추가됐어요! 총 ${articles.length}개`);
+}
+
+function addManArticle(){
+  const h=document.getElementById('man-headline').value.trim();
+  const b=document.getElementById('man-body').value.trim();
+  if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
+  const reporter=document.getElementById('man-reporter').value.trim()||'기자 '+stuName;
+  articles.push({headline:h,body:b,section:document.getElementById('man-section').value,reporter});
+  renderList();
+  ['man-headline','man-body','man-reporter'].forEach(id=>document.getElementById(id).value='');
+  alert(`"${h}" 추가됐어요!`);
+}
+
+function renderList(){
+  const el=document.getElementById('article-list');
+  document.getElementById('art-count').textContent=articles.length+'개';
+  if(!articles.length){el.innerHTML='<p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">아직 추가된 기사가 없어요!</p>';return;}
+  el.innerHTML='';
+  articles.forEach((art,i)=>{
+    const div=document.createElement('div');div.className='article-item';
+    div.innerHTML=`<div style="flex:1"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+      <span style="font-size:.62rem;font-weight:700;background:var(--accent);color:white;padding:1px 6px;border-radius:3px">${art.section.replace(/[📰📚🌱🎨🏫💬😊]/g,'').trim()}</span></div>
+      <div style="font-weight:900;font-size:.88rem;color:var(--ink);margin-bottom:2px">${art.headline}</div>
+      <div style="font-size:.72rem;color:var(--ink3)">${art.reporter}</div></div>
+      <button class="art-del" onclick="removeArticle(${i})">🗑️</button>`;
+    el.appendChild(div);
+  });
+}
+function removeArticle(i){articles.splice(i,1);renderList();}
+
+// STEP 3
+function buildNewspaper(){
+  const name=document.getElementById('np-name').value||'우리반 국어신문';
+  const date=document.getElementById('np-date').value||'';
+  const edition=document.getElementById('np-edition').value||'제 1호';
+  const wrap=document.getElementById('newspaper-wrap');
+  if(!articles.length){wrap.innerHTML='<div class="cd" style="text-align:center"><p style="color:var(--ink3)">기사가 없어요! Step 2에서 기사를 추가해주세요.</p></div>';return;}
+
+  const header=`<div class="np-header"><div class="np-masthead">${name}</div>
+    <div class="np-meta"><span>${date}</span><span>${edition}</span><span>편집장 ${stuName}</span></div></div>`;
+
+  const artHtml=(art,showFull=true)=>`<div>
+    <div class="np-section-tag">${art.section.replace(/[📰📚🌱🎨🏫💬😊]/g,'').trim()}</div>
+    <div class="np-art-title">${art.headline}</div>
+    <div class="np-art-byline">${art.reporter}</div>
+    <div class="np-art-body">${showFull?art.body:art.body.substring(0,150)+'...'}</div></div>`;
+
+  let html='';
+  if(selFmtNum===1){
+    html=`<div class="newspaper np-t1">${header}<div class="np-body">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink2)">
+        ${articles.map((art,i)=>`<div style="padding:13px;border-right:${i<articles.length-1?'1px solid var(--border)':'none'}">${artHtml(art)}</div>`).join('')}
+        ${articles.length<3?Array(3-articles.length).fill('<div style="padding:13px;border-right:1px solid var(--border)"></div>').join(''):''}
+      </div></div></div>`;
+  } else if(selFmtNum===2){
+    html=`<div class="newspaper np-t2">${header}<div class="np-body">
+      <div class="np-col">${articles.map(art=>artHtml(art)).join('<hr style="border:none;border-top:1px solid rgba(37,99,235,.1);margin:12px 0">')}</div>
+      <div class="np-col"><div style="font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid rgba(37,99,235,.15)">📌 목차</div>
+      ${articles.map((art,i)=>`<div style="margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed rgba(37,99,235,.1)">
+        <div style="font-size:.68rem;color:var(--accent);font-weight:700">${art.section.replace(/[📰📚🌱🎨🏫💬😊]/g,'').trim()}</div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--ink)">${art.headline}</div>
+      </div>`).join('')}</div></div></div>`;
+  } else if(selFmtNum===3){
+    html=`<div class="newspaper np-t3">${header.replace('np-header','np-header').replace(name,`◈ ${name} ◈`)}
+      <div class="np-body"><div style="text-align:center;font-size:.76rem;color:var(--ink3);margin-bottom:14px;letter-spacing:.15em">— 글로 세상을 보다 —</div>
+      ${articles.map(art=>`<div style="padding-bottom:14px;border-bottom:1px dashed var(--border);margin-bottom:14px">${artHtml(art)}</div>`).join('')}
+      <div style="text-align:center;font-size:.72rem;color:var(--ink3);letter-spacing:.1em">— 끝 —</div></div></div>`;
+  } else {
+    html=`<div class="newspaper np-t4">${header}<div class="np-body" style="padding:0">
+      ${articles.length>0?`<div class="np-col full" style="padding:13px">${artHtml(articles[0])}</div>`:''}
+      ${articles.slice(1).map(art=>`<div class="np-col" style="padding:13px">${artHtml(art,false)}</div>`).join('')}
+      </div></div>`;
+  }
+  wrap.innerHTML=html;
+}
+
+function copyNP(){
+  const name=document.getElementById('np-name').value||'국어신문';
+  let text=`📰 ${name}\n${stuName} | ${new Date().toLocaleDateString('ko-KR')}\n${'='.repeat(40)}\n\n`;
+  articles.forEach(art=>{text+=`[${art.section.replace(/[📰📚🌱🎨🏫💬😊]/g,'').trim()}] ${art.headline}\n${art.reporter}\n\n${art.body}\n\n${'-'.repeat(30)}\n\n`;});
+  navigator.clipboard.writeText(text).then(()=>alert('📋 복사됐어요!'));
+}
+function downloadNP(){
+  const name=document.getElementById('np-name').value||'국어신문';
+  let text=`📰 ${name}\n${stuName}\n${'='.repeat(40)}\n\n`;
+  articles.forEach(art=>{text+=`${art.headline}\n${art.reporter}\n\n${art.body}\n\n${'-'.repeat(30)}\n\n`;});
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(text);
+  a.download=`${stuName}_국어신문.txt`;a.click();
+}
+
+// STEP 4
+async function aiReflection(){
+  const text=document.getElementById('reflection-text').value.trim();
+  if(!text){alert('감상문을 먼저 써주세요!');return;}
+  const el=document.getElementById('reflection-ai');const txt=document.getElementById('reflection-ai-text');
+  el.style.display='block';txt.textContent='읽는 중...';
+  try{
+    const result=await callGemini(`중학생이 국어 신문을 만들고 쓴 감상문을 따뜻하게 첨삭해주세요.\n감상문:\n${text}\n\n✅ 잘한 점:\n✏️ 보완할 부분:\n⭐ 격려 한마디:`,350);
+    txt.textContent=result;
+  }catch(e){txt.textContent='API 키를 설정하면 AI 첨삭을 받을 수 있어요.';}
+}
+async function aiReflectionHelp(){
+  const el=document.getElementById('reflection-ai');const txt=document.getElementById('reflection-ai-text');
+  el.style.display='block';txt.textContent='생각 중...';
+  const topics=articles.map(a=>a.headline).join(', ');
+  try{
+    const result=await callGemini(`중학생이 "${topics}" 기사가 담긴 국어 신문을 만들었습니다.\n감상문 쓰기 힌트를 주세요:\n🌟 시작 문장:\n💭 생각해볼 질문 2개:\n📝 꼭 담을 내용:`,300);
+    txt.textContent=result;
+  }catch(e){txt.textContent='API 키를 설정하면 도움을 받을 수 있어요.';}
+}
+function copyReflection(){navigator.clipboard.writeText(document.getElementById('reflection-text').value).then(()=>alert('📋 복사됐어요!'));}
+function downloadAll(){
+  const name=document.getElementById('np-name').value||'국어신문';
+  let text=`📰 ${name}\n${stuName}\n${'='.repeat(40)}\n\n`;
+  articles.forEach(art=>{text+=`${art.headline}\n${art.body}\n\n`;});
+  const ref=document.getElementById('reflection-text').value;
+  if(ref)text+=`\n${'='.repeat(40)}\n감상문\n${'='.repeat(40)}\n${ref}`;
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(text);
+  a.download=`${stuName}_국어신문_전체.txt`;a.click();
+}
+
+// STEP 5
+let sunoGenreList=['발라드'];
+function toggleGenre(el,genre){
+  el.classList.toggle('on');
+  if(el.classList.contains('on'))sunoGenreList.push(genre);
+  else sunoGenreList=sunoGenreList.filter(g=>g!==genre);
+}
+async function genSuno(){
+  if(!articles.length){alert('기사를 먼저 추가해주세요!');sT(2);return;}
+  const btn=document.getElementById('suno-btn');btn.disabled=true;btn.textContent='🤖 생성 중...';
+  const genres=sunoGenreList.length?sunoGenreList.join(', '):'발라드';
+  const headlines=articles.map(a=>a.headline).join(' / ');
+  const key=apiKey||localStorage.getItem('eaim_gemini_key')||'';
+  if(!key){
+    const lyrics=`[Verse]\n${articles[0]?.headline||'우리 이야기'}\n말로 담은 세상 속에\n글로 피어난 꿈들\n\n[Chorus]\n우리가 쓴 신문 속에\n세상이 담겨있어\n하나하나 소중한 이야기`;
+    document.getElementById('suno-style').textContent=`Style: ${genres}, Korean, emotional\nMood: warm, hopeful\nTempo: slow to mid`;
+    document.getElementById('suno-lyrics').textContent=lyrics;
+    document.getElementById('suno-full').textContent=`[Style: ${genres}, Korean]\n\n[Lyrics]\n${lyrics}`;
+    document.getElementById('suno-result').style.display='block';
+    btn.disabled=false;btn.textContent='🤖 수노 프롬프트 생성!';return;
+  }
+  try{
+    const raw=await callGemini(`중학생이 만든 국어 신문의 기사들("${headlines}")을 주제로 노래 가사와 수노 프롬프트를 만들어주세요.
+장르: ${genres}
+순수 JSON만:
+{"style":"수노 style 태그 (영어, 120자)","mood":"분위기","lyrics":"[Verse]·[Chorus]·[Bridge] 구조 한국어 가사","fullPrompt":"완성 프롬프트"}`,600);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const result=JSON.parse(clean);
+    document.getElementById('suno-style').textContent=`Style: ${result.style}\nMood: ${result.mood}`;
+    document.getElementById('suno-lyrics').textContent=result.lyrics;
+    document.getElementById('suno-full').textContent=result.fullPrompt;
+    document.getElementById('suno-result').style.display='block';
+  }catch(e){
+    document.getElementById('suno-style').textContent=`Style: ${genres}, Korean`;
+    document.getElementById('suno-lyrics').textContent=headlines;
+    document.getElementById('suno-full').textContent=`[Style: ${genres}]\n\n[Lyrics]\n${headlines}`;
+    document.getElementById('suno-result').style.display='block';
+  }
+  btn.disabled=false;btn.textContent='🤖 수노 프롬프트 생성!';
+}
+function copySuno(){navigator.clipboard.writeText(document.getElementById('suno-full').textContent).then(()=>alert('📋 복사됐어요! 수노에 붙여넣기 해보세요~ 🎵'));}
+
+// 탭 전환
+function sT(n){
+  if(n===3)buildNewspaper();
+  if(n===5){const el=document.getElementById('suno-preview');el.innerHTML=articles.map(a=>`<span style="background:rgba(37,99,235,.1);color:var(--accent);border-radius:99px;padding:5px 12px;font-size:.76rem;font-weight:700">📰 ${a.headline.substring(0,15)}...</span>`).join('');}
+  for(let i=1;i<=5;i++){
+    const btn=document.getElementById('sB'+i);const cont=document.getElementById('tab-'+i);
+    if(i===n){btn.classList.add('on');btn.classList.remove('dn');cont.classList.add('on');}
+    else{btn.classList.remove('on');if(i<n)btn.classList.add('dn');else btn.classList.remove('dn');cont.classList.remove('on');}
+  }
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
