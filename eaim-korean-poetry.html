@@ -449,11 +449,12 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     <div style="font-size:3rem;margin-bottom:12px">📜</div>
     <h2>시 감상 & 창작</h2>
     <p>감정을 담아 시를 읽고, 나만의 시를 써봐요</p>
-    <input type="text" class="input-field" id="loginName" placeholder="이름을 입력하세요" maxlength="10" style="margin-bottom:12px;text-align:center;font-size:1.1rem">
-    <select class="input-field" id="loginClass" style="margin-bottom:20px">
+    <select class="input-field" id="loginClass" style="margin-bottom:10px" onchange="onLoginClassChange()">
       <option value="">반/모둠 선택</option>
       <option value="교사">교사</option>
     </select>
+    <input type="text" class="input-field" id="loginNumber" placeholder="번호" maxlength="3" inputmode="numeric" style="margin-bottom:10px;text-align:center;font-size:1.1rem">
+    <input type="text" class="input-field" id="loginName" placeholder="이름을 입력하세요" maxlength="10" style="margin-bottom:20px;text-align:center;font-size:1.1rem">
     <button class="btn btn-primary btn-full" onclick="doLogin()">✍️ 시작하기</button>
     <button onclick="showTeacherLogin()" style="margin-top:12px;background:none;border:none;font-size:.78rem;color:var(--ink3);cursor:pointer">선생님이신가요?</button>
   </div>
@@ -878,8 +879,8 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 <script>
 const LS = 'eaim_korean_';
 let student = null;
-let geminiKey = localStorage.getItem(LS+'gemini_key') || '';
-let teacherPw = localStorage.getItem(LS+'teacher_pw') || '1234';
+let geminiKey = localStorage.getItem('eaim_gemini_key') || '';
+let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let selectedEmotion = '';
 let selectedPoem = null;
 let selectedFeelings = [];
@@ -922,7 +923,7 @@ async function getGroups(){
       return snap.docs.map(d=>({ id:d.id, name:d.data().name }));
     }catch(e){ console.warn('Firestore 그룹 조회 실패, 로컬 저장소 사용', e); }
   }
-  return lsGet('classGroups') || [];
+  return JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
 }
 
 async function addGroup(name){
@@ -935,9 +936,9 @@ async function addGroup(name){
       return;
     }catch(e){ console.warn('Firestore 그룹 추가 실패, 로컬 저장소 사용', e); }
   }
-  const groups = lsGet('classGroups') || [];
+  const groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
   groups.push({ id: 'local_'+Date.now(), name });
-  lsSet('classGroups', groups);
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
 }
 
 async function deleteGroup(id){
@@ -947,9 +948,9 @@ async function deleteGroup(id){
       return;
     }catch(e){ console.warn('Firestore 그룹 삭제 실패, 로컬 저장소 사용', e); }
   }
-  let groups = lsGet('classGroups') || [];
+  let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
   groups = groups.filter(g=>g.id!==id);
-  lsSet('classGroups', groups);
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
 }
 
 async function populateClassSelect(){
@@ -1033,15 +1034,22 @@ function saveActivity(){
   lsSet('students', all);
 }
 
-function doLogin(){
-  const name = document.getElementById('loginName').value.trim();
+function onLoginClassChange(){
   const cls = document.getElementById('loginClass').value;
-  if(!name){ alert('이름을 입력해주세요!'); return; }
-  if(!cls){ alert('반을 선택해주세요!'); return; }
+  if(cls === '교사'){ showTeacherLogin(); document.getElementById('loginClass').value=''; }
+}
+
+function doLogin(){
+  const cls = document.getElementById('loginClass').value;
+  if(!cls){ alert('반/모둠을 선택해주세요!'); return; }
   if(cls === '교사'){ showTeacherLogin(); return; }
-  student = { name, class: cls };
+  const number = document.getElementById('loginNumber').value.trim();
+  const name = document.getElementById('loginName').value.trim();
+  if(!number){ alert('번호를 입력해주세요!'); return; }
+  if(!name){ alert('이름을 입력해주세요!'); return; }
+  student = { name, number, class: cls };
   document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('studentChip').textContent = name + ' 🌸';
+  document.getElementById('studentChip').textContent = cls + ' ' + number + '번 ' + name + ' 🌸';
   document.getElementById('studentChip').style.display = '';
   document.getElementById('stepNav').style.display = 'flex';
   document.getElementById('bottomNav').style.display = 'flex';
@@ -1078,7 +1086,7 @@ function closeTeacherPanel(){ document.getElementById('teacherPanel').style.disp
 function saveApiKey(){
   const key = document.getElementById('apiKeyInput').value.trim();
   if(!key){ alert('API 키를 입력하세요!'); return; }
-  geminiKey = key; lsSet('gemini_key', key);
+  geminiKey = key; localStorage.setItem('eaim_gemini_key', key);
   document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
   setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
 }
@@ -1089,7 +1097,7 @@ function loadStudentList(){
   if(!students.length){ el.innerHTML = '<p style="color:var(--ink3)">아직 참여한 학생이 없어요</p>'; return; }
   el.innerHTML = students.map(s=>`
     <div style="padding:8px 0;border-bottom:1px solid var(--border)">
-      <strong>${s.name}</strong> (${s.class}) — Step ${s.step}
+      <strong>${s.class} ${s.number||''}번 ${s.name}</strong> — Step ${s.step}
       <span style="color:var(--ink3);font-size:.75rem;display:block">${s.emotion||''} | 감상문 ${s.reviewLen||0}자 | ${s.updatedAt||''}</span>
     </div>`).join('');
 }
@@ -1130,7 +1138,7 @@ function setEmotion(e){
 
 // ══ Gemini 호출 (버그 수정: 차단/빈 응답 원인을 구분해서 알려줌) ══
 async function callGemini(prompt, maxTokens=1000){
-  const key = geminiKey || lsGet('gemini_key') || '';
+  const key = geminiKey || localStorage.getItem('eaim_gemini_key') || '';
   if(!key) throw new Error('API_KEY_MISSING');
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
@@ -1580,7 +1588,7 @@ async function genSunoPrompt() {
   const emotion = selectedEmotion || '감성적';
   const poem = (poemTitle ? poemTitle + '\n\n' : '') + poemText;
 
-  const key = geminiKey || lsGet('gemini_key') || '';
+  const key = geminiKey || localStorage.getItem('eaim_gemini_key') || '';
   if (!key) {
     const style = genres + ', Korean indie, soft vocal, emotional';
     document.getElementById('sunoStyle').textContent = 'Style: ' + style;
