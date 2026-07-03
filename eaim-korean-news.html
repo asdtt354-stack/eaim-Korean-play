@@ -295,6 +295,7 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
     <div class="input-tabs">
       <button onclick="switchTab('ai',this)" id="itab-ai" class="itab on">🤖 AI 자동 생성</button>
       <button onclick="switchTab('manual',this)" id="itab-manual" class="itab">✏️ 직접 입력 (모둠)</button>
+      <button onclick="switchTab('import',this)" id="itab-import" class="itab">📥 가져오기</button>
     </div>
 
     <div id="panel-ai">
@@ -383,6 +384,12 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
         <img id="man-img-preview" style="display:none;width:100%;border-radius:8px;border:1.5px solid var(--border)">
         <button onclick="addManArticle()" class="btn bbl bfl" style="font-size:.9rem;padding:12px">📰 신문에 추가!</button>
       </div>
+    </div>
+
+    <div id="panel-import" style="display:none">
+      <div class="hint" style="margin-bottom:12px">💡 시 감상&창작·글쓰기 창작 앱에서 "📰 신문으로 보내기"를 누른 글이 여기 나와요. 같은 이름으로 로그인한 내 글만 보여요.</div>
+      <button onclick="loadImportList()" class="btn bg2 bfl bsm" style="margin-bottom:10px">🔄 새로고침</button>
+      <div id="import-list"><p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">불러온 글이 없어요.</p></div>
     </div>
   </div>
 
@@ -630,8 +637,54 @@ function selFmt(n,el){selFmtNum=n;document.querySelectorAll('.fmt-card').forEach
 function switchTab(tab,btn){
   document.getElementById('panel-ai').style.display=tab==='ai'?'block':'none';
   document.getElementById('panel-manual').style.display=tab==='manual'?'block':'none';
+  document.getElementById('panel-import').style.display=tab==='import'?'block':'none';
   document.getElementById('itab-ai').className='itab'+(tab==='ai'?' on':'');
   document.getElementById('itab-manual').className='itab'+(tab==='manual'?' on':'');
+  document.getElementById('itab-import').className='itab'+(tab==='import'?' on':'');
+  if(tab==='import') loadImportList();
+}
+
+// ══ 시/글쓰기 앱에서 보낸 글 가져오기 ══
+async function getSharedPieces(){
+  if(firebaseReady){
+    try{
+      const snap = await db.collection('sharedPieces').orderBy('createdAt','desc').limit(200).get();
+      return snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    }catch(e){}
+  }
+  return JSON.parse(localStorage.getItem('eaim_sharedPieces')||'[]');
+}
+async function loadImportList(){
+  const el = document.getElementById('import-list');
+  el.innerHTML = '<p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">불러오는 중...</p>';
+  const pieces = await getSharedPieces();
+  const mine = pieces.filter(p => p.author === stuName);
+  window._importPieces = mine;
+  if(!mine.length){
+    el.innerHTML = '<p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">아직 불러올 글이 없어요. 시/글쓰기 앱에서 "📰 신문으로 보내기"를 먼저 눌러주세요.</p>';
+    return;
+  }
+  el.innerHTML = mine.map((p,i) => `
+    <div class="article-item" style="cursor:pointer" onclick="importPieceByIndex(${i})">
+      <div style="flex:1">
+        <div style="font-size:.62rem;font-weight:700;background:var(--violet,#7B6CF6);color:white;padding:1px 6px;border-radius:3px;display:inline-block;margin-bottom:3px">${p.type||'글'}</div>
+        <div style="font-weight:900;font-size:.88rem;color:var(--ink);margin-bottom:2px">${p.title||'(제목 없음)'}</div>
+        <div style="font-size:.72rem;color:var(--ink3)">${(p.body||'').substring(0,40)}...</div>
+      </div>
+      <span style="font-size:.72rem;color:var(--accent);font-weight:700">가져오기 →</span>
+    </div>`).join('');
+}
+function importPieceByIndex(i){
+  const p = (window._importPieces||[])[i];
+  if(!p) return;
+  importPiece(p);
+}
+function importPiece(p){
+  switchTab('manual', document.getElementById('itab-manual'));
+  document.getElementById('man-headline').value = p.title || '';
+  document.getElementById('man-body').value = p.body || '';
+  document.getElementById('man-reporter').value = '기자 '+(p.author||stuName);
+  alert('불러왔어요! 필요하면 수정한 뒤 "📰 신문에 추가!"를 눌러주세요.');
 }
 
 async function genAiArticle(){
