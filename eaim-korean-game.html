@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EAIM 국어 어휘 게임방</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --bg:#0F0A1A;--card:#1A1030;--card2:#221540;
@@ -31,14 +33,13 @@ header{background:linear-gradient(135deg,#0F0A1A,#1A1030);padding:14px 18px;
 .score-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:5px 11px;text-align:center}
 .score-val{font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;color:var(--amber)}
 .score-lbl{font-size:.6rem;color:rgba(255,255,255,.4)}
+.tb{background:rgba(200,148,10,.2);border:1.5px solid rgba(200,148,10,.4);border-radius:9px;padding:5px 11px;font-size:.75rem;color:#F0C040;cursor:pointer;font-family:inherit;font-weight:700}
 
 main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:10}
 
-/* ── 로비 ── */
 .lobby-title{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;text-align:center;margin-bottom:8px;
   background:linear-gradient(135deg,var(--violet),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-/* ── 게임 그리드 ── */
 .game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
 .game-card{background:var(--card);border:2px solid rgba(255,255,255,.07);border-radius:var(--r);
   padding:18px 14px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
@@ -51,7 +52,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .badge-ai{background:rgba(123,108,246,.25);color:#A89CF8;border:1px solid rgba(123,108,246,.3)}
 .badge-team{background:rgba(56,189,248,.2);color:var(--sky);border:1px solid rgba(56,189,248,.3)}
 
-/* ── 용어 설정 ── */
 .term-setup{background:var(--card);border:2px solid rgba(255,255,255,.07);border-radius:var(--r);padding:18px;margin-bottom:14px}
 .cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .ctab{padding:5px 12px;border-radius:99px;font-size:.73rem;font-weight:700;cursor:pointer;
@@ -62,7 +62,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
   background:rgba(123,108,246,.1);border:1.5px solid rgba(123,108,246,.2);color:#A89CF8;transition:all .15s}
 .term-chip.on{background:var(--violet);border-color:#5840D0;color:#fff}
 
-/* ── 게임 영역 ── */
 .game-area{background:var(--card);border:2px solid rgba(255,255,255,.07);border-radius:var(--r);padding:22px;margin-bottom:14px;min-height:280px}
 .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
 .game-title-badge{font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:var(--violet)}
@@ -70,13 +69,11 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .progress-bar{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:16px}
 .progress-fill{height:100%;background:linear-gradient(135deg,var(--violet),var(--sky));border-radius:99px;transition:width .3s}
 
-/* ── 문제 카드 ── */
 .q-card{background:var(--card2);border-radius:12px;padding:20px;margin-bottom:16px;text-align:center}
 .q-label{font-size:.7rem;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.08em;margin-bottom:8px}
 .q-text{font-size:1.1rem;font-weight:700;line-height:1.6}
 .q-hint{font-size:.78rem;color:rgba(255,255,255,.45);margin-top:8px}
 
-/* ── OX ── */
 .ox-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ox-btn{padding:20px;border-radius:14px;border:none;font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;cursor:pointer;transition:all .2s}
 .ox-o{background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.25);color:var(--green)}
@@ -84,7 +81,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .ox-o:hover{background:var(--green);color:#fff;transform:scale(1.05)}
 .ox-x:hover{background:var(--red);color:#fff;transform:scale(1.05)}
 
-/* ── 선택지 ── */
 .choices{display:flex;flex-direction:column;gap:8px}
 .choice-btn{padding:13px 16px;border-radius:11px;border:2px solid rgba(255,255,255,.08);
   background:rgba(255,255,255,.04);color:#fff;font-family:inherit;font-size:.88rem;font-weight:700;
@@ -93,14 +89,12 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .choice-btn.correct{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green)}
 .choice-btn.wrong{border-color:var(--red);background:rgba(239,68,68,.15);color:var(--red)}
 
-/* ── 입력 ── */
 .ans-input{width:100%;padding:13px 16px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.12);
   border-radius:11px;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;outline:none;
   text-align:center;transition:border-color .2s;margin-bottom:10px}
 .ans-input:focus{border-color:var(--violet)}
 .ans-input::placeholder{color:rgba(255,255,255,.2)}
 
-/* ── 카드 매칭 ── */
 .match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
 .match-card{aspect-ratio:1;border-radius:10px;border:2px solid rgba(255,255,255,.08);
   background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;
@@ -112,20 +106,17 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .match-card.wrong-match{animation:shake .3s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
-/* ── 피드백 ── */
 .feedback{text-align:center;padding:14px;border-radius:12px;margin-bottom:12px;font-weight:700;font-size:.92rem;display:none}
 .fb-ok{background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.25);color:var(--green)}
 .fb-no{background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.25);color:var(--red)}
 .fb-sub{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:5px;font-weight:400}
 
-/* ── 팀 ── */
 .team-scores{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .team-card{background:var(--card2);border-radius:12px;padding:13px;text-align:center;border:2px solid transparent;transition:all .3s}
 .team-card.active{border-color:var(--amber);box-shadow:0 0 20px rgba(245,158,11,.15)}
 .team-name{font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;margin-bottom:4px}
 .team-score{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:var(--amber)}
 
-/* ── 결과 ── */
 .result-card{text-align:center;padding:28px 20px}
 .result-emoji{font-size:4rem;margin-bottom:12px}
 .result-score{font-family:'Nunito',sans-serif;font-size:2.8rem;font-weight:900;
@@ -135,7 +126,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .stat-val{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;color:var(--violet)}
 .stat-lbl{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:2px}
 
-/* ── 버튼 ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;
   border-radius:11px;border:none;font-family:'Nunito',inherit;font-weight:800;font-size:.88rem;cursor:pointer;transition:all .15s}
 .btn:active{transform:scale(.96)}
@@ -147,23 +137,29 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .bfl{width:100%}
 .bsm{padding:7px 14px;font-size:.78rem;border-radius:9px}
 
-/* ── 랭킹 ── */
 .rank-list{display:flex;flex-direction:column;gap:8px}
 .rank-item{background:var(--card2);border-radius:10px;padding:11px 15px;display:flex;align-items:center;gap:12px}
 .rank-num{font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;min-width:28px}
 .rank-score{font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;color:var(--amber)}
 
-/* ── 로딩 ── */
 .ld{display:flex;align-items:center;justify-content:center;gap:6px;padding:20px;color:rgba(255,255,255,.4);font-size:.84rem}
 .ld span{width:7px;height:7px;border-radius:50%;background:var(--violet);animation:bl 1.2s infinite}
 .ld span:nth-child(2){animation-delay:.2s}.ld span:nth-child(3){animation-delay:.4s}
 @keyframes bl{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
-/* ── 모달 ── */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:200;
   display:flex;align-items:center;justify-content:center;padding:18px}
 .mb{background:var(--card);border-radius:1.5rem;padding:24px;width:100%;max-width:400px;
-  box-shadow:0 28px 56px rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.07);text-align:center}
+  box-shadow:0 28px 56px rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.07);text-align:center;max-height:88vh;overflow-y:auto}
+
+.mi{width:100%;text-align:center;font-size:1.05rem;font-family:inherit;font-weight:700;
+  border:2px solid rgba(123,108,246,.3);border-radius:.9rem;padding:11px;outline:none;
+  margin-bottom:14px;background:rgba(255,255,255,.07);color:#fff}
+.mi:focus{border-color:#7B6CF6}
+
+.group-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.82rem;color:rgba(255,255,255,.75);text-align:left}
+.group-del{background:none;border:none;color:#FF8080;cursor:pointer;font-size:.75rem}
+.sync-status{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:6px}
 
 @media(max-width:480px){.match-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
@@ -171,43 +167,72 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 <body>
 <div id="particles"></div>
 
-<!-- 모달 -->
 <div id="nm" class="ov">
   <div class="mb">
     <div style="font-size:2.8rem;margin-bottom:10px">🎮</div>
     <div style="font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:5px">국어 어휘 게임방</div>
     <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:18px">재미있게 어휘를 마스터해봐요!</div>
-    <input type="text" id="sni" placeholder="이름 입력"
-      style="width:100%;text-align:center;font-size:1.05rem;font-family:inherit;font-weight:700;
-      border:2px solid rgba(123,108,246,.3);border-radius:.9rem;padding:11px;outline:none;
-      margin-bottom:14px;background:rgba(255,255,255,.07);color:#fff"
-      onfocus="this.style.borderColor='#7B6CF6'" onblur="this.style.borderColor='rgba(123,108,246,.3)'"
+    <input type="text" id="sni" placeholder="이름 입력" class="mi"
       onkeydown="if(event.key==='Enter')sN()">
+    <select id="sclass" class="mi" style="text-align:left">
+      <option value="">반/모둠 선택</option>
+      <option value="교사">교사</option>
+    </select>
     <button onclick="sN()" class="btn bvio bfl" style="font-size:.95rem;padding:12px">🎮 게임 시작!</button>
+    <button onclick="showTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.78rem;color:rgba(255,255,255,.4);cursor:pointer;width:100%">선생님이신가요?</button>
   </div>
 </div>
 
-<!-- 헤더 -->
+<div id="tlOv" class="ov" style="display:none">
+  <div class="mb">
+    <div style="font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:14px">교사 로그인</div>
+    <input type="password" id="teacherPwInput" class="mi" placeholder="비밀번호 (기본: 1234)">
+    <button onclick="doTeacherLogin()" class="btn bvio bfl">로그인</button>
+    <button onclick="hideTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.78rem;color:rgba(255,255,255,.4);cursor:pointer;width:100%">← 돌아가기</button>
+  </div>
+</div>
+
+<div id="teacherPanel" class="ov" style="display:none">
+  <div class="mb" style="text-align:left">
+    <div style="font-family:'Nunito',sans-serif;font-size:1.15rem;font-weight:900;margin-bottom:18px;text-align:center">📋 교사 컨트롤</div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">🏷️ 반/모둠 이름 관리</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" id="newGroupName" class="mi" placeholder="예: 다詩, 3반 어휘반" style="margin-bottom:0;flex:1;font-size:.85rem">
+        <button class="btn bvio bsm" onclick="addGroupUI()">추가</button>
+      </div>
+      <div id="groupList"></div>
+      <p id="groupSyncStatus" class="sync-status"></p>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
+      <input type="text" id="apiKeyInput" class="mi" placeholder="AIzaSy..." style="font-size:.85rem">
+      <button class="btn bvio bsm bfl" style="margin-top:-6px" onclick="saveApiKey()">저장</button>
+      <p id="apiStatus" style="font-size:.73rem;color:var(--mint);margin-top:6px;text-align:center"></p>
+    </div>
+    <button class="btn bg2 bfl" onclick="closeTeacherPanel()">닫기</button>
+  </div>
+</div>
+
 <header>
   <div class="hi">
     <div class="logo">🎮 EAIM <span>국어 게임방</span></div>
     <div class="score-board">
       <div class="score-item"><div class="score-val" id="total-score">0</div><div class="score-lbl">총점</div></div>
       <div class="score-item"><div class="score-val" id="streak-count">0</div><div class="score-lbl">연속</div></div>
+      <button onclick="openTeacherPanel()" class="tb">교사</button>
       <button onclick="goLobby()" class="btn bg2 bsm">🏠 로비</button>
     </div>
   </div>
 </header>
 
 <main>
-<!-- ══ 로비 ══ -->
 <div id="lobby">
   <div style="text-align:center;padding:20px 0 24px">
     <div class="lobby-title">🎮 국어 어휘 게임방</div>
     <div style="font-size:.88rem;color:rgba(255,255,255,.45);margin-bottom:8px">재미있게 국어 어휘를 마스터해봐요!</div>
   </div>
 
-  <!-- 어휘 선택 -->
   <div class="term-setup">
     <div style="font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;color:var(--violet);margin-bottom:12px">📚 게임할 어휘 선택</div>
     <div class="cat-tabs" id="cat-tabs">
@@ -227,7 +252,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
     </div>
   </div>
 
-  <!-- 게임 선택 -->
   <div class="game-grid">
     <div class="game-card" onclick="startGame('ox')" style="border-color:rgba(34,197,94,.15)">
       <span class="gbadge badge-hot">HOT</span>
@@ -278,14 +302,12 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
     </div>
   </div>
 
-  <!-- 랭킹 -->
   <div style="background:var(--card);border:2px solid rgba(255,255,255,.06);border-radius:var(--r);padding:16px">
     <div style="font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:var(--amber);margin-bottom:12px">🏆 오늘의 랭킹</div>
     <div id="rank-list" class="rank-list"></div>
   </div>
 </div>
 
-<!-- ══ 게임 영역 ══ -->
 <div id="game-area" style="display:none">
   <div class="game-area">
     <div class="game-header">
@@ -302,7 +324,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
   </div>
 </div>
 
-<!-- ══ 결과 ══ -->
 <div id="result-area" style="display:none">
   <div class="game-area">
     <div class="result-card" id="result-content"></div>
@@ -311,16 +332,16 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 </main>
 
 <div style="text-align:center;padding:12px;color:rgba(255,255,255,.15);font-size:.68rem;position:relative;z-index:10">
-  Designed by Park Seong-ae · EAIM 국어 어휘 게임방 v1
+  Designed by Park Seong-ae · EAIM 국어 어휘 게임방 v2
 </div>
 
 <script>
 let stuName='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
+let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let totalScore=0, streak=0, currentGame=null, gameState={};
 let selectedTerms=[];
 let rankings=JSON.parse(localStorage.getItem('eaim_korean_rankings')||'[]');
 
-// ══ 어휘 데이터 ══
 const TERMS = {
   '속담': [
     {w:'가는 말이 고와야 오는 말이 곱다',m:'자기가 남에게 잘 대해야 남도 잘 대해준다'},
@@ -408,7 +429,70 @@ const TERMS = {
   ],
 };
 
-// ══ 파티클 ══
+const FIREBASE_CONFIG = {
+  apiKey: "", authDomain: "", projectId: "", storageBucket: "", messagingSenderId: "", appId: ""
+};
+let db = null, firebaseReady = false;
+try {
+  if (FIREBASE_CONFIG.apiKey) { firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); firebaseReady = true; }
+} catch(e) { firebaseReady = false; }
+
+async function getGroups(){
+  if(firebaseReady){
+    try{ const snap = await db.collection('classGroups').orderBy('createdAt','asc').get();
+      return snap.docs.map(d=>({id:d.id,name:d.data().name})); }catch(e){}
+  }
+  return JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+}
+async function addGroup(name){
+  if(firebaseReady){
+    try{ await db.collection('classGroups').add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); return; }catch(e){}
+  }
+  const groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+  groups.push({id:'local_'+Date.now(), name});
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+async function deleteGroupFn(id){
+  if(firebaseReady){
+    try{ await db.collection('classGroups').doc(id).delete(); return; }catch(e){}
+  }
+  let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+  groups = groups.filter(g=>g.id!==id);
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+async function populateClassSelect(){
+  const sel = document.getElementById('sclass'); if(!sel) return;
+  const groups = await getGroups();
+  sel.innerHTML = '<option value="">반/모둠 선택</option>';
+  if(!groups.length){
+    const opt=document.createElement('option'); opt.disabled=true; opt.textContent='(선생님이 아직 반/모둠을 만들지 않았어요)';
+    sel.appendChild(opt);
+  } else {
+    groups.forEach(g=>{ const opt=document.createElement('option'); opt.value=g.name; opt.textContent=g.name; sel.appendChild(opt); });
+  }
+  const t=document.createElement('option'); t.value='교사'; t.textContent='교사'; sel.appendChild(t);
+}
+async function refreshGroupList(){
+  const groups = await getGroups();
+  const el = document.getElementById('groupList'); if(!el) return;
+  el.innerHTML = groups.length ? groups.map(g=>`
+    <div class="group-item"><span>${g.name}</span><button class="group-del" onclick="deleteGroupUI('${g.id}')">삭제</button></div>
+  `).join('') : '<p style="font-size:.8rem;color:rgba(255,255,255,.4)">아직 만든 반/모둠이 없어요</p>';
+  const s = document.getElementById('groupSyncStatus');
+  if(s) s.textContent = firebaseReady ? '✅ 여러 기기에서 공유돼요' : '⚠️ Firebase 미설정 — 이 기기에서만 보여요';
+}
+async function addGroupUI(){
+  const input = document.getElementById('newGroupName');
+  const name = input.value.trim();
+  if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
+  await addGroup(name); input.value='';
+  await refreshGroupList(); await populateClassSelect();
+}
+async function deleteGroupUI(id){
+  if(!confirm('이 반/모둠을 삭제할까요?')) return;
+  await deleteGroupFn(id); await refreshGroupList(); await populateClassSelect();
+}
+
 function initParticles(){
   const container=document.getElementById('particles');
   const colors=['#7B6CF6','#38BDF8','#00BF8A','#F59E0B'];
@@ -421,12 +505,48 @@ function initParticles(){
 }
 initParticles();
 
+window.addEventListener('load', populateClassSelect);
+
 function sN(){
   const n=document.getElementById('sni').value.trim();
+  const c=document.getElementById('sclass').value;
   if(!n){alert('이름을 입력해주세요!');return;}
+  if(!c){alert('반/모둠을 선택해주세요!');return;}
+  if(c==='교사'){ showTeacherLogin(); return; }
   stuName=n;
   document.getElementById('nm').style.display='none';
   initTerms();loadRankings();
+}
+
+function showTeacherLogin(){
+  document.getElementById('nm').style.display='none';
+  document.getElementById('tlOv').style.display='flex';
+}
+function hideTeacherLogin(){
+  document.getElementById('tlOv').style.display='none';
+  document.getElementById('nm').style.display='flex';
+}
+function doTeacherLogin(){
+  const pw = document.getElementById('teacherPwInput').value;
+  if(pw !== teacherPw){ alert('비밀번호가 틀렸어요!'); return; }
+  document.getElementById('tlOv').style.display='none';
+  document.getElementById('nm').style.display='none';
+  stuName='선생님';
+  initTerms();loadRankings();
+  openTeacherPanel();
+}
+function openTeacherPanel(){
+  if(apiKey) document.getElementById('apiKeyInput').value = apiKey;
+  refreshGroupList();
+  document.getElementById('teacherPanel').style.display='flex';
+}
+function closeTeacherPanel(){ document.getElementById('teacherPanel').style.display='none'; }
+function saveApiKey(){
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if(!key) return;
+  apiKey = key; localStorage.setItem('eaim_gemini_key', key);
+  document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
+  setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
 }
 
 function initTerms(){
@@ -523,7 +643,6 @@ async function nextQ(){
   else if(gs.type==='story')await showStory();
 }
 
-// ══ OX ══
 function showOX(){
   const term=getRandTerm();const isOK=Math.random()>.45;
   let shown=term.m;
@@ -540,10 +659,8 @@ function showOX(){
 }
 function ansOX(ans){clearTimer();const ok=ans===gameState.oxAns;showFB(ok,gameState.oxTerm);setTimeout(()=>nextQ(),1800);}
 
-// ══ 빈칸 ══
 async function showBlank(){
   const term=getRandTerm();
-  let sentence=`${term.m}. 이것을 "${term.w.substring(0,1)}(으)로 시작하는 어휘"라고 한다.`;
   gameState.blankAns=term.w;
   document.getElementById('game-content').innerHTML=`
     <div class="q-card"><div class="q-label">🔤 빈칸에 알맞은 어휘는?</div>
@@ -565,7 +682,6 @@ function checkBlank(){
   setTimeout(()=>nextQ(),1800);
 }
 
-// ══ 어휘 맞추기 ══
 function showGuess(){
   const term=getRandTerm();
   const others=getRandTerms(10).filter(t=>t.w!==term.w).slice(0,3);
@@ -589,7 +705,6 @@ function checkGuess(ans,el){
   showFB(ok,term);setTimeout(()=>nextQ(),1800);
 }
 
-// ══ AI 랜덤 ══
 async function showRandom(){
   const term=getRandTerm();
   const others=getRandTerms(10).filter(t=>t.w!==term.w).slice(0,3);
@@ -618,7 +733,6 @@ async function showRandom(){
   startTimer(20);
 }
 
-// ══ 이야기 퀴즈 ══
 async function showStory(){
   const term=getRandTerm();
   const others=getRandTerms(10).filter(t=>t.w!==term.w).slice(0,3);
@@ -645,7 +759,6 @@ async function showStory(){
   startTimer(25);
 }
 
-// ══ 카드 매칭 ══
 function startMatchGame(){
   const terms=getRandTerms(6);
   const cards=[];
@@ -694,7 +807,6 @@ function flipCard(idx){
   }
 }
 
-// ══ 스피드 ══
 function startSpeedGame(){
   gameState.speedScore=0;gameState.speedTotal=0;gameState.timeLeft=30;
   document.getElementById('q-counter').textContent='30초!';
@@ -726,7 +838,6 @@ function ansSpeed(ans){
   updateHeader();showSpeed();
 }
 
-// ══ 팀 대항전 ══
 function startTeamGame(){
   gameState.teams=[{name:'🔵 팀 A',score:0},{name:'🔴 팀 B',score:0}];
   gameState.currentTeam=0;gameState.teamQ=0;gameState.teamTotal=10;
@@ -763,7 +874,6 @@ function ansTeam(ans,el){
   showFB(ok,term);setTimeout(()=>showTeamQ(),1800);
 }
 
-// ══ 피드백 & 점수 ══
 function showFB(ok,term){
   const el=document.getElementById('feedback');
   el.className='feedback '+(ok?'fb-ok':'fb-no');
@@ -776,7 +886,6 @@ function addScore(pts){totalScore+=pts;gameState.score=(gameState.score||0)+pts;
 function updateHeader(){document.getElementById('total-score').textContent=totalScore;document.getElementById('streak-count').textContent=streak;}
 function skipQ(){clearTimer();gameState.wrong++;streak=0;updateHeader();nextQ();}
 
-// ══ 타이머 ══
 let _timer=null;
 function startTimer(sec){
   clearTimer();let left=sec;
@@ -788,7 +897,6 @@ function startTimer(sec){
 }
 function clearTimer(){if(_timer){clearInterval(_timer);_timer=null;}}
 
-// ══ 결과 ══
 function endGame(){
   clearTimer();if(gameState.speedTimer)clearInterval(gameState.speedTimer);
   document.getElementById('game-area').style.display='none';
