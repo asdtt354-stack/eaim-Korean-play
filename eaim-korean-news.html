@@ -581,6 +581,7 @@ async function deleteGroupUI(id){
 window.onload=function(){
   document.getElementById('np-date').value=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
   populateClassSelect();
+  getSheetUrlRemote().then(u=>{ if(u) sheetUrl=u; });
 };
 
 function sN(){
@@ -627,10 +628,25 @@ function saveApiKey(){
   document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
   setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
 }
-function saveSheetUrl(){
+async function getSheetUrlRemote(){
+  if(firebaseReady){
+    try{
+      const doc = await db.collection('settings').doc('sheetUrl').get();
+      if(doc.exists) return doc.data().url || '';
+    }catch(e){}
+  }
+  return localStorage.getItem('eaim_sheet_url') || '';
+}
+async function setSheetUrlRemote(url){
+  if(firebaseReady){
+    try{ await db.collection('settings').doc('sheetUrl').set({url}); }catch(e){}
+  }
+  localStorage.setItem('eaim_sheet_url', url);
+}
+async function saveSheetUrl(){
   const url = document.getElementById('sheetUrlInput').value.trim();
-  sheetUrl = url; localStorage.setItem('eaim_sheet_url', url);
-  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요!' : '연동 해제됨';
+  sheetUrl = url; await setSheetUrlRemote(url);
+  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요! (다른 기기에도 곧 적용돼요)' : '연동 해제됨';
   setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
 }
 function logToSheet(activity, title, detail){
