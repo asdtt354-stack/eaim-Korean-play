@@ -649,13 +649,15 @@ async function saveSheetUrl(){
   document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요! (다른 기기에도 곧 적용돼요)' : '연동 해제됨';
   setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
 }
-function logToSheet(activity, title, detail){
+function logToSheet(activity, title, detail, image){
   const url = sheetUrl || localStorage.getItem('eaim_sheet_url') || '';
   if(!url) return;
   try{
+    const payload = { name: stuName||'', group: stuClass||'', app: '신문', activity, title: title||'', detail: detail||'' };
+    if(image) payload.image = image;
     fetch(url, {
       method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ name: stuName||'', group: stuClass||'', app: '신문', activity, title: title||'', detail: detail||'' })
+      body: JSON.stringify(payload)
     });
   }catch(e){ console.warn('시트 기록 실패', e); }
 }
@@ -778,6 +780,7 @@ function addAiArticle(){
   const h=document.getElementById('ai-headline').value.trim();
   const b=document.getElementById('ai-body').value.trim();
   if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
+  const imgToLog = aiGenImage;
   articles.push({headline:h,body:b,section:document.getElementById('ai-section').value,reporter:'기자 '+stuName,image:aiGenImage});
   renderList();
   document.getElementById('ai-topic').value='';document.getElementById('ai-headline').value='';
@@ -785,7 +788,7 @@ function addAiArticle(){
   aiGenImage=null;
   const aiImgPrev=document.getElementById('ai-img-preview'); aiImgPrev.style.display='none'; aiImgPrev.src='';
   alert(`"${h}" 추가됐어요! 총 ${articles.length}개`);
-  logToSheet('기사추가', h, b.length+'자');
+  logToSheet('기사추가', h, b.length+'자', imgToLog);
 }
 
 function addManArticle(){
@@ -793,13 +796,14 @@ function addManArticle(){
   const b=document.getElementById('man-body').value.trim();
   if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
   const reporter=document.getElementById('man-reporter').value.trim()||'기자 '+stuName;
+  const imgToLog = manGenImage;
   articles.push({headline:h,body:b,section:document.getElementById('man-section').value,reporter,image:manGenImage});
   renderList();
   ['man-headline','man-body','man-reporter'].forEach(id=>document.getElementById(id).value='');
   manGenImage=null;
   const manImgPrev=document.getElementById('man-img-preview'); manImgPrev.style.display='none'; manImgPrev.src='';
   alert(`"${h}" 추가됐어요!`);
-  logToSheet('기사추가', h, b.length+'자');
+  logToSheet('기사추가', h, b.length+'자', imgToLog);
 }
 
 // ══ AI 삽화 생성 (Gemini 2.5 Flash Image) ══
