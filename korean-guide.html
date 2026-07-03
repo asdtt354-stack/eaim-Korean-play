@@ -359,9 +359,9 @@ body {
       <p style="font-size:.86rem;color:var(--ink3);line-height:1.75;margin-bottom:12px">
         학생 로그인 화면의 반/모둠 선택은 <strong>고정 목록이 아니라 선생님이 직접 만드는 이름</strong>이에요. "다詩", "3반 시창작반"처럼 원하는 이름을 자유롭게 만들 수 있어요. 교사 패널의 "🏷️ 반/모둠 이름 관리"에서 추가·삭제하면, 4개 앱 학생 로그인 화면에 똑같이 나타나요.
       </p>
-      <div class="tip tip-blue">
-        <div class="tip-ico">📶</div>
-        <div><h4>여러 기기에서 공유하려면</h4><p>Firebase 설정이 되어 있어야 선생님 컴퓨터에서 만든 반 이름이 학생들 각자 폰에도 보여요. 설정 전에는 같은 기기 안에서만 보입니다.</p></div>
+      <div class="tip tip-green">
+        <div class="tip-ico">✅</div>
+        <div><h4>여러 기기에서 자동으로 공유돼요</h4><p>4개 앱은 같은 Firebase 프로젝트(eaim-classroom)에 연결되어 있어요. 선생님이 컴퓨터에서 만든 반 이름이 학생들 각자 폰에도 바로 나타납니다.</p></div>
       </div>
     </div>
   </div>
@@ -420,7 +420,7 @@ body {
           <div class="step-ico" style="background:#FFF8E0">📖</div>
           <div class="step-body">
             <h3>Step 6 — 감상 일지 완성</h3>
-            <p>모든 활동이 한 페이지에 모여요. 인쇄하거나 텍스트로 저장할 수 있어요.</p>
+            <p>모든 활동이 한 페이지에 모여요. 인쇄하거나 텍스트로 저장할 수 있고, <strong>"📰 신문으로 보내기"</strong>로 나만의 시를 신문 앱 기사 재료로 보낼 수도 있어요.</p>
           </div>
         </div>
         <div class="step-item">
@@ -487,7 +487,7 @@ body {
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#34D399">📖</div>
-          <div class="step-body"><h3>Step 6 — 완성 & 저장</h3><p>인쇄하거나 텍스트 파일로 저장해요.</p></div>
+          <div class="step-body"><h3>Step 6 — 완성 & 저장</h3><p>인쇄하거나 텍스트 파일로 저장해요. <strong>"📰 신문으로 보내기"</strong>로 완성한 글을 신문 앱 기사 재료로 보낼 수도 있어요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#10B981">🎵</div>
@@ -518,7 +518,7 @@ body {
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#BFDBFE">✍️</div>
-          <div class="step-body"><h3>Step 2 — 기사 작성</h3><p>"🤖 AI 자동 생성"(주제·섹션·유형·길이 지정)과 "✏️ 직접 입력(모둠)" 두 방식을 섞어서 기사를 여러 개 추가해요.</p></div>
+          <div class="step-body"><h3>Step 2 — 기사 작성</h3><p>기사 추가 방식이 3가지예요: "🤖 AI 자동 생성"(주제·섹션·유형·길이 지정), "✏️ 직접 입력(모둠)", "📥 가져오기"(시·글쓰기 앱에서 보낸 내 글 불러오기). 섞어서 기사를 여러 개 추가해요. 기사마다 "🎨 AI 삽화 생성"으로 흑백 신문 일러스트도 넣을 수 있어요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#93C5FD">🗞️</div>
@@ -536,6 +536,10 @@ body {
       <div class="tip tip-green" style="margin-top:12px">
         <div class="tip-ico">👥</div>
         <div><h4>모둠 활동에 최적화</h4><p>"직접 입력" 탭은 모둠원별로 기사를 나눠 쓰고 기자 이름을 남길 수 있어, 모둠 협업 신문 제작에 특히 잘 맞아요.</p></div>
+      </div>
+      <div class="tip tip-blue" style="margin-top:10px">
+        <div class="tip-ico">🔗</div>
+        <div><h4>시·글쓰기 앱과 연계</h4><p>시 감상&창작·글쓰기 창작 앱 완성 화면에서 "📰 신문으로 보내기"를 누르면, 신문 앱 "📥 가져오기" 탭에서 같은 이름으로 로그인한 학생 본인의 글만 불러올 수 있어요. 자기 시나 글을 신문 기사로 재활용할 수 있는 거예요.</p></div>
       </div>
     </div>
   </div>
@@ -615,8 +619,13 @@ body {
       <div class="ai-grid">
         <div class="ai-card"><div class="ai-ico">🏷️</div><h4>신문 이름 추천</h4><p>어울리는 이름 5가지 제안</p></div>
         <div class="ai-card"><div class="ai-ico">📝</div><h4>기사 자동 생성</h4><p>주제·섹션·유형·길이 지정해 기사 완성</p></div>
+        <div class="ai-card"><div class="ai-ico">🎨</div><h4>AI 삽화 생성</h4><p>기사마다 흑백 신문 일러스트 생성</p></div>
         <div class="ai-card"><div class="ai-ico">✏️</div><h4>감상문 첨삭·도움</h4><p>피드백 및 시작 문장 힌트 제공</p></div>
         <div class="ai-card"><div class="ai-ico">🎸</div><h4>수노 프롬프트</h4><p>기사 내용으로 가사·프롬프트 생성</p></div>
+      </div>
+      <div class="tip tip-blue" style="margin-top:12px">
+        <div class="tip-ico">🎨</div>
+        <div><h4>삽화는 다른 모델을 써요</h4><p>다른 AI 기능은 전부 텍스트 모델(gemini-2.5-flash)을 쓰지만, AI 삽화만 이미지 생성 전용 모델(gemini-2.5-flash-image)을 별도로 호출해요. 같은 API 키로 자동 작동합니다.</p></div>
       </div>
     </div>
 
@@ -741,12 +750,8 @@ body {
         <div class="ai-card"><div class="ai-ico">🗑️</div><h4>전체 초기화</h4><p>새 반 수업 전 데이터 삭제</p></div>
       </div>
       <div class="tip tip-green" style="margin-top:12px">
-        <div class="tip-ico">🔗</div>
-        <div><h4>4개 앱이 API 키·반이름을 공유해요</h4><p>시·글쓰기·신문·게임 앱은 같은 이름의 브라우저 저장 항목을 사용해서, API 키와 반/모둠 목록을 한 곳에서만 설정하면 됩니다. 단, 각 앱의 학생 활동 기록(누가 어디까지 썼는지)은 앱별로 따로 저장돼요.</p></div>
-      </div>
-      <div class="tip tip-blue" style="margin-top:10px">
-        <div class="tip-ico">📶</div>
-        <div><h4>여러 기기에서 반이름을 공유하려면</h4><p>기본 상태로는 반/모둠 이름이 "이 브라우저 안에서만" 보여요. 학생들이 각자 폰으로 접속하는 환경이라면, Firebase 프로젝트를 설정해야 선생님이 만든 반이름이 학생 기기에도 똑같이 나타납니다. (설정 방법은 별도 안내)</p></div>
+        <div class="tip-ico">✅</div>
+        <div><h4>4개 앱이 Firebase로 연결돼 있어요</h4><p>시·글쓰기·신문·게임 앱은 같은 Firebase 프로젝트(eaim-classroom)를 사용해서, 반/모둠 목록과 "신문으로 보내기"한 글이 학생 기기가 달라도 실시간으로 공유돼요. API 키는 한 곳에서만 설정하면 됩니다. 단, 각 앱의 학생 활동 기록(누가 어디까지 썼는지)은 기기별로 따로 저장돼요.</p></div>
       </div>
     </div>
   </div>
@@ -831,7 +836,7 @@ body {
       </div>
       <div class="qa-item">
         <div class="qa-q">학생 활동 기록이 다른 기기에서 안 보여요.</div>
-        <div class="qa-a">각 앱의 학생 활동(진행 단계·작성 글자 수 등)은 그 학생이 접속한 기기·브라우저에만 저장돼요. 교사는 그 기기의 교사 패널에서 CSV로 내보내 통합 관리하세요. (반/모둠 이름 목록은 Firebase 설정 시 기기 간 공유가 가능해요 — 활동 기록과는 별개예요)</div>
+        <div class="qa-a">각 앱의 학생 활동(진행 단계·작성 글자 수 등)은 그 학생이 접속한 기기·브라우저에만 저장돼요. 교사는 그 기기의 교사 패널에서 CSV로 내보내 통합 관리하세요. (반/모둠 이름 목록과 "신문으로 보내기"한 글은 Firebase로 연결되어 있어 기기 간 공유가 돼요 — 활동 기록과는 별개예요)</div>
       </div>
       <div class="qa-item">
         <div class="qa-q">TTS 소리가 나오지 않아요.</div>
@@ -844,6 +849,14 @@ body {
       <div class="qa-item">
         <div class="qa-q">Gemini API 사용 비용이 발생하나요?</div>
         <div class="qa-a">Google AI Studio 무료 티어는 분당 15회, 하루 1,500회 요청이 무료예요. 일반 수업 활용 범위에서는 비용이 발생하지 않습니다.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">시/글쓰기 앱에서 "신문으로 보내기"를 눌렀는데 신문 앱 가져오기 목록에 안 보여요.</div>
+        <div class="qa-a">두 앱에서 <strong>같은 이름</strong>으로 로그인했는지 확인하세요. 가져오기 목록은 로그인한 이름이 똑같은 글만 보여줘요. 신문 앱에서 "🔄 새로고침"도 한번 눌러보세요.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">AI 삽화 생성이 안 돼요.</div>
+        <div class="qa-a">신문 앱의 AI 삽화는 <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">gemini-2.5-flash-image</code> 모델을 따로 호출해요. 같은 API 키를 쓰지만 이미지 생성 권한이 막혀있는 키라면 실패할 수 있어요. Google AI Studio에서 발급한 일반 키라면 보통 문제없이 작동해요.</div>
       </div>
     </div>
   </div>
