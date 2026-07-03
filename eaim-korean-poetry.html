@@ -689,6 +689,7 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
       <button class="btn btn-secondary" style="flex:1" onclick="downloadFinal()">💾 저장</button>
       <button class="btn btn-gold" style="flex:1" onclick="goStep(7)">🎵 낭독하기</button>
     </div>
+    <button class="btn btn-primary btn-full" style="margin-top:10px" onclick="sendToNewspaper()">📰 신문으로 보내기</button>
   </div>
 
   <div class="screen" id="step7">
@@ -951,6 +952,41 @@ async function deleteGroup(id){
   let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
   groups = groups.filter(g=>g.id!==id);
   localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+
+// ══ 신문 앱과 공유하는 글(시/글쓰기 → 신문 기사 재료) ══
+async function getSharedPieces(){
+  if(firebaseReady){
+    try{
+      const snap = await db.collection('sharedPieces').orderBy('createdAt','desc').limit(200).get();
+      return snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    }catch(e){ console.warn('Firestore sharedPieces 조회 실패, 로컬 저장소 사용', e); }
+  }
+  return JSON.parse(localStorage.getItem('eaim_sharedPieces')||'[]');
+}
+async function addSharedPiece(piece){
+  if(firebaseReady){
+    try{
+      await db.collection('sharedPieces').add({ ...piece, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      return;
+    }catch(e){ console.warn('Firestore sharedPieces 저장 실패, 로컬 저장소 사용', e); }
+  }
+  const list = JSON.parse(localStorage.getItem('eaim_sharedPieces')||'[]');
+  list.unshift({ id:'local_'+Date.now(), ...piece, createdAt: Date.now() });
+  localStorage.setItem('eaim_sharedPieces', JSON.stringify(list));
+}
+async function sendToNewspaper(){
+  const title = document.getElementById('myPoemTitle').value.trim();
+  const body = document.getElementById('myPoemText').value.trim();
+  if(!body){ alert('먼저 Step 5에서 나만의 시를 써주세요!'); goStep(5); return; }
+  await addSharedPiece({
+    title: title || '(제목 없음)',
+    body,
+    author: student?.name || '',
+    type: '시',
+    theme: selectedEmotion || ''
+  });
+  alert('📰 신문 앱으로 보냈어요! 신문 앱 Step 2의 "📥 가져오기" 탭에서 확인하세요.');
 }
 
 async function populateClassSelect(){
