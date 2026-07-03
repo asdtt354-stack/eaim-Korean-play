@@ -387,6 +387,12 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
       <p id="apiStatus" style="font-size:.73rem;color:var(--accent);margin-top:4px;text-align:center"></p>
     </div>
     <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">📊 구글시트 연동 (선택)</label>
+      <input type="text" class="input-field" id="sheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+      <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%" onclick="saveSheetUrl()">저장</button>
+      <p id="sheetUrlStatus" style="font-size:.73rem;color:var(--accent);margin-top:4px;text-align:center"></p>
+    </div>
+    <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:8px">👥 학생 현황</label>
       <div id="studentList" style="font-size:.8rem;color:var(--ink3);max-height:180px;overflow-y:auto"></div>
     </div>
@@ -745,6 +751,7 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 const LS = 'eaim_writing_';
 let student = null;
 let geminiKey = localStorage.getItem('eaim_gemini_key') || '';
+let sheetUrl = localStorage.getItem('eaim_sheet_url') || '';
 let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let selectedGenre = { id:'', label:'', hint:'' };
 let selectedEmotions = [];
@@ -832,6 +839,7 @@ async function sendToNewspaper(){
     type: selectedGenre.label || '글쓰기'
   });
   alert('📰 신문 앱으로 보냈어요! 신문 앱 Step 2의 "📥 가져오기" 탭에서 확인하세요.');
+  logToSheet('신문전송', title || '(제목 없음)', body.length+'자');
 }
 
 async function populateClassSelect(){
@@ -914,6 +922,7 @@ function doTeacherLogin(){
 }
 function openTeacherPanel(){
   if(geminiKey) document.getElementById('apiKeyInput').value = geminiKey;
+  if(sheetUrl) document.getElementById('sheetUrlInput').value = sheetUrl;
   loadStudentList();
   refreshGroupList();
   document.getElementById('teacherPanel').style.display = 'flex';
@@ -925,6 +934,25 @@ function saveApiKey(){
   geminiKey = key; localStorage.setItem('eaim_gemini_key', key);
   document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
   setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
+}
+function saveSheetUrl(){
+  const url = document.getElementById('sheetUrlInput').value.trim();
+  sheetUrl = url; localStorage.setItem('eaim_sheet_url', url);
+  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요!' : '연동 해제됨';
+  setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
+}
+function logToSheet(activity, title, detail){
+  const url = sheetUrl || localStorage.getItem('eaim_sheet_url') || '';
+  if(!url) return;
+  try{
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        name: student?.name || '', group: student?.class || '',
+        app: '글쓰기', activity, title: title||'', detail: detail||''
+      })
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
 }
 function loadStudentList(){
   const all = lsGet('students') || {};
@@ -1237,6 +1265,7 @@ function downloadFinal(){
   const a=document.createElement('a');
   a.href='data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(content);
   a.download=`${name}_글쓰기창작.txt`; a.click();
+  logToSheet('완성', selectedIdea?.title || document.getElementById('topicInput').value || '', document.getElementById('mainText').value.length+'자');
 }
 
 function switchMusic(tab){
