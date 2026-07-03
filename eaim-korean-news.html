@@ -200,6 +200,12 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
       <button class="btn bbl bsm bfl" style="margin-top:8px" onclick="saveApiKey()">저장</button>
       <p id="apiStatus" style="font-size:.73rem;color:var(--mint);margin-top:4px;text-align:center"></p>
     </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">📊 구글시트 연동 (선택)</label>
+      <input type="text" id="sheetUrlInput" class="ni" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.8rem">
+      <button class="btn bbl bsm bfl" style="margin-top:8px" onclick="saveSheetUrl()">저장</button>
+      <p id="sheetUrlStatus" style="font-size:.73rem;color:var(--mint);margin-top:4px;text-align:center"></p>
+    </div>
     <button class="btn bg2 bfl" onclick="closeTeacherPanel()">닫기</button>
   </div>
 </div>
@@ -498,7 +504,8 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 <div style="text-align:center;padding:12px;color:var(--ink3);font-size:.68rem" class="no-print">Designed by Park Seong-ae · EAIM 국어 신문 v2</div>
 
 <script>
-let stuName='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
+let stuName='', stuClass='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
+let sheetUrl = localStorage.getItem('eaim_sheet_url') || '';
 let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let selFmtNum=1, articles=[], sunoGenreList=['발라드'];
 
@@ -583,6 +590,7 @@ function sN(){
   if(!c){alert('반/모둠을 선택해주세요!');return;}
   if(c==='교사'){ showTeacherLogin(); return; }
   stuName=n;
+  stuClass=c;
   const nb=document.getElementById('wn');nb.textContent=n+' 님 📰';nb.style.display='';
   document.getElementById('nm').style.display='none';
   document.getElementById('sNav').style.display='flex';
@@ -607,6 +615,7 @@ function doTeacherLogin(){
 }
 function openTeacherPanel(){
   if(apiKey) document.getElementById('apiKeyInput').value = apiKey;
+  if(sheetUrl) document.getElementById('sheetUrlInput').value = sheetUrl;
   refreshGroupList();
   document.getElementById('teacherPanel').style.display='flex';
 }
@@ -617,6 +626,22 @@ function saveApiKey(){
   apiKey = key; localStorage.setItem('eaim_gemini_key', key);
   document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
   setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
+}
+function saveSheetUrl(){
+  const url = document.getElementById('sheetUrlInput').value.trim();
+  sheetUrl = url; localStorage.setItem('eaim_sheet_url', url);
+  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요!' : '연동 해제됨';
+  setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
+}
+function logToSheet(activity, title, detail){
+  const url = sheetUrl || localStorage.getItem('eaim_sheet_url') || '';
+  if(!url) return;
+  try{
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ name: stuName||'', group: stuClass||'', app: '신문', activity, title: title||'', detail: detail||'' })
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
 }
 
 async function callGemini(prompt,maxTokens=800){
@@ -744,6 +769,7 @@ function addAiArticle(){
   aiGenImage=null;
   const aiImgPrev=document.getElementById('ai-img-preview'); aiImgPrev.style.display='none'; aiImgPrev.src='';
   alert(`"${h}" 추가됐어요! 총 ${articles.length}개`);
+  logToSheet('기사추가', h, b.length+'자');
 }
 
 function addManArticle(){
@@ -757,6 +783,7 @@ function addManArticle(){
   manGenImage=null;
   const manImgPrev=document.getElementById('man-img-preview'); manImgPrev.style.display='none'; manImgPrev.src='';
   alert(`"${h}" 추가됐어요!`);
+  logToSheet('기사추가', h, b.length+'자');
 }
 
 // ══ AI 삽화 생성 (Gemini 2.5 Flash Image) ══
@@ -922,6 +949,7 @@ function downloadAll(){
   const a=document.createElement('a');
   a.href='data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(text);
   a.download=`${stuName}_국어신문_전체.txt`;a.click();
+  logToSheet('완성', name, articles.length+'개 기사');
 }
 
 function toggleGenre(el,genre){
