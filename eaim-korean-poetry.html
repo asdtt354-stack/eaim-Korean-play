@@ -1286,7 +1286,7 @@ async function callGemini(prompt, maxTokens=1000){
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
       contents:[{parts:[{text:prompt}]}],
-      generationConfig:{maxOutputTokens:maxTokens, temperature:0.8}
+      generationConfig:{maxOutputTokens:maxTokens, temperature:0.8, thinkingConfig:{thinkingBudget:0}}
     })
   });
 
