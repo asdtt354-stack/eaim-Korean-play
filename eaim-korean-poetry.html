@@ -1490,7 +1490,7 @@ async function generateGeminiImage(prompt){
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseModalities: ['IMAGE'] }
+      generationConfig: { responseModalities: ['TEXT','IMAGE'] }
     })
   });
   if(!res.ok){
