@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EAIM 국어 시 감상 & 창작</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -32,7 +34,6 @@ body {
   padding-bottom: 80px;
 }
 
-/* ── 한지 텍스처 배경 ── */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: -1;
@@ -43,7 +44,6 @@ body::before {
     repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(139,69,19,.015) 40px, rgba(139,69,19,.015) 41px);
 }
 
-/* ── 헤더 ── */
 header {
   background: linear-gradient(135deg, #2C1810 0%, #4A2818 50%, #2C1810 100%);
   padding: 20px 24px;
@@ -73,7 +73,6 @@ header::after {
   font-size: .8rem; color: var(--gold); font-weight: 700;
 }
 
-/* ── 네비 ── */
 .sticky-nav {
   position: sticky; top: 0; z-index: 50;
   background: rgba(253,250,246,.95);
@@ -98,15 +97,12 @@ header::after {
 .step-btn.done { background: var(--surface2); border-color: var(--border); color: var(--ink2); }
 .step-btn.done::after { content: ' ✓'; }
 
-/* ── 메인 ── */
 main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 
-/* ── 스크린 ── */
 .screen { display: none; }
 .screen.active { display: block; animation: fadeUp .4s ease; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-/* ── 카드 ── */
 .card {
   background: var(--surface);
   border: 1.5px solid var(--border);
@@ -123,7 +119,6 @@ main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
   border-bottom: 1px solid var(--border);
 }
 
-/* ── 섹션 헤더 ── */
 .section-header {
   text-align: center; margin-bottom: 28px;
 }
@@ -140,7 +135,6 @@ main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 }
 .section-header p { font-size: .85rem; color: var(--ink3); margin-top: 6px; }
 
-/* ── 입력 ── */
 .input-field {
   width: 100%; padding: 12px 16px;
   background: var(--surface2);
@@ -152,7 +146,6 @@ main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 .input-field:focus { border-color: var(--accent); background: white; }
 textarea.input-field { resize: vertical; line-height: 1.8; }
 
-/* ── 버튼 ── */
 .btn {
   padding: 12px 24px; border-radius: 10px; border: none;
   font-family: 'Noto Sans KR', sans-serif;
@@ -182,7 +175,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 .btn-full { width: 100%; justify-content: center; padding: 14px; }
 .btn-sm { padding: 8px 16px; font-size: .82rem; border-radius: 8px; }
 
-/* ── 감정 탭 ── */
 .emotion-grid {
   display: flex; flex-wrap: wrap; gap: 8px;
 }
@@ -199,7 +191,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   transform: scale(1.08);
 }
 
-/* ── 시 카드 ── */
 .poem-card {
   background: linear-gradient(135deg, #FFFEF9, #FDF8EE);
   border: 2px solid var(--border);
@@ -235,7 +226,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   font-size: .8rem; color: var(--accent2); line-height: 1.6;
 }
 
-/* ── 전체 시 보기 ── */
 .poem-full {
   background: linear-gradient(135deg, #FFFEF9, #FDF8EE);
   border: 1.5px solid var(--border);
@@ -256,7 +246,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   margin-bottom: 24px;
 }
 
-/* ── AI 결과 박스 ── */
 .ai-result {
   background: linear-gradient(135deg, #FFF8F0, #FFF3E5);
   border: 2px solid rgba(212,168,71,.3);
@@ -273,7 +262,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   line-height: 1.8; white-space: pre-line;
 }
 
-/* ── 음악 섹션 ── */
 .music-tabs {
   display: flex; gap: 8px; margin-bottom: 16px;
 }
@@ -299,7 +287,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   position: absolute; inset: 0; width: 100%; height: 100%; border: none;
 }
 
-/* ── AI 음악 추천 ── */
 .music-rec-card {
   background: var(--surface2); border: 1.5px solid var(--border);
   border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
@@ -314,7 +301,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   border-radius: 99px; font-size: .72rem; color: var(--accent); font-weight: 700;
 }
 
-/* ── TTS 낭독 ── */
 .recite-box {
   background: linear-gradient(135deg, #2C1810, #4A2818);
   border-radius: var(--radius); padding: 28px;
@@ -338,7 +324,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 .recite-stop { background: rgba(255,255,255,.15); color: white; border: 1px solid rgba(255,255,255,.2); }
 .recite-speed { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.15); font-size: .8rem; padding: 10px 16px; }
 
-/* ── 완성 페이지 ── */
 .final-story {
   background: linear-gradient(160deg, #FFFEF9, #FDF8EE);
   border: 2px solid var(--border); border-radius: var(--radius);
@@ -371,7 +356,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   background: rgba(212,168,71,.06); border-radius: 10px;
 }
 
-/* ── 로딩 ── */
 .loading-dots span {
   display: inline-block; width: 7px; height: 7px; border-radius: 50%;
   background: var(--accent); margin: 0 2px;
@@ -381,7 +365,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 .loading-dots span:nth-child(3) { animation-delay: .4s; }
 @keyframes blink { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
 
-/* ── 교사 패널 ── */
 .teacher-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.6);
   z-index: 200; display: flex; align-items: center; justify-content: center;
@@ -399,7 +382,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   color: var(--accent); display: flex; align-items: center; gap: 8px;
 }
 
-/* ── 로그인 모달 ── */
 .login-overlay {
   position: fixed; inset: 0; z-index: 300;
   background: linear-gradient(135deg, #2C1810, #4A2818);
@@ -417,7 +399,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 }
 .login-box p { font-size: .85rem; color: var(--ink3); margin-bottom: 24px; }
 
-/* ── 하단 네비 ── */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
   background: rgba(253,250,246,.97); backdrop-filter: blur(12px);
@@ -434,16 +415,13 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 .nav-btn .nav-icon { font-size: 1.2rem; }
 .nav-btn.active { color: var(--accent); background: rgba(139,69,19,.08); }
 
-/* ── 힌트 박스 ── */
 .hint { background: rgba(212,168,71,.1); border: 1.5px solid rgba(212,168,71,.3); border-radius: 10px; padding: 12px 16px; font-size: .82rem; color: var(--ink2); line-height: 1.7; margin-top: 12px; }
 
-/* ── 반응형 ── */
 @media (max-width: 480px) {
   .music-tabs { flex-wrap: wrap; }
   .recite-controls { flex-direction: column; align-items: stretch; }
 }
 
-/* ── 수노 프롬프트 ── */
 .suno-wrap{background:linear-gradient(135deg,#1A0830,#0A1A2C);border-radius:var(--radius);padding:24px;border:2px solid rgba(212,168,71,.25);box-shadow:0 8px 32px rgba(0,0,0,.2);margin-bottom:16px}
 .suno-title{font-family:'Nanum Myeongjo',serif;font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .suno-section{margin-bottom:14px}
@@ -456,11 +434,16 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 .genre-chip:hover{transform:scale(1.05)}
 .genre-chip.on{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 3px 12px rgba(139,69,19,.3)}
 .suno-how{background:rgba(212,168,71,.08);border:1.5px solid rgba(212,168,71,.2);border-radius:10px;padding:13px 16px;margin-top:12px;font-size:.78rem;color:rgba(212,168,71,.85);line-height:1.8}
+
+.error-box {
+  background: #FEE2E2; border: 1.5px solid #FCA5A5; border-radius: 10px;
+  padding: 14px 16px; font-size: .82rem; color: #B91C1C; line-height: 1.8; margin-top: 10px;
+}
+.error-box strong { display: block; margin-bottom: 4px; }
 </style>
 </head>
 <body>
 
-<!-- ── 로그인 ── -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div style="font-size:3rem;margin-bottom:12px">📜</div>
@@ -468,17 +451,14 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     <p>감정을 담아 시를 읽고, 나만의 시를 써봐요</p>
     <input type="text" class="input-field" id="loginName" placeholder="이름을 입력하세요" maxlength="10" style="margin-bottom:12px;text-align:center;font-size:1.1rem">
     <select class="input-field" id="loginClass" style="margin-bottom:20px">
-      <option value="">반 선택</option>
-      <option>1반</option><option>2반</option><option>3반</option>
-      <option>4반</option><option>5반</option><option>6반</option>
-      <option>교사</option>
+      <option value="">반/모둠 선택</option>
+      <option value="교사">교사</option>
     </select>
     <button class="btn btn-primary btn-full" onclick="doLogin()">✍️ 시작하기</button>
     <button onclick="showTeacherLogin()" style="margin-top:12px;background:none;border:none;font-size:.78rem;color:var(--ink3);cursor:pointer">선생님이신가요?</button>
   </div>
 </div>
 
-<!-- ── 교사 로그인 ── -->
 <div id="teacherLoginOverlay" class="login-overlay" style="display:none">
   <div class="login-box">
     <h2>교사 로그인</h2>
@@ -488,10 +468,18 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   </div>
 </div>
 
-<!-- ── 교사 패널 ── -->
 <div class="teacher-overlay" id="teacherPanel" style="display:none">
   <div class="teacher-box">
     <h2>📋 교사 컨트롤</h2>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.8rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🏷️ 반/모둠 이름 관리</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" class="input-field" id="newGroupName" placeholder="예: 다詩, 3반 시창작반" style="flex:1">
+        <button class="btn btn-primary btn-sm" onclick="addGroupUI()">추가</button>
+      </div>
+      <div id="groupList" style="font-size:.82rem;color:var(--ink3)"></div>
+      <p id="groupSyncStatus" style="font-size:.7rem;color:var(--ink3);margin-top:6px"></p>
+    </div>
     <div style="margin-bottom:16px">
       <label style="font-size:.8rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
       <input type="text" class="input-field" id="apiKeyInput" placeholder="AIzaSy...">
@@ -510,7 +498,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   </div>
 </div>
 
-<!-- ── 헤더 ── -->
 <header>
   <div class="header-left">
     <h1>📜 EAIM 국어 — 시 감상 & 창작</h1>
@@ -522,7 +509,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   </div>
 </header>
 
-<!-- ── 탭 네비 ── -->
 <div class="sticky-nav" id="stepNav" style="display:none">
   <button class="step-btn active" id="sBtn1" onclick="goStep(1)">Step 1<br>감정입력</button>
   <button class="step-btn" id="sBtn2" onclick="goStep(2)">Step 2<br>시 추천</button>
@@ -536,7 +522,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 
 <main>
 
-  <!-- ══ STEP 1: 감정/주제 입력 ══ -->
   <div class="screen active" id="step1">
     <div class="section-header">
       <div class="section-num">✍️ Step 1</div>
@@ -573,7 +558,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     </button>
   </div>
 
-  <!-- ══ STEP 2: AI 시 추천 ══ -->
   <div class="screen" id="step2">
     <div class="section-header">
       <div class="section-num">📚 Step 2</div>
@@ -593,7 +577,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     </div>
   </div>
 
-  <!-- ══ STEP 3: 감정 선택 ══ -->
   <div class="screen" id="step3">
     <div class="section-header">
       <div class="section-num">🎨 Step 3</div>
@@ -630,7 +613,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     <button class="btn btn-primary btn-full" onclick="goStep(4)">감상문 쓰러 가기 →</button>
   </div>
 
-  <!-- ══ STEP 4: 감상문 ══ -->
   <div class="screen" id="step4">
     <div class="section-header">
       <div class="section-num">✍️ Step 4</div>
@@ -655,7 +637,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     <button class="btn btn-primary btn-full" onclick="goStep(5)">나만의 시 쓰러 가기 →</button>
   </div>
 
-  <!-- ══ STEP 5: 나의 시 ══ -->
   <div class="screen" id="step5">
     <div class="section-header">
       <div class="section-num">🌸 Step 5</div>
@@ -682,7 +663,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     <button class="btn btn-primary btn-full" onclick="goStep(6)">전체 완성하러 가기 →</button>
   </div>
 
-  <!-- ══ STEP 6: 전체 완성 ══ -->
   <div class="screen" id="step6">
     <div class="section-header">
       <div class="section-num">📖 Step 6</div>
@@ -710,7 +690,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     </div>
   </div>
 
-  <!-- ══ STEP 7: 음악 & 낭독 ══ -->
   <div class="screen" id="step7">
     <div class="section-header">
       <div class="section-num">🎵 Step 7</div>
@@ -718,7 +697,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
       <p>배경음악을 선택하고 시를 낭독해봐요</p>
     </div>
 
-    <!-- 음악 선택 -->
     <div class="card">
       <div class="card-title">🎶 배경음악 선택</div>
       <div class="music-tabs">
@@ -727,7 +705,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
         <button class="music-tab" onclick="switchMusicTab('ai')">🤖 AI 추천</button>
       </div>
 
-      <!-- 유튜브 패널 -->
       <div class="music-panel active" id="ytPanel">
         <p style="font-size:.82rem;color:var(--ink3);margin-bottom:8px">유튜브 URL을 붙여넣고 재생 버튼을 눌러요</p>
         <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -738,10 +715,8 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
           <button class="btn btn-primary btn-sm" onclick="loadYoutube()">▶ 재생</button>
         </div>
 
-        <!-- 오류 메시지 -->
         <div id="ytError" style="display:none;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:10px;padding:12px 14px;font-size:.82rem;color:#B91C1C;line-height:1.7;margin-bottom:8px"></div>
 
-        <!-- 플레이어 -->
         <div id="ytPlayerWrap" style="display:none">
           <div class="yt-container">
             <iframe id="ytPlayer" allowfullscreen allow="autoplay; encrypted-media"></iframe>
@@ -758,7 +733,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
         </div>
       </div>
 
-      <!-- 파일 업로드 패널 -->
       <div class="music-panel" id="uploadPanel">
         <p style="font-size:.82rem;color:var(--ink3);margin-bottom:12px">mp3, wav, ogg 파일을 업로드하세요</p>
         <div style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s"
@@ -777,7 +751,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
         </div>
       </div>
 
-      <!-- AI 추천 패널 -->
       <div class="music-panel" id="aiMusicPanel">
         <button class="btn btn-gold btn-full" onclick="getAIMusicRec()">
           🤖 시 분위기에 맞는 음악 추천받기
@@ -793,7 +766,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
       </div>
     </div>
 
-    <!-- TTS 낭독 -->
     <div class="recite-box">
       <p style="font-size:.8rem;color:rgba(212,168,71,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">🎤 시 낭독</p>
       <p id="reciteTitle" style="font-family:'Nanum Myeongjo',serif;font-size:1.1rem;color:var(--gold);font-weight:700"></p>
@@ -816,7 +788,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   </div>
 
 
-  <!-- ══ STEP 8: 수노 프롬프트 ══ -->
   <div class="screen" id="step8">
     <div class="section-header">
       <div class="section-num">🎸 Step 8</div>
@@ -877,7 +848,6 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 
 </main>
 
-<!-- ── 하단 네비 ── -->
 <nav class="bottom-nav" id="bottomNav" style="display:none">
   <button class="nav-btn active" id="nav1" onclick="goStep(1)">
     <span class="nav-icon">💭</span>감정
@@ -906,20 +876,144 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 </nav>
 
 <script>
-// ── 상태 ──────────────────────────────────────────────────
 const LS = 'eaim_korean_';
 let student = null;
 let geminiKey = localStorage.getItem(LS+'gemini_key') || '';
 let teacherPw = localStorage.getItem(LS+'teacher_pw') || '1234';
 let selectedEmotion = '';
-let selectedPoem = null;  // { title, author, text, reason }
+let selectedPoem = null;
 let selectedFeelings = [];
 let reviewText = '';
 let myPoem = { title:'', text:'' };
 let currentStep = 1;
 let ttsUtterance = null;
 
-// ── 유틸 ──────────────────────────────────────────────────
+// ══ Firebase 설정 ══
+// 다른 EAIM 앱(뮤지컬메이커 허브 등)과 같은 Firebase 프로젝트를 쓰시려면
+// 그 프로젝트의 설정값을 아래에 그대로 붙여넣으세요.
+// 비워두면 이 기기(브라우저) 안에서만 반/모둠 이름이 저장/공유돼요 (다른 기기와는 공유 안 됨).
+const FIREBASE_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+let db = null;
+let firebaseReady = false;
+try {
+  if (FIREBASE_CONFIG.apiKey) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    firebaseReady = true;
+  }
+} catch(e) {
+  console.warn('Firebase 초기화 실패, 이 기기 저장 모드로 동작합니다.', e);
+  firebaseReady = false;
+}
+
+// ── 반/모둠 이름 CRUD (Firebase 연결 시 여러 기기 공유, 아니면 이 기기에만 저장) ──
+async function getGroups(){
+  if(firebaseReady){
+    try{
+      const snap = await db.collection('classGroups').orderBy('createdAt','asc').get();
+      return snap.docs.map(d=>({ id:d.id, name:d.data().name }));
+    }catch(e){ console.warn('Firestore 그룹 조회 실패, 로컬 저장소 사용', e); }
+  }
+  return lsGet('classGroups') || [];
+}
+
+async function addGroup(name){
+  if(firebaseReady){
+    try{
+      await db.collection('classGroups').add({
+        name,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      return;
+    }catch(e){ console.warn('Firestore 그룹 추가 실패, 로컬 저장소 사용', e); }
+  }
+  const groups = lsGet('classGroups') || [];
+  groups.push({ id: 'local_'+Date.now(), name });
+  lsSet('classGroups', groups);
+}
+
+async function deleteGroup(id){
+  if(firebaseReady){
+    try{
+      await db.collection('classGroups').doc(id).delete();
+      return;
+    }catch(e){ console.warn('Firestore 그룹 삭제 실패, 로컬 저장소 사용', e); }
+  }
+  let groups = lsGet('classGroups') || [];
+  groups = groups.filter(g=>g.id!==id);
+  lsSet('classGroups', groups);
+}
+
+async function populateClassSelect(){
+  const sel = document.getElementById('loginClass');
+  if(!sel) return;
+  const groups = await getGroups();
+  sel.innerHTML = '<option value="">반/모둠 선택</option>';
+  if(!groups.length){
+    const opt = document.createElement('option');
+    opt.disabled = true;
+    opt.textContent = '(선생님이 아직 반/모둠을 만들지 않았어요)';
+    sel.appendChild(opt);
+  } else {
+    groups.forEach(g=>{
+      const opt = document.createElement('option');
+      opt.value = g.name;
+      opt.textContent = g.name;
+      sel.appendChild(opt);
+    });
+  }
+  const teacherOpt = document.createElement('option');
+  teacherOpt.value = '교사';
+  teacherOpt.textContent = '교사';
+  sel.appendChild(teacherOpt);
+}
+
+async function refreshGroupList(){
+  const groups = await getGroups();
+  const el = document.getElementById('groupList');
+  if(!el) return;
+  if(!groups.length){
+    el.innerHTML = '<p>아직 만든 반/모둠이 없어요</p>';
+  } else {
+    el.innerHTML = groups.map(g=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span>${g.name}</span>
+        <button onclick="deleteGroupUI('${g.id}')" style="background:none;border:none;color:#DC2626;cursor:pointer;font-size:.78rem">삭제</button>
+      </div>`).join('');
+  }
+  const statusEl = document.getElementById('groupSyncStatus');
+  if(statusEl){
+    statusEl.textContent = firebaseReady
+      ? '✅ Firebase 연결됨 — 학생들이 어떤 기기에서 접속해도 같은 목록이 보여요'
+      : '⚠️ Firebase 미설정 — 지금은 이 기기(이 브라우저)에서만 반/모둠 이름이 보여요';
+  }
+}
+
+async function addGroupUI(){
+  const input = document.getElementById('newGroupName');
+  const name = input.value.trim();
+  if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
+  await addGroup(name);
+  input.value = '';
+  await refreshGroupList();
+  await populateClassSelect();
+}
+
+async function deleteGroupUI(id){
+  if(!confirm('이 반/모둠을 삭제할까요? 이미 이 이름으로 들어온 학생 기록은 남아있어요.')) return;
+  await deleteGroup(id);
+  await refreshGroupList();
+  await populateClassSelect();
+}
+
 function lsGet(k){ try{return JSON.parse(localStorage.getItem(LS+k))}catch{return null} }
 function lsSet(k,v){ try{localStorage.setItem(LS+k, JSON.stringify(v))}catch{} }
 
@@ -939,7 +1033,6 @@ function saveActivity(){
   lsSet('students', all);
 }
 
-// ── 로그인 ────────────────────────────────────────────────
 function doLogin(){
   const name = document.getElementById('loginName').value.trim();
   const cls = document.getElementById('loginClass').value;
@@ -978,6 +1071,7 @@ function doTeacherLogin(){
 function openTeacherPanel(){
   if(geminiKey) document.getElementById('apiKeyInput').value = geminiKey;
   loadStudentList();
+  refreshGroupList();
   document.getElementById('teacherPanel').style.display = 'flex';
 }
 function closeTeacherPanel(){ document.getElementById('teacherPanel').style.display = 'none'; }
@@ -1009,7 +1103,6 @@ function exportStudents(){
 }
 function resetAll(){ if(confirm('모든 데이터를 초기화하겠습니까?')){ Object.keys(localStorage).filter(k=>k.startsWith(LS)).forEach(k=>localStorage.removeItem(k)); location.reload(); } }
 
-// ── 스텝 이동 ─────────────────────────────────────────────
 function goStep(n){
   currentStep = n;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1027,7 +1120,6 @@ function goStep(n){
   window.scrollTo(0,0);
 }
 
-// ── Step 1: 감정 입력 ─────────────────────────────────────
 function setEmotion(e){
   selectedEmotion = e;
   document.getElementById('emotionInput').value = e;
@@ -1036,10 +1128,11 @@ function setEmotion(e){
   });
 }
 
-// ── Gemini 호출 ───────────────────────────────────────────
+// ══ Gemini 호출 (버그 수정: 차단/빈 응답 원인을 구분해서 알려줌) ══
 async function callGemini(prompt, maxTokens=1000){
   const key = geminiKey || lsGet('gemini_key') || '';
   if(!key) throw new Error('API_KEY_MISSING');
+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
   const res = await fetch(url, {
     method:'POST', headers:{'Content-Type':'application/json'},
@@ -1048,12 +1141,48 @@ async function callGemini(prompt, maxTokens=1000){
       generationConfig:{maxOutputTokens:maxTokens, temperature:0.8}
     })
   });
+
   const data = await res.json();
-  if(data.error) throw new Error(data.error.message);
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  if(!res.ok || data.error){
+    throw new Error(data.error?.message || `HTTP ${res.status} 오류`);
+  }
+
+  const candidate = data.candidates?.[0];
+  if(!candidate){
+    throw new Error('NO_CANDIDATE');
+  }
+
+  // 저작권(원문 암송) 차단 / 안전 차단 / 길이 초과를 명확히 구분
+  if(candidate.finishReason === 'RECITATION'){
+    throw new Error('RECITATION_BLOCKED');
+  }
+  if(candidate.finishReason === 'SAFETY'){
+    throw new Error('SAFETY_BLOCKED');
+  }
+  if(candidate.finishReason === 'MAX_TOKENS'){
+    throw new Error('MAX_TOKENS_TRUNCATED');
+  }
+
+  const text = candidate.content?.parts?.[0]?.text || '';
+  if(!text){
+    throw new Error('EMPTY_RESPONSE');
+  }
+  return text;
 }
 
-// ── Step 2: 시 추천 ───────────────────────────────────────
+// 에러 코드를 학생/교사가 이해할 수 있는 한국어 메시지로 변환
+function friendlyErrorMsg(e){
+  const msg = e.message || '';
+  if(msg === 'API_KEY_MISSING') return '먼저 교사 패널에서 Gemini API 키를 저장해주세요.';
+  if(msg === 'RECITATION_BLOCKED') return 'Gemini가 저작권 보호 시(원문 그대로 재현)를 요청받아 응답을 차단했어요. 실제 시 전문을 매번 실시간 생성 요청하는 구조라 생기는 문제예요.';
+  if(msg === 'SAFETY_BLOCKED') return 'Gemini의 안전 필터에 걸려 응답이 차단됐어요. 감정/주제 단어를 바꿔서 다시 시도해보세요.';
+  if(msg === 'MAX_TOKENS_TRUNCATED') return '응답이 길이 제한에 걸려 중간에 잘렸어요. 다시 시도해주세요.';
+  if(msg === 'NO_CANDIDATE' || msg === 'EMPTY_RESPONSE') return 'Gemini가 빈 응답을 반환했어요. 잠시 후 다시 시도해주세요.';
+  if(msg.includes('API key not valid') || msg.includes('API_KEY_INVALID')) return 'API 키가 올바르지 않아요. 교사 패널에서 키를 다시 확인해주세요.';
+  return 'AI 연결 중 오류가 발생했어요: ' + msg;
+}
+
 async function requestPoems(){
   const emotion = document.getElementById('emotionInput').value.trim();
   if(!emotion){ alert('감정이나 주제를 입력해주세요!'); return; }
@@ -1081,13 +1210,33 @@ async function requestPoems(){
   try {
     const raw = await callGemini(prompt, 1500);
     const clean = raw.replace(/```json|```/g,'').trim();
-    const poems = JSON.parse(clean);
+
+    let poems;
+    try {
+      poems = JSON.parse(clean);
+    } catch(parseErr) {
+      document.getElementById('poemLoading').style.display = 'none';
+      document.getElementById('poemList').innerHTML =
+        `<div class="card"><div class="error-box">
+          <strong>⚠️ AI 응답을 해석하지 못했어요 (JSON 형식 오류)</strong>
+          받은 원본 응답 일부:<br>
+          <code style="font-size:.72rem;white-space:pre-wrap">${(raw||'(빈 응답)').slice(0,300)}</code>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="requestPoems()">다시 시도</button></div>`;
+      return;
+    }
+
     document.getElementById('poemLoading').style.display = 'none';
     renderPoems(poems);
+
   } catch(e) {
-    document.getElementById('poemLoading').innerHTML =
-      `<p style="color:red;font-size:.85rem">⚠️ ${e.message==='API_KEY_MISSING'?'API 키를 교사 패널에서 설정해주세요.':'시를 불러오지 못했어요. 다시 시도해주세요.'}</p>
-       <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="requestPoems()">다시 시도</button>`;
+    document.getElementById('poemLoading').style.display = 'none';
+    document.getElementById('poemList').innerHTML =
+      `<div class="card"><div class="error-box">
+        <strong>⚠️ 시를 불러오지 못했어요</strong>
+        ${friendlyErrorMsg(e)}
+      </div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="requestPoems()">다시 시도</button></div>`;
   }
 }
 
@@ -1116,7 +1265,6 @@ function selectPoemCard(i, poems){
 
 function selectPoem(){
   if(!selectedPoem){ alert('시를 선택해주세요!'); return; }
-  // Step 3에 시 표시
   document.getElementById('selectedPoemDisplay').innerHTML =
     `<div class="poem-full-title">${selectedPoem.title}</div>
      <div class="poem-full-author">— ${selectedPoem.author}</div>
@@ -1124,7 +1272,6 @@ function selectPoem(){
   goStep(3);
 }
 
-// ── Step 3: 감정 탭 ───────────────────────────────────────
 document.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('#feelingChips .emo-chip').forEach(chip=>{
     chip.onclick = ()=>{
@@ -1138,7 +1285,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 });
 
-// ── Step 4: 감상문 AI 첨삭 ───────────────────────────────
 async function aiReviewCheck(){
   const text = document.getElementById('reviewText').value.trim();
   if(!text){ alert('감상문을 먼저 써주세요!'); return; }
@@ -1155,11 +1301,10 @@ async function aiReviewCheck(){
 짧고 따뜻하게 한국어로 피드백해주세요.`, 600);
     document.getElementById('reviewAiText').textContent = result;
     document.getElementById('reviewAiResult').style.display = 'block';
-  } catch(e) { alert('AI 연결에 실패했어요.'); }
+  } catch(e) { alert('AI 연결에 실패했어요.\n' + friendlyErrorMsg(e)); }
   btn.disabled=false; btn.textContent='🤖 AI 첨삭받기';
 }
 
-// ── Step 5: 나의 시 AI 첨삭/영감 ─────────────────────────
 async function aiPoemCheck(){
   const text = document.getElementById('myPoemText').value.trim();
   if(!text){ alert('시를 먼저 써주세요!'); return; }
@@ -1176,7 +1321,7 @@ async function aiPoemCheck(){
 따뜻하고 구체적으로 한국어로 피드백해주세요.`, 600);
     document.getElementById('poemAiText').textContent = result;
     document.getElementById('poemAiResult').style.display = 'block';
-  } catch(e) { alert('AI 연결에 실패했어요.'); }
+  } catch(e) { alert('AI 연결에 실패했어요.\n' + friendlyErrorMsg(e)); }
   btn.disabled=false; btn.textContent='🤖 AI 첨삭받기';
 }
 
@@ -1196,11 +1341,10 @@ async function aiPoemInspire(){
 짧고 영감을 주는 방식으로 한국어로 답해주세요.`, 500);
     document.getElementById('poemAiText').textContent = result;
     document.getElementById('poemAiResult').style.display = 'block';
-  } catch(e) { alert('AI 연결에 실패했어요.'); }
+  } catch(e) { alert('AI 연결에 실패했어요.\n' + friendlyErrorMsg(e)); }
   btn.disabled=false; btn.textContent='💡 AI 영감 받기';
 }
 
-// ── Step 6: 전체 완성 ─────────────────────────────────────
 function buildFinal(){
   const name = student?.name || '';
   const cls = student?.class || '';
@@ -1240,7 +1384,6 @@ function downloadFinal(){
   a.download = `${name}_시감상일지.txt`; a.click();
 }
 
-// ── Step 7: 음악 탭 ───────────────────────────────────────
 function switchMusicTab(tab){
   document.querySelectorAll('.music-tab').forEach((b,i)=>{
     const tabs=['yt','upload','ai'];
@@ -1252,13 +1395,10 @@ function switchMusicTab(tab){
 }
 
 function extractYoutubeId(url){
-  // 1) 일반: youtube.com/watch?v=ID (11자리)
   let m = url.match(/[?&]v=([A-Za-z0-9_-]{11})/);
   if(m) return m[1];
-  // 2) 단축: youtu.be/ID
   m = url.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
   if(m) return m[1];
-  // 3) 이미 embed: youtube.com/embed/ID
   m = url.match(/embed\/([A-Za-z0-9_-]{11})/);
   if(m) return m[1];
   return null;
@@ -1346,7 +1486,7 @@ async function getAIMusicRec(){
     document.getElementById('aiMusicResult').innerHTML = html;
   } catch(e) {
     document.getElementById('aiMusicLoading').style.display = 'none';
-    document.getElementById('aiMusicResult').innerHTML = '<p style="color:red;font-size:.82rem">AI 연결에 실패했어요.</p>';
+    document.getElementById('aiMusicResult').innerHTML = `<p style="color:red;font-size:.82rem">${friendlyErrorMsg(e)}</p>`;
   }
 }
 
@@ -1356,7 +1496,6 @@ function copySearch(keyword){
   });
 }
 
-// ── TTS 낭독 ──────────────────────────────────────────────
 function buildRecite(){
   if(!selectedPoem) return;
   document.getElementById('reciteTitle').textContent = selectedPoem.title + ' — ' + selectedPoem.author;
@@ -1399,14 +1538,13 @@ function stopRecite(){
   ttsUtterance = null;
 }
 
-// ── 초기화 ────────────────────────────────────────────────
 window.addEventListener('load', ()=>{
   if(geminiKey) document.getElementById('apiKeyInput').value = geminiKey;
+  populateClassSelect();
   if(window.speechSynthesis.onvoiceschanged !== undefined)
     window.speechSynthesis.onvoiceschanged = ()=>{};
 });
 
-// ── Step 8: 수노 프롬프트 ─────────────────────────────────
 let selectedGenres = [];
 
 function toggleGenre(el, genre) {
