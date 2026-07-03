@@ -764,7 +764,12 @@ function lsGet(k){ try{return JSON.parse(localStorage.getItem(LS+k))}catch{retur
 function lsSet(k,v){ try{localStorage.setItem(LS+k, JSON.stringify(v))}catch{} }
 
 const FIREBASE_CONFIG = {
-  apiKey: "", authDomain: "", projectId: "", storageBucket: "", messagingSenderId: "", appId: ""
+  apiKey: "AIzaSyBalg0f5x0ydfHxn_nzgZ1pAELvJw6PzoY",
+  authDomain: "eaim-classroom.firebaseapp.com",
+  projectId: "eaim-classroom",
+  storageBucket: "eaim-classroom.firebasestorage.app",
+  messagingSenderId: "294479576192",
+  appId: "1:294479576192:web:c60e994e319dbd2f11ba65"
 };
 let db = null, firebaseReady = false;
 try {
