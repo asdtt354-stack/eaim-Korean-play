@@ -6,6 +6,8 @@
 <title>EAIM 국어 신문 만들기</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --ink:#1A1008;--ink2:#4A3010;--ink3:#9A8060;
@@ -19,7 +21,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Pretendard','Noto Sans KR',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:80px}
 
-/* ── 헤더 ── */
 header{background:linear-gradient(135deg,#1A1A2E,#16213E,#0F3460);
   padding:14px 18px;border-bottom:3px solid var(--accent);
   position:sticky;top:0;z-index:100;box-shadow:0 3px 18px rgba(0,0,0,.3)}
@@ -29,8 +30,8 @@ header{background:linear-gradient(135deg,#1A1A2E,#16213E,#0F3460);
 .ls{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:1px}
 .nb{background:rgba(96,165,250,.18);border:1.5px solid rgba(96,165,250,.35);border-radius:99px;padding:4px 12px;font-size:.75rem;color:#60A5FA;font-weight:700;display:none}
 .rb{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:4px 10px;font-size:.7rem;color:rgba(255,255,255,.65);cursor:pointer;font-family:inherit}
+.tb{background:rgba(200,148,10,.2);border:1px solid rgba(200,148,10,.4);border-radius:9px;padding:4px 10px;font-size:.7rem;color:#F0C040;cursor:pointer;font-family:inherit;font-weight:700}
 
-/* ── 스텝 네비 ── */
 .sn{background:rgba(253,248,240,.96);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);
   padding:8px 14px;display:none;gap:5px;overflow-x:auto;
   position:sticky;top:62px;z-index:90;box-shadow:0 2px 10px rgba(0,0,0,.05)}
@@ -42,23 +43,19 @@ header{background:linear-gradient(135deg,#1A1A2E,#16213E,#0F3460);
 .sb.dn{background:var(--paper2);border-color:var(--border);color:var(--ink2)}
 .sb.dn::after{content:' ✓'}
 
-/* ── 메인 ── */
 main{max-width:800px;margin:0 auto;padding:20px 14px}
 .tc{display:none;animation:fu .4s ease}
 .tc.on{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── 카드 ── */
 .cd{background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--s)}
 .ct{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
 
-/* ── 입력 ── */
 .ni{width:100%;padding:10px 13px;background:var(--paper);border:2px solid var(--border);border-radius:9px;color:var(--ink);font-family:inherit;font-size:.95rem;font-weight:700;outline:none;transition:border-color .2s}
 .ni:focus{border-color:var(--accent);background:white}
 .ta{width:100%;padding:11px 13px;background:var(--paper);border:2px solid var(--border);border-radius:9px;color:var(--ink);font-family:'Nanum Myeongjo',serif;font-size:.92rem;resize:vertical;outline:none;transition:border-color .2s;line-height:1.9;min-height:120px}
 .ta:focus{border-color:var(--accent);background:white}
 
-/* ── 버튼 ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:9px;border:none;font-family:inherit;font-weight:700;font-size:.86rem;cursor:pointer;transition:all .15s}
 .btn:active{transform:scale(.96)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -71,26 +68,21 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 .bfl{width:100%}
 .bsm{padding:7px 13px;font-size:.76rem;border-radius:8px}
 
-/* ── 힌트 ── */
 .hint{background:rgba(37,99,235,.07);border:1.5px solid rgba(37,99,235,.2);border-radius:9px;padding:10px 13px;font-size:.78rem;color:var(--ink2);line-height:1.7;margin-top:9px}
 
-/* ── 입력 탭 ── */
 .input-tabs{display:flex;gap:7px;margin-bottom:14px}
 .itab{flex:1;padding:9px;border-radius:10px;border:2px solid var(--border);background:white;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
 .itab.on{background:var(--accent);border-color:var(--accent2);color:white}
 
-/* ── 포맷 선택 ── */
 .fmt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .fmt-card{border:3px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;background:white;text-align:center}
 .fmt-card:hover{transform:translateY(-2px);box-shadow:var(--s)}
 .fmt-card.sel{border-color:var(--accent);background:rgba(37,99,235,.05);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
 
-/* ── 기사 아이템 ── */
 .article-item{background:var(--paper);border:1.5px solid var(--border);border-radius:9px;padding:13px 15px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start}
 .art-del{background:none;border:none;cursor:pointer;color:var(--ink3);flex-shrink:0;padding:4px;transition:color .2s}
 .art-del:hover{color:var(--coral)}
 
-/* ══ 신문 스타일 ══ */
 .newspaper{background:var(--paper);border:2px solid var(--ink2);font-family:'Nanum Myeongjo',serif;overflow:hidden;box-shadow:var(--sl)}
 .np-header{border-bottom:3px double var(--ink2);padding:16px 20px 12px;text-align:center;background:var(--paper2)}
 .np-masthead{font-size:2rem;font-weight:800;letter-spacing:.1em;color:var(--ink)}
@@ -101,12 +93,10 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 .np-art-body{font-size:.78rem;color:var(--ink2);line-height:1.9}
 .np-section-tag{display:inline-block;background:var(--accent);color:white;font-size:.6rem;padding:2px 7px;border-radius:3px;margin-bottom:6px;font-family:'Pretendard',sans-serif;font-weight:700}
 
-/* 타입1: 조선일보형 */
 .np-t1 .np-body{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink2)}
 .np-t1 .np-col{padding:13px;border-right:1px solid var(--border)}
 .np-t1 .np-col:last-child{border-right:none}
 
-/* 타입2: 2단형 */
 .np-t2{background:white}
 .np-t2 .np-header{background:var(--accent);border-bottom:4px solid var(--accent2)}
 .np-t2 .np-masthead{color:white}
@@ -115,14 +105,12 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 .np-t2 .np-col{padding:14px;border-right:2px solid rgba(37,99,235,.15)}
 .np-t2 .np-col:last-child{border-right:none;background:rgba(37,99,235,.03)}
 
-/* 타입3: 복고형 */
 .np-t3{background:linear-gradient(135deg,#FFF8E8,#FFF0D0);border:3px double #8B6914}
 .np-t3 .np-header{background:linear-gradient(135deg,#1A1A2E,#16213E);border-bottom:3px solid var(--gold)}
 .np-t3 .np-masthead{color:var(--gold)}
 .np-t3 .np-meta{color:rgba(200,148,10,.6)}
 .np-t3 .np-body{padding:18px}
 
-/* 타입4: 타블로이드형 */
 .np-t4{background:white;border:3px solid var(--coral)}
 .np-t4 .np-header{background:var(--coral);border-bottom:4px solid #C03020}
 .np-t4 .np-masthead{color:white}
@@ -133,43 +121,40 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 .np-t4 .np-col.full{grid-column:span 2;border-right:none;border-bottom:2px solid rgba(255,107,91,.15)}
 .np-t4 .np-art-title{color:#C03020}
 
-/* ── AI 박스 ── */
 .ai-box{background:rgba(37,99,235,.07);border:1.5px solid rgba(37,99,235,.2);border-radius:11px;padding:13px;margin-top:10px;display:none}
 .ai-label{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:6px}
 .ai-text{font-size:.86rem;color:var(--ink2);line-height:1.85;white-space:pre-line}
 
-/* ── 수노 박스 ── */
 .suno-box{background:linear-gradient(135deg,#1A0808,#0A1A20);border-radius:var(--r);padding:20px;border:2px solid rgba(200,148,10,.25)}
 .suno-label{font-size:.65rem;font-weight:700;color:rgba(200,148,10,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
 .suno-content{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 13px;font-family:'Nanum Myeongjo',serif;font-size:.88rem;color:rgba(255,255,255,.9);line-height:1.9;white-space:pre-line;margin-bottom:10px}
 
-/* ── 감상문 ── */
 .act-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
 .act-btn{flex:1;min-width:90px;padding:10px;border-radius:9px;border:none;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
 .ab-copy{background:var(--paper2);color:var(--ink2);border:2px solid var(--border)}
 .ab-dl{background:linear-gradient(135deg,var(--gold),#A07008);color:white}
 .ab-print{background:linear-gradient(135deg,#2A2A2A,#1A1A1A);color:white}
 
-/* ── 로딩 ── */
 .ld{display:flex;align-items:center;gap:5px;color:var(--ink3);font-size:.8rem;justify-content:center;padding:14px}
 .ld span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:bl 1.2s infinite}
 .ld span:nth-child(2){animation-delay:.2s}.ld span:nth-child(3){animation-delay:.4s}
 @keyframes bl{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
-/* ── 모달 ── */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px}
-.mb{background:var(--paper);border-radius:1.5rem;padding:24px;width:100%;max-width:400px;box-shadow:0 24px 56px rgba(0,0,0,.3);border:1.5px solid var(--border);text-align:center}
+.mb{background:var(--paper);border-radius:1.5rem;padding:24px;width:100%;max-width:400px;box-shadow:0 24px 56px rgba(0,0,0,.3);border:1.5px solid var(--border);text-align:center;max-height:88vh;overflow-y:auto}
 
-/* ── 장르 칩 ── */
 .genre-chip{padding:7px 13px;border-radius:99px;font-size:.78rem;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--ink2);transition:all .15s;display:inline-block;margin:3px}
 .genre-chip.on{background:var(--accent);border-color:var(--accent2);color:white}
+
+.group-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--ink2);text-align:left}
+.group-del{background:none;border:none;color:#C03020;cursor:pointer;font-size:.75rem}
+.sync-status{font-size:.68rem;color:var(--ink3);margin-top:6px}
 
 @media print{header,.sn,.no-print{display:none!important}body{background:white}.newspaper{box-shadow:none}}
 </style>
 </head>
 <body>
 
-<!-- 모달 -->
 <div id="nm" class="ov">
   <div class="mb">
     <div style="font-size:2.8rem;margin-bottom:11px">📰</div>
@@ -180,15 +165,45 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
       onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
       onkeydown="if(event.key==='Enter')sN()">
     <select id="sclass" style="width:100%;padding:9px;border:2px solid var(--border);border-radius:.9rem;font-family:inherit;font-weight:700;background:white;outline:none;margin-bottom:14px">
-      <option value="">반 선택</option>
-      <option>1반</option><option>2반</option><option>3반</option>
-      <option>4반</option><option>5반</option><option>6반</option>
+      <option value="">반/모둠 선택</option>
+      <option value="교사">교사</option>
     </select>
     <button onclick="sN()" class="btn bbl bfl" style="font-size:.95rem;padding:12px">📰 신문 만들기 시작!</button>
+    <button onclick="showTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.76rem;color:var(--ink3);cursor:pointer;width:100%">선생님이신가요?</button>
   </div>
 </div>
 
-<!-- 헤더 -->
+<div id="tlOv" class="ov" style="display:none">
+  <div class="mb">
+    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.3rem;color:var(--accent);margin-bottom:14px">교사 로그인</h2>
+    <input type="password" id="teacherPwInput" class="ni" placeholder="비밀번호 (기본: 1234)" style="margin-bottom:12px;text-align:center">
+    <button onclick="doTeacherLogin()" class="btn bbl bfl">로그인</button>
+    <button onclick="hideTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.76rem;color:var(--ink3);cursor:pointer;width:100%">← 돌아가기</button>
+  </div>
+</div>
+
+<div id="teacherPanel" class="ov" style="display:none">
+  <div class="mb" style="text-align:left">
+    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:var(--accent);margin-bottom:18px;text-align:center">📋 교사 컨트롤</h2>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🏷️ 반/모둠 이름 관리</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" id="newGroupName" class="ni" placeholder="예: 다詩, 3반 신문반" style="flex:1;font-size:.85rem">
+        <button class="btn bbl bsm" onclick="addGroupUI()">추가</button>
+      </div>
+      <div id="groupList"></div>
+      <p id="groupSyncStatus" class="sync-status"></p>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
+      <input type="text" id="apiKeyInput" class="ni" placeholder="AIzaSy..." style="font-size:.85rem">
+      <button class="btn bbl bsm bfl" style="margin-top:8px" onclick="saveApiKey()">저장</button>
+      <p id="apiStatus" style="font-size:.73rem;color:var(--mint);margin-top:4px;text-align:center"></p>
+    </div>
+    <button class="btn bg2 bfl" onclick="closeTeacherPanel()">닫기</button>
+  </div>
+</div>
+
 <header>
   <div class="hi">
     <div>
@@ -197,12 +212,12 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
     </div>
     <div style="display:flex;gap:6px;align-items:center">
       <span id="wn" class="nb"></span>
+      <button onclick="openTeacherPanel()" class="tb">교사</button>
       <button onclick="location.reload()" class="rb">↺</button>
     </div>
   </div>
 </header>
 
-<!-- 스텝 네비 -->
 <div class="sn" id="sNav">
   <button class="sb on" id="sB1" onclick="sT(1)">Step 1<br><span style="font-size:.6rem;opacity:.8">신문설정</span></button>
   <button class="sb" id="sB2" onclick="sT(2)">Step 2<br><span style="font-size:.6rem;opacity:.8">기사작성</span></button>
@@ -213,7 +228,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 
 <main>
 
-<!-- ══ STEP 1 ══ -->
 <div id="tab-1" class="tc on" style="margin-top:16px">
   <div style="text-align:center;margin-bottom:18px">
     <span style="background:rgba(37,99,235,.1);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 1</span>
@@ -270,7 +284,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
   <button onclick="sT(2)" class="btn bbl bfl" style="font-size:.95rem;padding:13px">📝 기사 작성하러 가기 →</button>
 </div>
 
-<!-- ══ STEP 2 ══ -->
 <div id="tab-2" class="tc" style="margin-top:16px">
   <div style="text-align:center;margin-bottom:18px">
     <span style="background:rgba(37,99,235,.1);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 2</span>
@@ -284,7 +297,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
       <button onclick="switchTab('manual',this)" id="itab-manual" class="itab">✏️ 직접 입력 (모둠)</button>
     </div>
 
-    <!-- AI 자동 -->
     <div id="panel-ai">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
         <div>
@@ -339,7 +351,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
       </div>
     </div>
 
-    <!-- 직접 입력 (모둠) -->
     <div id="panel-manual" style="display:none">
       <div class="hint" style="margin-bottom:12px">💡 모둠원이 직접 쓴 글이나 조사한 내용을 입력해요!</div>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -369,7 +380,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
     </div>
   </div>
 
-  <!-- 추가된 기사 -->
   <div class="cd">
     <div class="ct">📝 추가된 기사 <span id="art-count" style="background:rgba(37,99,235,.1);color:var(--accent);border-radius:99px;padding:2px 10px;font-size:.72rem">0개</span></div>
     <div id="article-list"><p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">아직 추가된 기사가 없어요!</p></div>
@@ -378,7 +388,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
   <button onclick="sT(3)" class="btn bbl bfl" style="font-size:.95rem;padding:13px">📰 신문 완성하기 →</button>
 </div>
 
-<!-- ══ STEP 3 ══ -->
 <div id="tab-3" class="tc" style="margin-top:16px">
   <div style="text-align:center;margin-bottom:18px">
     <span style="background:rgba(37,99,235,.1);color:var(--accent);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 3</span>
@@ -393,7 +402,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
   <button onclick="sT(4)" class="btn bgold bfl no-print" style="margin-top:10px;font-size:.92rem;padding:13px">✍️ 감상문 쓰기 →</button>
 </div>
 
-<!-- ══ STEP 4 ══ -->
 <div id="tab-4" class="tc" style="margin-top:16px">
   <div style="text-align:center;margin-bottom:18px">
     <span style="background:var(--mint-l);color:var(--mint);padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 4</span>
@@ -422,7 +430,6 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
   <button onclick="sT(5)" class="btn bgold bfl no-print" style="margin-top:10px;font-size:.92rem;padding:13px">🎸 수노 프롬프트 →</button>
 </div>
 
-<!-- ══ STEP 5 ══ -->
 <div id="tab-5" class="tc" style="margin-top:16px">
   <div style="text-align:center;margin-bottom:18px">
     <span style="background:#FFFBEB;color:#B07000;padding:5px 16px;border-radius:99px;font-size:.8rem;font-weight:900">Step 5</span>
@@ -475,24 +482,123 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 </div>
 
 </main>
-<div style="text-align:center;padding:12px;color:var(--ink3);font-size:.68rem" class="no-print">Designed by Park Seong-ae · EAIM 국어 신문 v1</div>
+<div style="text-align:center;padding:12px;color:var(--ink3);font-size:.68rem" class="no-print">Designed by Park Seong-ae · EAIM 국어 신문 v2</div>
 
 <script>
 let stuName='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
-let selFmtNum=1, articles=[], sunoGenres=['발라드'];
+let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
+let selFmtNum=1, articles=[], sunoGenreList=['발라드'];
+
+const FIREBASE_CONFIG = {
+  apiKey: "", authDomain: "", projectId: "", storageBucket: "", messagingSenderId: "", appId: ""
+};
+let db = null, firebaseReady = false;
+try {
+  if (FIREBASE_CONFIG.apiKey) { firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); firebaseReady = true; }
+} catch(e) { firebaseReady = false; }
+
+async function getGroups(){
+  if(firebaseReady){
+    try{ const snap = await db.collection('classGroups').orderBy('createdAt','asc').get();
+      return snap.docs.map(d=>({id:d.id,name:d.data().name})); }catch(e){}
+  }
+  return JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+}
+async function addGroup(name){
+  if(firebaseReady){
+    try{ await db.collection('classGroups').add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); return; }catch(e){}
+  }
+  const groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+  groups.push({id:'local_'+Date.now(), name});
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+async function deleteGroupFn(id){
+  if(firebaseReady){
+    try{ await db.collection('classGroups').doc(id).delete(); return; }catch(e){}
+  }
+  let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+  groups = groups.filter(g=>g.id!==id);
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+async function populateClassSelect(){
+  const sel = document.getElementById('sclass'); if(!sel) return;
+  const groups = await getGroups();
+  sel.innerHTML = '<option value="">반/모둠 선택</option>';
+  if(!groups.length){
+    const opt=document.createElement('option'); opt.disabled=true; opt.textContent='(선생님이 아직 반/모둠을 만들지 않았어요)';
+    sel.appendChild(opt);
+  } else {
+    groups.forEach(g=>{ const opt=document.createElement('option'); opt.value=g.name; opt.textContent=g.name; sel.appendChild(opt); });
+  }
+  const t=document.createElement('option'); t.value='교사'; t.textContent='교사'; sel.appendChild(t);
+}
+async function refreshGroupList(){
+  const groups = await getGroups();
+  const el = document.getElementById('groupList'); if(!el) return;
+  el.innerHTML = groups.length ? groups.map(g=>`
+    <div class="group-item"><span>${g.name}</span><button class="group-del" onclick="deleteGroupUI('${g.id}')">삭제</button></div>
+  `).join('') : '<p style="font-size:.8rem;color:var(--ink3)">아직 만든 반/모둠이 없어요</p>';
+  const s = document.getElementById('groupSyncStatus');
+  if(s) s.textContent = firebaseReady ? '✅ 여러 기기에서 공유돼요' : '⚠️ Firebase 미설정 — 이 기기에서만 보여요';
+}
+async function addGroupUI(){
+  const input = document.getElementById('newGroupName');
+  const name = input.value.trim();
+  if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
+  await addGroup(name); input.value='';
+  await refreshGroupList(); await populateClassSelect();
+}
+async function deleteGroupUI(id){
+  if(!confirm('이 반/모둠을 삭제할까요?')) return;
+  await deleteGroupFn(id); await refreshGroupList(); await populateClassSelect();
+}
 
 window.onload=function(){
   document.getElementById('np-date').value=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  populateClassSelect();
 };
 
 function sN(){
   const n=document.getElementById('sni').value.trim();
   const c=document.getElementById('sclass').value;
-  if(!n||!c){alert('이름과 반을 입력해주세요!');return;}
+  if(!n){alert('이름을 입력해주세요!');return;}
+  if(!c){alert('반/모둠을 선택해주세요!');return;}
+  if(c==='교사'){ showTeacherLogin(); return; }
   stuName=n;
   const nb=document.getElementById('wn');nb.textContent=n+' 님 📰';nb.style.display='';
   document.getElementById('nm').style.display='none';
   document.getElementById('sNav').style.display='flex';
+}
+
+function showTeacherLogin(){
+  document.getElementById('nm').style.display='none';
+  document.getElementById('tlOv').style.display='flex';
+}
+function hideTeacherLogin(){
+  document.getElementById('tlOv').style.display='none';
+  document.getElementById('nm').style.display='flex';
+}
+function doTeacherLogin(){
+  const pw = document.getElementById('teacherPwInput').value;
+  if(pw !== teacherPw){ alert('비밀번호가 틀렸어요!'); return; }
+  document.getElementById('tlOv').style.display='none';
+  document.getElementById('nm').style.display='none';
+  const nb=document.getElementById('wn'); nb.textContent='👩‍🏫 선생님'; nb.style.display='';
+  document.getElementById('sNav').style.display='flex';
+  openTeacherPanel();
+}
+function openTeacherPanel(){
+  if(apiKey) document.getElementById('apiKeyInput').value = apiKey;
+  refreshGroupList();
+  document.getElementById('teacherPanel').style.display='flex';
+}
+function closeTeacherPanel(){ document.getElementById('teacherPanel').style.display='none'; }
+function saveApiKey(){
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if(!key) return;
+  apiKey = key; localStorage.setItem('eaim_gemini_key', key);
+  document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
+  setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
 }
 
 async function callGemini(prompt,maxTokens=800){
@@ -507,7 +613,6 @@ async function callGemini(prompt,maxTokens=800){
   return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
 }
 
-// STEP 1
 async function aiNameSuggest(){
   const el=document.getElementById('name-ai');const txt=document.getElementById('name-ai-text');
   el.style.display='block';txt.textContent='추천 중...';
@@ -516,7 +621,6 @@ async function aiNameSuggest(){
 }
 function selFmt(n,el){selFmtNum=n;document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
 
-// STEP 2
 function switchTab(tab,btn){
   document.getElementById('panel-ai').style.display=tab==='ai'?'block':'none';
   document.getElementById('panel-manual').style.display=tab==='manual'?'block':'none';
@@ -604,7 +708,6 @@ function renderList(){
 }
 function removeArticle(i){articles.splice(i,1);renderList();}
 
-// STEP 3
 function buildNewspaper(){
   const name=document.getElementById('np-name').value||'우리반 국어신문';
   const date=document.getElementById('np-date').value||'';
@@ -665,7 +768,6 @@ function downloadNP(){
   a.download=`${stuName}_국어신문.txt`;a.click();
 }
 
-// STEP 4
 async function aiReflection(){
   const text=document.getElementById('reflection-text').value.trim();
   if(!text){alert('감상문을 먼저 써주세요!');return;}
@@ -697,8 +799,6 @@ function downloadAll(){
   a.download=`${stuName}_국어신문_전체.txt`;a.click();
 }
 
-// STEP 5
-let sunoGenreList=['발라드'];
 function toggleGenre(el,genre){
   el.classList.toggle('on');
   if(el.classList.contains('on'))sunoGenreList.push(genre);
@@ -739,7 +839,6 @@ async function genSuno(){
 }
 function copySuno(){navigator.clipboard.writeText(document.getElementById('suno-full').textContent).then(()=>alert('📋 복사됐어요! 수노에 붙여넣기 해보세요~ 🎵'));}
 
-// 탭 전환
 function sT(n){
   if(n===3)buildNewspaper();
   if(n===5){const el=document.getElementById('suno-preview');el.innerHTML=articles.map(a=>`<span style="background:rgba(37,99,235,.1);color:var(--accent);border-radius:99px;padding:5px 12px;font-size:.76rem;font-weight:700">📰 ${a.headline.substring(0,15)}...</span>`).join('');}
