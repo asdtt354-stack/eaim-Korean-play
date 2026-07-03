@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EAIM 국어 시 감상 & 창작</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8B4513">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EAIM국어">
+<link rel="icon" href="favicon-32.png">
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -1348,7 +1355,7 @@ async function requestPoems(){
 실제 존재하는 한국 시를 추천하세요. 윤동주, 김소월, 백석, 정지용, 한용운 등 교과서 시인 우선. 시의 원문은 절대 포함하지 말고 제목·작가·추천 이유만 작성하세요.`;
 
   try {
-    const raw = await callGemini(prompt, 600);
+    const raw = await callGemini(prompt, 900);
     const clean = raw.replace(/```json|```/g,'').trim();
 
     let poems;
@@ -1876,6 +1883,13 @@ function copySunoPrompt() {
   });
 }
 
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
