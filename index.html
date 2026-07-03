@@ -28,7 +28,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── 한지 배경 ── */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -40,7 +39,6 @@ body::before {
     repeating-linear-gradient(90deg, transparent, transparent 44px, rgba(139,69,19,.012) 44px, rgba(139,69,19,.012) 45px);
 }
 
-/* ── 떠다니는 문자들 ── */
 .float-char {
   position: fixed;
   font-family: 'Nanum Myeongjo', serif;
@@ -53,14 +51,12 @@ body::before {
   50% { transform: translateY(-18px) rotate(5deg); }
 }
 
-/* ── 래퍼 ── */
 .wrapper {
   position: relative; z-index: 10;
   max-width: 720px; margin: 0 auto;
   padding: 0 20px 60px;
 }
 
-/* ── 히어로 ── */
 .hero {
   text-align: center;
   padding: 52px 0 36px;
@@ -88,7 +84,7 @@ body::before {
 
 .hero h1 {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: clamp(2.2rem, 8vw, 3.2rem);
+  font-size: clamp(2.1rem, 7.5vw, 3rem);
   font-weight: 800; line-height: 1.2;
   color: var(--ink); margin-bottom: 14px;
 }
@@ -99,7 +95,7 @@ body::before {
 }
 .hero-desc {
   font-size: .95rem; color: var(--ink3);
-  line-height: 1.85; max-width: 440px; margin: 0 auto 22px;
+  line-height: 1.85; max-width: 460px; margin: 0 auto 22px;
 }
 
 .eaim-row {
@@ -113,7 +109,6 @@ body::before {
 .eaim-pill:nth-child(3){background:#EFF6FF;color:#1A40B0;border:1.5px solid #BFDBFE}
 .eaim-pill:nth-child(4){background:#FAF5FF;color:#6A20A0;border:1.5px solid #DDD6FE}
 
-/* ── 정보 스트립 ── */
 .info-strip {
   background: white; border: 2px solid var(--border);
   border-radius: var(--r); padding: 18px 24px;
@@ -134,7 +129,6 @@ body::before {
 .info-lbl { font-size: .68rem; color: var(--ink3); font-weight: 700; letter-spacing: .04em; }
 .info-div { width: 1px; height: 36px; background: var(--border); }
 
-/* ── 섹션 라벨 ── */
 .section-label {
   text-align: center; margin: 0 0 20px;
   font-family: 'Nanum Myeongjo', serif;
@@ -144,7 +138,6 @@ body::before {
   content: ' — '; color: var(--gold);
 }
 
-/* ── 앱 카드 ── */
 @keyframes cardIn { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
 .app-card {
@@ -156,14 +149,15 @@ body::before {
   border: 1.5px solid var(--border);
 }
 .app-card:nth-child(1){ animation: cardIn .6s .2s ease both; }
-.app-card:nth-child(2){ animation: cardIn .6s .32s ease both; }
+.app-card:nth-child(2){ animation: cardIn .6s .28s ease both; }
+.app-card:nth-child(3){ animation: cardIn .6s .36s ease both; }
+.app-card:nth-child(4){ animation: cardIn .6s .44s ease both; }
 .app-card:hover {
   transform: translateY(-5px) scale(1.008);
   box-shadow: 0 14px 44px rgba(139,69,19,.16);
 }
 .app-card:active { transform: scale(.98); }
 
-/* 시 감상 카드 — 짙은 고전 분위기 */
 .card-poetry .card-head {
   background: linear-gradient(135deg, #2C1810 0%, #4A2818 50%, #2C1810 100%);
   padding: 30px 28px 24px; position: relative; overflow: hidden;
@@ -175,7 +169,6 @@ body::before {
   font-size: 6rem; color: rgba(200,168,75,.1); pointer-events: none;
 }
 
-/* 글쓰기 카드 — 차분한 초록 */
 .card-writing .card-head {
   background: linear-gradient(135deg, #1A2E0E 0%, #2A4A1A 55%, #1A2E0E 100%);
   padding: 30px 28px 24px; position: relative; overflow: hidden;
@@ -185,6 +178,28 @@ body::before {
   position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
   font-family: 'Nanum Myeongjo', serif;
   font-size: 6rem; color: rgba(122,143,58,.15); pointer-events: none;
+}
+
+.card-news .card-head {
+  background: linear-gradient(135deg, #1A1A2E 0%, #16213E 55%, #0F3460 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-news .card-head::before {
+  content: '報';
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 6rem; color: rgba(96,165,250,.15); pointer-events: none;
+}
+
+.card-game .card-head {
+  background: linear-gradient(135deg, #0F0A1A 0%, #1A1030 55%, #221540 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-game .card-head::before {
+  content: '遊';
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 6rem; color: rgba(123,108,246,.18); pointer-events: none;
 }
 
 .card-tag {
@@ -200,18 +215,20 @@ body::before {
 }
 .card-poetry .live-dot { background: #FFBB55; box-shadow: 0 0 6px #FFBB55; }
 .card-writing .live-dot { background: #7ADE8A; box-shadow: 0 0 6px #7ADE8A; }
+.card-news .live-dot { background: #60A5FA; box-shadow: 0 0 6px #60A5FA; }
+.card-game .live-dot { background: #A89CF8; box-shadow: 0 0 6px #A89CF8; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
 .card-head h2 {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: 1.85rem; color: white; margin-bottom: 6px; line-height: 1.15;
+  font-size: 1.75rem; color: white; margin-bottom: 6px; line-height: 1.15;
 }
 .card-head h2 small {
   display: block; font-family: 'Noto Sans KR', sans-serif;
-  font-size: .82rem; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 5px;
+  font-size: .8rem; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 5px;
 }
 .card-head p {
-  font-size: .86rem; color: rgba(255,255,255,.72); line-height: 1.7;
+  font-size: .85rem; color: rgba(255,255,255,.72); line-height: 1.7;
   max-width: 380px;
 }
 
@@ -231,9 +248,9 @@ body::before {
 
 .step-dots { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .step-dot {
-  width: 30px; height: 30px; border-radius: 8px;
+  width: 28px; height: 28px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: .62rem; font-weight: 900;
+  font-size: .6rem; font-weight: 900;
 }
 .card-poetry .step-dot:nth-child(1){background:#FEF0E0;color:#A05010}
 .card-poetry .step-dot:nth-child(2){background:#FDF8EE;color:#806010}
@@ -251,6 +268,14 @@ body::before {
 .card-writing .step-dot:nth-child(6){background:#A7F3D0;color:#065F46}
 .card-writing .step-dot:nth-child(7){background:#6EE7B7;color:#064E3B}
 
+.card-news .step-dot:nth-child(1){background:#DBEAFE;color:#1D4ED8}
+.card-news .step-dot:nth-child(2){background:#BFDBFE;color:#1D4ED8}
+.card-news .step-dot:nth-child(3){background:#93C5FD;color:#1E3A8A}
+.card-news .step-dot:nth-child(4){background:#E0FBF2;color:#009E72}
+.card-news .step-dot:nth-child(5){background:#FFFBEB;color:#B07000}
+
+.card-game .step-dot { background:rgba(123,108,246,.18); color:#A89CF8; }
+
 .enter-btn {
   display: inline-flex; align-items: center; gap: 8px;
   border-radius: 12px; padding: 11px 22px;
@@ -266,15 +291,22 @@ body::before {
   background: linear-gradient(135deg, #1A2E0E, #2A4A1A);
   color: #7ADE8A; box-shadow: 0 4px 14px rgba(26,46,14,.25);
 }
+.card-news .enter-btn {
+  background: linear-gradient(135deg, #1A1A2E, #16213E);
+  color: #60A5FA; box-shadow: 0 4px 14px rgba(15,52,96,.25);
+}
+.card-game .enter-btn {
+  background: linear-gradient(135deg, #221540, #1A1030);
+  color: #A89CF8; box-shadow: 0 4px 14px rgba(34,21,64,.3);
+}
 .enter-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
 
-/* ── 교사 스트립 ── */
 .teacher-strip {
   background: linear-gradient(135deg, #1A1208, #2A1E10);
   border-radius: var(--r); padding: 18px 24px;
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   margin-bottom: 28px; flex-wrap: wrap;
-  animation: cardIn .6s .44s ease both;
+  animation: cardIn .6s .52s ease both;
   border: 1.5px solid rgba(200,168,75,.2);
 }
 .teacher-strip-text h3 {
@@ -284,21 +316,22 @@ body::before {
 .teacher-strip-text p { font-size: .76rem; color: rgba(200,168,75,.55); }
 .teacher-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .t-btn {
-  padding: 8px 18px; border-radius: 10px; border: none;
-  font-family: 'Noto Sans KR', sans-serif; font-size: .8rem; font-weight: 700;
+  padding: 8px 16px; border-radius: 10px; border: none;
+  font-family: 'Noto Sans KR', sans-serif; font-size: .78rem; font-weight: 700;
   cursor: pointer; transition: all .15s; text-decoration: none;
   display: inline-block; text-align: center;
 }
 .t-btn-poetry { background: rgba(200,168,75,.2); color: var(--gold); border: 1px solid rgba(200,168,75,.35); }
 .t-btn-writing { background: rgba(122,143,58,.2); color: #7ADE8A; border: 1px solid rgba(122,143,58,.3); }
+.t-btn-news { background: rgba(96,165,250,.18); color: #60A5FA; border: 1px solid rgba(96,165,250,.32); }
+.t-btn-game { background: rgba(123,108,246,.2); color: #A89CF8; border: 1px solid rgba(123,108,246,.32); }
 .t-btn-guide { background: rgba(255,255,255,.08); color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.12); }
 .t-btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
 
-/* ── 푸터 ── */
 footer {
   text-align: center; padding: 28px 0;
   font-size: .78rem; color: var(--ink3); line-height: 1.9;
-  animation: cardIn .6s .55s ease both;
+  animation: cardIn .6s .6s ease both;
   border-top: 1px solid var(--border);
 }
 footer strong { color: var(--accent); }
@@ -308,7 +341,7 @@ footer strong { color: var(--accent); }
   .enter-btn { width: 100%; justify-content: center; }
   .teacher-strip { flex-direction: column; }
   .teacher-btns { width: 100%; }
-  .t-btn { flex: 1; }
+  .t-btn { flex: 1; min-width: 80px; }
   .info-div { display: none; }
   .info-strip { gap: 12px; }
 }
@@ -316,7 +349,6 @@ footer strong { color: var(--accent); }
 </head>
 <body>
 
-<!-- 떠다니는 한자 장식 -->
 <div class="float-char" style="font-size:8rem;top:8%;left:3%;animation-duration:7s;animation-delay:0s">詩</div>
 <div class="float-char" style="font-size:6rem;top:55%;right:4%;animation-duration:9s;animation-delay:2s">文</div>
 <div class="float-char" style="font-size:5rem;top:80%;left:6%;animation-duration:8s;animation-delay:4s">感</div>
@@ -324,14 +356,13 @@ footer strong { color: var(--accent); }
 
 <div class="wrapper">
 
-  <!-- 히어로 -->
   <div class="hero">
     <div class="hero-emblem">
       <span class="e-logo">EAIM</span>
       <span class="e-badge">국어 창작 플랫폼</span>
     </div>
     <h1>감정으로 <span class="point">읽고</span>,<br>마음으로 <span class="point">쓰다</span></h1>
-    <p class="hero-desc">시를 읽고 느끼고 창작하고,<br>나만의 글을 완성하는 국어 창작 공간입니다.</p>
+    <p class="hero-desc">시를 읽고 느끼고 창작하고, 나만의 글을 완성하고,<br>신문을 만들고, 어휘를 게임으로 익히는 국어 창작 공간입니다.</p>
     <div class="eaim-row">
       <span class="eaim-pill">💛 Emotion</span>
       <span class="eaim-pill">🌿 Artscape</span>
@@ -340,7 +371,6 @@ footer strong { color: var(--accent); }
     </div>
   </div>
 
-  <!-- 정보 스트립 -->
   <div class="info-strip">
     <div class="info-item">
       <div class="info-icon">🏫</div>
@@ -362,15 +392,13 @@ footer strong { color: var(--accent); }
     <div class="info-div"></div>
     <div class="info-item">
       <div class="info-icon">✍️</div>
-      <div class="info-val">2가지 앱</div>
+      <div class="info-val">4가지 앱</div>
       <div class="info-lbl">활동</div>
     </div>
   </div>
 
-  <!-- 앱 선택 -->
   <div class="section-label">앱 선택하기</div>
 
-  <!-- 시 감상 & 창작 -->
   <a href="eaim-korean-poetry.html" class="app-card card-poetry">
     <div class="card-head">
       <div class="card-tag"><div class="live-dot"></div> 시 감상 · 창작</div>
@@ -388,19 +416,13 @@ footer strong { color: var(--accent); }
     </div>
     <div class="card-body">
       <div class="step-dots">
-        <div class="step-dot">S1</div>
-        <div class="step-dot">S2</div>
-        <div class="step-dot">S3</div>
-        <div class="step-dot">S4</div>
-        <div class="step-dot">S5</div>
-        <div class="step-dot">S6</div>
-        <div class="step-dot">S7</div>
+        <div class="step-dot">S1</div><div class="step-dot">S2</div><div class="step-dot">S3</div>
+        <div class="step-dot">S4</div><div class="step-dot">S5</div><div class="step-dot">S6</div><div class="step-dot">S7</div>
       </div>
       <span class="enter-btn">입장하기 →</span>
     </div>
   </a>
 
-  <!-- 글쓰기 창작 -->
   <a href="eaim-korean-writing.html" class="app-card card-writing">
     <div class="card-head">
       <div class="card-tag"><div class="live-dot"></div> 글쓰기 창작</div>
@@ -418,32 +440,74 @@ footer strong { color: var(--accent); }
     </div>
     <div class="card-body">
       <div class="step-dots">
-        <div class="step-dot">S1</div>
-        <div class="step-dot">S2</div>
-        <div class="step-dot">S3</div>
-        <div class="step-dot">S4</div>
-        <div class="step-dot">S5</div>
-        <div class="step-dot">S6</div>
-        <div class="step-dot">S7</div>
+        <div class="step-dot">S1</div><div class="step-dot">S2</div><div class="step-dot">S3</div>
+        <div class="step-dot">S4</div><div class="step-dot">S5</div><div class="step-dot">S6</div><div class="step-dot">S7</div>
       </div>
       <span class="enter-btn">입장하기 →</span>
     </div>
   </a>
 
-  <!-- 교사 스트립 -->
+  <a href="eaim-korean-news.html" class="app-card card-news">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 신문 만들기</div>
+      <h2>📰 국어 신문 만들기
+        <small>Korean Newspaper Creator</small>
+      </h2>
+      <p>AI 자동 생성 또는 모둠 직접 작성으로 기사를 모아, 4가지 스타일의 나만의 신문을 완성해요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">🤖 AI 기사 생성</span>
+        <span class="feat-pill">✏️ 모둠 직접 입력</span>
+        <span class="feat-pill">🗞️ 신문 스타일 4종</span>
+        <span class="feat-pill">🎸 수노 프롬프트</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots">
+        <div class="step-dot">S1</div><div class="step-dot">S2</div><div class="step-dot">S3</div>
+        <div class="step-dot">S4</div><div class="step-dot">S5</div>
+      </div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
+  <a href="eaim-korean-game.html" class="app-card card-game">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 어휘 게임방</div>
+      <h2>🎮 국어 어휘 게임방
+        <small>Vocabulary Game Room</small>
+      </h2>
+      <p>속담·관용어·한자성어·순우리말·문학어휘·맞춤법을 8가지 게임으로 재미있게 익혀요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">⭕❌ OX 퀴즈</span>
+        <span class="feat-pill">⏱️ 스피드 퀴즈</span>
+        <span class="feat-pill">🃏 카드 매칭</span>
+        <span class="feat-pill">🏆 팀 대항전</span>
+        <span class="feat-pill">🤖 AI 랜덤 퀴즈</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots">
+        <div class="step-dot">🃏</div><div class="step-dot">⏱️</div><div class="step-dot">🎯</div>
+        <div class="step-dot">🏆</div><div class="step-dot">📖</div>
+      </div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
   <div class="teacher-strip">
     <div class="teacher-strip-text">
       <h3>👩‍🏫 교사 전용 컨트롤</h3>
-      <p>각 앱에서 비밀번호 입력 후 교사 패널 접속 (기본: 1234)</p>
+      <p>각 앱 로그인 화면에서 "선생님이신가요?" → 비밀번호 입력 (기본: 1234)</p>
     </div>
     <div class="teacher-btns">
-      <a href="eaim-korean-poetry.html" class="t-btn t-btn-poetry">📜 시 앱</a>
-      <a href="eaim-korean-writing.html" class="t-btn t-btn-writing">✍️ 글쓰기 앱</a>
-      <a href="guide.html" class="t-btn t-btn-guide">📖 가이드</a>
+      <a href="eaim-korean-poetry.html" class="t-btn t-btn-poetry">📜 시</a>
+      <a href="eaim-korean-writing.html" class="t-btn t-btn-writing">✍️ 글쓰기</a>
+      <a href="eaim-korean-news.html" class="t-btn t-btn-news">📰 신문</a>
+      <a href="eaim-korean-game.html" class="t-btn t-btn-game">🎮 게임</a>
+      <a href="korean-guide.html" class="t-btn t-btn-guide">📖 가이드</a>
     </div>
   </div>
 
-  <!-- 푸터 -->
   <footer>
     <strong>EAIM 국어 창작 플랫폼</strong> · 박성애 선생님 제작<br>
     Emotion · Artscape · Interactive · Musicalization<br>
