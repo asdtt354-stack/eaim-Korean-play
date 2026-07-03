@@ -210,6 +210,12 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
       <button class="btn bvio bsm bfl" style="margin-top:-6px" onclick="saveApiKey()">저장</button>
       <p id="apiStatus" style="font-size:.73rem;color:var(--mint);margin-top:6px;text-align:center"></p>
     </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">📊 구글시트 연동 (선택)</label>
+      <input type="text" id="sheetUrlInput" class="mi" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.78rem">
+      <button class="btn bvio bsm bfl" style="margin-top:-6px" onclick="saveSheetUrl()">저장</button>
+      <p id="sheetUrlStatus" style="font-size:.73rem;color:var(--mint);margin-top:6px;text-align:center"></p>
+    </div>
     <button class="btn bg2 bfl" onclick="closeTeacherPanel()">닫기</button>
   </div>
 </div>
@@ -336,7 +342,8 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 </div>
 
 <script>
-let stuName='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
+let stuName='', stuClass='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
+let sheetUrl = localStorage.getItem('eaim_sheet_url') || '';
 let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let totalScore=0, streak=0, currentGame=null, gameState={};
 let selectedTerms=[];
@@ -510,7 +517,10 @@ function initParticles(){
 }
 initParticles();
 
-window.addEventListener('load', populateClassSelect);
+window.addEventListener('load', ()=>{
+  populateClassSelect();
+  getSheetUrlRemote().then(u=>{ if(u) sheetUrl=u; });
+});
 
 function sN(){
   const n=document.getElementById('sni').value.trim();
@@ -519,6 +529,7 @@ function sN(){
   if(!c){alert('반/모둠을 선택해주세요!');return;}
   if(c==='교사'){ showTeacherLogin(); return; }
   stuName=n;
+  stuClass=c;
   document.getElementById('nm').style.display='none';
   initTerms();loadRankings();
 }
@@ -542,6 +553,7 @@ function doTeacherLogin(){
 }
 function openTeacherPanel(){
   if(apiKey) document.getElementById('apiKeyInput').value = apiKey;
+  if(sheetUrl) document.getElementById('sheetUrlInput').value = sheetUrl;
   refreshGroupList();
   document.getElementById('teacherPanel').style.display='flex';
 }
@@ -552,6 +564,37 @@ function saveApiKey(){
   apiKey = key; localStorage.setItem('eaim_gemini_key', key);
   document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
   setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
+}
+async function getSheetUrlRemote(){
+  if(firebaseReady){
+    try{
+      const doc = await db.collection('settings').doc('sheetUrl').get();
+      if(doc.exists) return doc.data().url || '';
+    }catch(e){}
+  }
+  return localStorage.getItem('eaim_sheet_url') || '';
+}
+async function setSheetUrlRemote(url){
+  if(firebaseReady){
+    try{ await db.collection('settings').doc('sheetUrl').set({url}); }catch(e){}
+  }
+  localStorage.setItem('eaim_sheet_url', url);
+}
+async function saveSheetUrl(){
+  const url = document.getElementById('sheetUrlInput').value.trim();
+  sheetUrl = url; await setSheetUrlRemote(url);
+  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요! (다른 기기에도 곧 적용돼요)' : '연동 해제됨';
+  setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
+}
+function logToSheet(activity, title, detail){
+  const url = sheetUrl || localStorage.getItem('eaim_sheet_url') || '';
+  if(!url) return;
+  try{
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ name: stuName||'', group: stuClass||'', app: '게임', activity, title: title||'', detail: detail||'' })
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
 }
 
 function initTerms(){
@@ -915,6 +958,7 @@ function endGame(){
   rankings.push({name:stuName,score:sc,game:currentGame,date:new Date().toLocaleTimeString('ko-KR')});
   rankings.sort((a,b)=>b.score-a.score);rankings=rankings.slice(0,10);
   localStorage.setItem('eaim_korean_rankings',JSON.stringify(rankings));
+  logToSheet('게임완료', currentGame||'', `${sc}점 · 정답률 ${pct}%`);
   document.getElementById('result-content').innerHTML=`
     <div class="result-emoji">${emoji}</div>
     <div class="result-score">${sc}점</div>
