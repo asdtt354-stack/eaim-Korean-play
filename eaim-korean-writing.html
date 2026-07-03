@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EAIM 국어 — 글쓰기 창작</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -41,7 +43,6 @@ body::before {
     repeating-linear-gradient(0deg, transparent, transparent 36px, rgba(92,107,46,.018) 36px, rgba(92,107,46,.018) 37px);
 }
 
-/* ── 헤더 ── */
 header {
   background: linear-gradient(135deg, #2A3A12 0%, #3D5018 50%, #2A3A12 100%);
   padding: 18px 24px;
@@ -65,7 +66,6 @@ header::after {
   font-size: .8rem; color: var(--gold); font-weight: 700;
 }
 
-/* ── 네비 ── */
 .sticky-nav {
   position: sticky; top: 0; z-index: 50;
   background: rgba(248,246,240,.96); backdrop-filter: blur(12px);
@@ -83,13 +83,11 @@ header::after {
 .step-btn.done { background: var(--surface2); border-color: var(--border); color: var(--ink2); }
 .step-btn.done::after { content: ' ✓'; }
 
-/* ── 메인 ── */
 main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 .screen { display: none; }
 .screen.active { display: block; animation: fadeUp .35s ease; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-/* ── 카드 ── */
 .card {
   background: var(--surface); border: 1.5px solid var(--border);
   border-radius: var(--radius); padding: 22px; margin-bottom: 18px;
@@ -112,7 +110,6 @@ main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 .section-header h2 { font-family: 'Nanum Myeongjo', serif; font-size: 1.55rem; }
 .section-header p { font-size: .84rem; color: var(--ink3); margin-top: 5px; }
 
-/* ── 입력 ── */
 .input-field {
   width: 100%; padding: 11px 15px;
   background: var(--surface2); border: 2px solid var(--border);
@@ -123,7 +120,6 @@ main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 .input-field:focus { border-color: var(--accent); background: white; }
 textarea.input-field { resize: vertical; line-height: 1.85; }
 
-/* ── 버튼 ── */
 .btn {
   padding: 11px 22px; border-radius: 10px; border: none;
   font-family: 'Noto Sans KR', sans-serif; font-weight: 700;
@@ -140,7 +136,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .btn-sm { padding: 7px 14px; font-size: .8rem; border-radius: 8px; }
 .btn:active { transform: scale(.97); }
 
-/* ── 장르 그리드 ── */
 .genre-grid {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
 }
@@ -156,7 +151,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .genre-btn .g-name { font-size: .82rem; font-weight: 700; color: var(--ink); }
 .genre-btn .g-desc { font-size: .68rem; color: var(--ink3); margin-top: 2px; }
 
-/* ── 감정 칩 ── */
 .emotion-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .emo-chip {
   padding: 7px 14px; border-radius: 99px; font-size: .8rem; font-weight: 700;
@@ -165,7 +159,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .emo-chip:hover { transform: scale(1.05); }
 .emo-chip.selected { border-color: var(--ink) !important; box-shadow: 0 0 0 3px rgba(26,18,8,.12); transform: scale(1.08); }
 
-/* ── 글감 카드 ── */
 .idea-card {
   background: linear-gradient(135deg,#FFFEFB,#F8F5EC);
   border: 2px solid var(--border); border-radius: var(--radius);
@@ -183,7 +176,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .idea-preview { font-size: .84rem; color: var(--ink2); line-height: 1.7; }
 .idea-reason { margin-top: 10px; padding: 8px 12px; background: rgba(92,107,46,.07); border-radius: 8px; font-size: .78rem; color: var(--accent2); line-height: 1.6; }
 
-/* ── 개요 영역 ── */
 .outline-section {
   background: var(--surface2); border-radius: 12px; padding: 16px; margin-bottom: 14px;
 }
@@ -201,10 +193,7 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 }
 .outline-input:focus { border-color: var(--accent); }
 
-/* ── 본문 에디터 ── */
-.writing-area {
-  position: relative;
-}
+.writing-area { position: relative; }
 .writing-textarea {
   width: 100%; min-height: 280px; padding: 18px;
   background: white; border: 2px solid var(--border);
@@ -215,7 +204,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .writing-textarea:focus { border-color: var(--accent); }
 .writing-count { text-align: right; font-size: .75rem; color: var(--ink3); margin-top: 4px; }
 
-/* ── AI 도구 버튼 바 ── */
 .ai-toolbar {
   display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0;
   padding: 12px; background: rgba(92,107,46,.05);
@@ -236,7 +224,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .ai-tool-btn:active { transform: scale(.96); }
 .ai-tool-btn.loading { opacity: .6; pointer-events: none; }
 
-/* ── AI 결과 ── */
 .ai-result {
   background: linear-gradient(135deg,#F5F8EE,#EDF3E0);
   border: 2px solid rgba(92,107,46,.2);
@@ -248,7 +235,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 }
 .ai-result-text { font-size: .87rem; color: var(--ink2); line-height: 1.85; white-space: pre-line; }
 
-/* ── AI 수정 결과 (적용 버튼 포함) ── */
 .ai-edit-box {
   background: white; border: 2px solid var(--accent);
   border-radius: 14px; padding: 18px; margin-top: 14px;
@@ -265,14 +251,12 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 }
 .ai-edit-actions { display: flex; gap: 8px; }
 
-/* ── 힌트 ── */
 .hint {
   background: rgba(200,168,75,.1); border: 1.5px solid rgba(200,168,75,.3);
   border-radius: 10px; padding: 11px 15px;
   font-size: .81rem; color: var(--ink2); line-height: 1.7; margin-top: 12px;
 }
 
-/* ── 음악 섹션 ── */
 .music-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
 .music-tab {
   flex: 1; padding: 9px; border-radius: 10px;
@@ -286,7 +270,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .yt-container { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: 12px; overflow: hidden; background: #000; margin-top: 12px; }
 .yt-container iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
-/* ── 음악 추천 카드 ── */
 .music-rec-card {
   background: var(--surface2); border: 1.5px solid var(--border);
   border-radius: 12px; padding: 13px 15px; margin-bottom: 10px;
@@ -294,7 +277,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 }
 .music-rec-card:hover { border-color: var(--accent); }
 
-/* ── 완성 출력 ── */
 .final-story {
   background: linear-gradient(160deg,#FFFEFB,#F8F5EC);
   border: 2px solid var(--border); border-radius: var(--radius);
@@ -314,7 +296,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
   padding: 16px; background: rgba(92,107,46,.04); border-radius: 10px;
 }
 
-/* ── 낭독 ── */
 .recite-box {
   background: linear-gradient(135deg,#2A3A12,#3D5018);
   border-radius: var(--radius); padding: 26px; text-align: center; color: white; margin-top: 16px;
@@ -326,27 +307,27 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 .recite-stop { background: rgba(255,255,255,.15); color: white; border: 1px solid rgba(255,255,255,.2); }
 .recite-opt { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.15); font-size: .78rem; padding: 8px 14px; }
 
-/* ── 로딩 ── */
 .loading-dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 2px; animation: blink 1.2s infinite; }
 .loading-dots span:nth-child(2){animation-delay:.2s} .loading-dots span:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
-/* ── 모달 ── */
 .overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .overlay-bg { background: rgba(0,0,0,.55); }
 .modal-box { background: var(--surface); border-radius: 2rem; width: 100%; max-width: 400px; padding: 32px 26px; box-shadow: 0 24px 60px rgba(0,0,0,.3); border: 1.5px solid var(--border); position: relative; z-index: 1; }
 .modal-box h2 { font-family: 'Nanum Myeongjo', serif; font-size: 1.5rem; color: var(--accent); margin-bottom: 6px; text-align: center; }
 .modal-box p { font-size: .84rem; color: var(--ink3); text-align: center; margin-bottom: 22px; }
 
-/* ── 하단 네비 ── */
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; background: rgba(248,246,240,.97); backdrop-filter: blur(12px); border-top: 1.5px solid var(--border); display: flex; padding: 8px 10px; }
 .nav-btn { flex: 1; padding: 7px 2px; background: transparent; border: none; color: var(--ink3); cursor: pointer; border-radius: 10px; transition: all .2s; font-family: 'Noto Sans KR', sans-serif; font-size: .65rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .nav-btn .nav-icon { font-size: 1.15rem; }
 .nav-btn.active { color: var(--accent); background: rgba(92,107,46,.08); }
 
-/* ── 교사 패널 ── */
 .teacher-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .teacher-box { background: white; border-radius: 1.5rem; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,.3); }
+
+.group-item { display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--ink2) }
+.group-del { background:none;border:none;color:#DC2626;cursor:pointer;font-size:.75rem }
+.sync-status { font-size:.68rem;color:var(--ink3);margin-top:6px }
 
 @media(max-width:480px){
   .genre-grid{grid-template-columns:repeat(2,1fr)}
@@ -361,7 +342,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 </head>
 <body>
 
-<!-- ── 로그인 ── -->
 <div class="overlay overlay-bg" id="loginOverlay">
   <div class="modal-box">
     <div style="font-size:2.8rem;text-align:center;margin-bottom:12px">✍️</div>
@@ -369,17 +349,14 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     <p>내 감정과 경험을 글로 표현해봐요</p>
     <input type="text" class="input-field" id="loginName" placeholder="이름" maxlength="10" style="margin-bottom:10px;text-align:center;font-size:1rem">
     <select class="input-field" id="loginClass" style="margin-bottom:18px">
-      <option value="">반 선택</option>
-      <option>1반</option><option>2반</option><option>3반</option>
-      <option>4반</option><option>5반</option><option>6반</option>
-      <option>교사</option>
+      <option value="">반/모둠 선택</option>
+      <option value="교사">교사</option>
     </select>
     <button class="btn btn-primary btn-full" onclick="doLogin()">✍️ 글쓰기 시작</button>
     <button onclick="showTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.76rem;color:var(--ink3);cursor:pointer;width:100%">선생님이신가요?</button>
   </div>
 </div>
 
-<!-- ── 교사 로그인 ── -->
 <div class="overlay overlay-bg" id="teacherLoginOverlay" style="display:none">
   <div class="modal-box">
     <h2>교사 로그인</h2>
@@ -389,10 +366,20 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
   </div>
 </div>
 
-<!-- ── 교사 패널 ── -->
 <div class="teacher-overlay" id="teacherPanel" style="display:none">
   <div class="teacher-box">
     <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.15rem;color:var(--accent);margin-bottom:18px">📋 교사 컨트롤</h2>
+
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🏷️ 반/모둠 이름 관리</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" class="input-field" id="newGroupName" placeholder="예: 다詩, 3반 시창작반" style="flex:1">
+        <button class="btn btn-primary btn-sm" onclick="addGroupUI()">추가</button>
+      </div>
+      <div id="groupList"></div>
+      <p id="groupSyncStatus" class="sync-status"></p>
+    </div>
+
     <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
       <input type="text" class="input-field" id="apiKeyInput" placeholder="AIzaSy...">
@@ -411,7 +398,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
   </div>
 </div>
 
-<!-- ── 헤더 ── -->
 <header>
   <div class="header-left">
     <h1>✍️ EAIM 국어 — 글쓰기 창작</h1>
@@ -423,7 +409,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
   </div>
 </header>
 
-<!-- ── 탭 네비 ── -->
 <div class="sticky-nav" id="stepNav" style="display:none">
   <button class="step-btn active" id="sBtn1" onclick="goStep(1)">Step1<br>장르·감정</button>
   <button class="step-btn" id="sBtn2" onclick="goStep(2)">Step2<br>글감추천</button>
@@ -436,7 +421,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 
 <main>
 
-  <!-- ══ STEP 1: 장르 & 감정 ══ -->
   <div class="screen active" id="step1">
     <div class="section-header">
       <div class="section-num">✍️ Step 1</div>
@@ -508,7 +492,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     <button class="btn btn-primary btn-full" onclick="requestIdeas()">🤖 AI 글감 추천받기 →</button>
   </div>
 
-  <!-- ══ STEP 2: 글감 추천 ══ -->
   <div class="screen" id="step2">
     <div class="section-header">
       <div class="section-num">📚 Step 2</div>
@@ -526,7 +509,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     </div>
   </div>
 
-  <!-- ══ STEP 3: 개요 짜기 ══ -->
   <div class="screen" id="step3">
     <div class="section-header">
       <div class="section-num">🗂️ Step 3</div>
@@ -550,7 +532,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     <button class="btn btn-primary btn-full" onclick="goStep(4)">본문 쓰러 가기 →</button>
   </div>
 
-  <!-- ══ STEP 4: 본문 쓰기 ══ -->
   <div class="screen" id="step4">
     <div class="section-header">
       <div class="section-num">✍️ Step 4</div>
@@ -559,7 +540,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     </div>
 
     <div class="card">
-      <!-- 개요 참고 접기 -->
       <div style="margin-bottom:14px">
         <button onclick="toggleOutlineRef()" style="background:rgba(92,107,46,.07);border:1.5px solid rgba(92,107,46,.2);border-radius:8px;padding:7px 14px;font-size:.78rem;font-weight:700;color:var(--accent);cursor:pointer;width:100%;text-align:left">
           📋 개요 참고하기 ▾
@@ -575,7 +555,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         <div class="writing-count"><span id="wordCount">0</span>자</div>
       </div>
 
-      <!-- AI 도구 바 -->
       <div class="ai-toolbar">
         <div class="ai-toolbar-label">🤖 AI 글쓰기 도우미 (선택 사용)</div>
         <button class="ai-tool-btn" id="btnFix" onclick="aiFixText()">🔧 AI 수정</button>
@@ -584,7 +563,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         <button class="ai-tool-btn" id="btnIdea" onclick="aiNextIdea()">💡 다음 내용 제안</button>
       </div>
 
-      <!-- AI 수정 결과 (적용 버튼 포함) -->
       <div id="aiEditBox" style="display:none" class="ai-edit-box">
         <div class="ai-edit-header">
           <span>🔧 AI 수정 결과</span>
@@ -597,7 +575,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         </div>
       </div>
 
-      <!-- AI 첨삭/이어쓰기/제안 결과 -->
       <div id="aiToolResult" style="display:none" class="ai-result">
         <div class="ai-result-header" id="aiToolResultHeader">🤖 AI 피드백</div>
         <div class="ai-result-text" id="aiToolResultText"></div>
@@ -607,7 +584,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     <button class="btn btn-primary btn-full" onclick="goStep(5)">AI 최종 다듬기 →</button>
   </div>
 
-  <!-- ══ STEP 5: AI 최종 다듬기 ══ -->
   <div class="screen" id="step5">
     <div class="section-header">
       <div class="section-num">🌟 Step 5</div>
@@ -633,7 +609,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         <div class="ai-result-text" id="finalAiText"></div>
       </div>
 
-      <!-- 전체 다듬기 결과 -->
       <div id="finalRewriteBox" style="display:none" class="ai-edit-box">
         <div class="ai-edit-header">
           <span>✨ AI 다듬은 글</span>
@@ -650,7 +625,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     <button class="btn btn-primary btn-full" onclick="goStep(6)">완성하러 가기 →</button>
   </div>
 
-  <!-- ══ STEP 6: 완성 ══ -->
   <div class="screen" id="step6">
     <div class="section-header">
       <div class="section-num">📖 Step 6</div>
@@ -676,7 +650,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
     </div>
   </div>
 
-  <!-- ══ STEP 7: 음악 & 낭독 ══ -->
   <div class="screen" id="step7">
     <div class="section-header">
       <div class="section-num">🎵 Step 7</div>
@@ -692,7 +665,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         <button class="music-tab" onclick="switchMusic('ai')">🤖 AI 추천</button>
       </div>
 
-      <!-- 유튜브 -->
       <div class="music-panel active" id="ytPanel">
         <div style="display:flex;gap:8px;margin-bottom:8px">
           <input type="text" class="input-field" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..."
@@ -712,7 +684,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         </div>
       </div>
 
-      <!-- 파일 업로드 -->
       <div class="music-panel" id="uploadPanel">
         <div style="border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;cursor:pointer"
           onclick="document.getElementById('audioFile').click()"
@@ -730,7 +701,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
         </div>
       </div>
 
-      <!-- AI 추천 -->
       <div class="music-panel" id="aiMusicPanel">
         <button class="btn btn-gold btn-full" onclick="getAIMusicRec()">🤖 글 분위기에 맞는 음악 추천</button>
         <div id="aiMusicLoading" style="display:none;text-align:center;padding:18px">
@@ -742,7 +712,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
       </div>
     </div>
 
-    <!-- TTS 낭독 -->
     <div class="recite-box">
       <p style="font-size:.75rem;color:rgba(200,168,75,.65);letter-spacing:.1em;margin-bottom:6px">🎤 낭독</p>
       <p id="reciteDocTitle" style="font-family:'Nanum Myeongjo',serif;font-size:1.05rem;color:var(--gold);font-weight:700"></p>
@@ -761,7 +730,6 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 
 </main>
 
-<!-- ── 하단 네비 ── -->
 <nav class="bottom-nav" id="bottomNav" style="display:none">
   <button class="nav-btn active" id="nav1" onclick="goStep(1)"><span class="nav-icon">📝</span>장르</button>
   <button class="nav-btn" id="nav2" onclick="goStep(2)"><span class="nav-icon">💡</span>글감</button>
@@ -773,17 +741,15 @@ textarea.input-field { resize: vertical; line-height: 1.85; }
 </nav>
 
 <script>
-// ── 상수 & 상태 ──────────────────────────────────────────
 const LS = 'eaim_writing_';
 let student = null;
-let geminiKey = localStorage.getItem(LS+'gemini_key') || '';
-let teacherPw = localStorage.getItem(LS+'teacher_pw') || '1234';
+let geminiKey = localStorage.getItem('eaim_gemini_key') || '';
+let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let selectedGenre = { id:'', label:'', hint:'' };
 let selectedEmotions = [];
 let selectedIdea = null;
 let currentStep = 1;
 
-// 장르별 개요 구조
 const OUTLINE_STRUCTURE = {
   diary:   ['처음 — 오늘 어떤 일이 있었나요?', '중간 — 그때 어떤 생각과 감정이었나요?', '끝 — 이 일을 통해 느낀 점'],
   life:    ['처음 — 언제, 어디서 있었던 일인가요?', '중간 — 무슨 일이 있었나요? (자세히)', '끝 — 그 경험에서 배운 것'],
@@ -793,9 +759,72 @@ const OUTLINE_STRUCTURE = {
   story:   ['발단 — 인물과 배경 소개', '전개 — 사건 시작', '절정 — 가장 중요한 사건', '결말 — 사건의 마무리']
 };
 
-// ── 유틸 ──────────────────────────────────────────────────
 function lsGet(k){ try{return JSON.parse(localStorage.getItem(LS+k))}catch{return null} }
 function lsSet(k,v){ try{localStorage.setItem(LS+k, JSON.stringify(v))}catch{} }
+
+const FIREBASE_CONFIG = {
+  apiKey: "", authDomain: "", projectId: "", storageBucket: "", messagingSenderId: "", appId: ""
+};
+let db = null, firebaseReady = false;
+try {
+  if (FIREBASE_CONFIG.apiKey) { firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); firebaseReady = true; }
+} catch(e) { firebaseReady = false; }
+
+async function getGroups(){
+  if(firebaseReady){
+    try{ const snap = await db.collection('classGroups').orderBy('createdAt','asc').get();
+      return snap.docs.map(d=>({id:d.id,name:d.data().name})); }catch(e){}
+  }
+  return JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+}
+async function addGroup(name){
+  if(firebaseReady){
+    try{ await db.collection('classGroups').add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); return; }catch(e){}
+  }
+  const groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+  groups.push({id:'local_'+Date.now(), name});
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+async function deleteGroup(id){
+  if(firebaseReady){
+    try{ await db.collection('classGroups').doc(id).delete(); return; }catch(e){}
+  }
+  let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+  groups = groups.filter(g=>g.id!==id);
+  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+}
+async function populateClassSelect(){
+  const sel = document.getElementById('loginClass'); if(!sel) return;
+  const groups = await getGroups();
+  sel.innerHTML = '<option value="">반/모둠 선택</option>';
+  if(!groups.length){
+    const opt=document.createElement('option'); opt.disabled=true; opt.textContent='(선생님이 아직 반/모둠을 만들지 않았어요)';
+    sel.appendChild(opt);
+  } else {
+    groups.forEach(g=>{ const opt=document.createElement('option'); opt.value=g.name; opt.textContent=g.name; sel.appendChild(opt); });
+  }
+  const t=document.createElement('option'); t.value='교사'; t.textContent='교사'; sel.appendChild(t);
+}
+async function refreshGroupList(){
+  const groups = await getGroups();
+  const el = document.getElementById('groupList'); if(!el) return;
+  el.innerHTML = groups.length ? groups.map(g=>`
+    <div class="group-item"><span>${g.name}</span><button class="group-del" onclick="deleteGroupUI('${g.id}')">삭제</button></div>
+  `).join('') : '<p style="font-size:.8rem;color:var(--ink3)">아직 만든 반/모둠이 없어요</p>';
+  const s = document.getElementById('groupSyncStatus');
+  if(s) s.textContent = firebaseReady ? '✅ 여러 기기에서 공유돼요' : '⚠️ Firebase 미설정 — 이 기기에서만 보여요';
+}
+async function addGroupUI(){
+  const input = document.getElementById('newGroupName');
+  const name = input.value.trim();
+  if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
+  await addGroup(name); input.value='';
+  await refreshGroupList(); await populateClassSelect();
+}
+async function deleteGroupUI(id){
+  if(!confirm('이 반/모둠을 삭제할까요?')) return;
+  await deleteGroup(id); await refreshGroupList(); await populateClassSelect();
+}
 
 function saveActivity(){
   if(!student) return;
@@ -809,12 +838,11 @@ function saveActivity(){
   lsSet('students', all);
 }
 
-// ── 로그인 ────────────────────────────────────────────────
 function doLogin(){
   const name = document.getElementById('loginName').value.trim();
   const cls = document.getElementById('loginClass').value;
   if(!name){ alert('이름을 입력해주세요!'); return; }
-  if(!cls){ alert('반을 선택해주세요!'); return; }
+  if(!cls){ alert('반/모둠을 선택해주세요!'); return; }
   if(cls==='교사'){ showTeacherLogin(); return; }
   student = { name, class: cls };
   document.getElementById('loginOverlay').style.display = 'none';
@@ -846,13 +874,14 @@ function doTeacherLogin(){
 function openTeacherPanel(){
   if(geminiKey) document.getElementById('apiKeyInput').value = geminiKey;
   loadStudentList();
+  refreshGroupList();
   document.getElementById('teacherPanel').style.display = 'flex';
 }
 function closeTeacherPanel(){ document.getElementById('teacherPanel').style.display = 'none'; }
 function saveApiKey(){
   const key = document.getElementById('apiKeyInput').value.trim();
   if(!key) return;
-  geminiKey = key; lsSet('gemini_key', key);
+  geminiKey = key; localStorage.setItem('eaim_gemini_key', key);
   document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
   setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
 }
@@ -877,7 +906,6 @@ function exportStudents(){
 }
 function resetAll(){ if(confirm('모든 데이터를 초기화하겠습니까?')){ Object.keys(localStorage).filter(k=>k.startsWith(LS)).forEach(k=>localStorage.removeItem(k)); location.reload(); } }
 
-// ── 스텝 이동 ─────────────────────────────────────────────
 function goStep(n){
   currentStep = n;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -897,7 +925,6 @@ function goStep(n){
   window.scrollTo(0,0);
 }
 
-// ── Step 1 ────────────────────────────────────────────────
 function setGenre(id, label, hint){
   selectedGenre = { id, label, hint };
   document.querySelectorAll('.genre-btn').forEach(b=>b.classList.remove('selected'));
@@ -912,7 +939,6 @@ function toggleEmo(el, name){
   selectedEmotions = Array.from(document.querySelectorAll('#step1 .emo-chip.selected')).map(c=>c.textContent.trim());
 }
 
-// ── Step 2: 글감 추천 ─────────────────────────────────────
 async function requestIdeas(){
   const topic = document.getElementById('topicInput').value.trim();
   if(!selectedGenre.id){ alert('장르를 먼저 선택해주세요!'); return; }
@@ -963,7 +989,6 @@ async function requestIdeas(){
   }
 }
 
-// ── Step 3: 개요 ──────────────────────────────────────────
 function buildOutlineFields(){
   const fields = OUTLINE_STRUCTURE[selectedGenre.id] || ['처음','중간','끝'];
   const card = document.getElementById('outlineFields');
@@ -1000,7 +1025,6 @@ function clearOutline(){
   document.querySelectorAll('[id^="outline"]').forEach(el=>{ if(el.tagName==='TEXTAREA') el.value=''; });
 }
 
-// ── Step 4: 본문 쓰기 ─────────────────────────────────────
 function buildOutlineRef(){
   const text = getOutlineText();
   document.getElementById('outlineRef').textContent = text || '(개요가 없어요)';
@@ -1105,7 +1129,6 @@ function applyAiEdit(){
   alert('AI 수정이 적용됐어요! ✅');
 }
 
-// ── Step 5: 최종 다듬기 ───────────────────────────────────
 async function aiFinalCheck(){
   const text = document.getElementById('mainText').value.trim();
   if(!text){ alert('본문을 먼저 써주세요!'); return; }
@@ -1149,7 +1172,6 @@ function applyFinalRewrite(){
   alert('적용됐어요! ✅');
 }
 
-// ── Step 6: 완성 ──────────────────────────────────────────
 function buildFinal(){
   const name = student?.name||''; const cls = student?.class||'';
   const today = new Date().toLocaleDateString('ko-KR');
@@ -1176,7 +1198,6 @@ function downloadFinal(){
   a.download=`${name}_글쓰기창작.txt`; a.click();
 }
 
-// ── Step 7: 음악 & 낭독 ───────────────────────────────────
 function switchMusic(tab){
   document.querySelectorAll('.music-tab').forEach((b,i)=>{
     b.classList.toggle('active',['yt','upload','ai'][i]===tab);
@@ -1274,9 +1295,8 @@ function startRecite(){
 }
 function stopRecite(){ window.speechSynthesis.cancel(); }
 
-// ── Gemini API ────────────────────────────────────────────
 async function callGemini(prompt, maxTokens=800){
-  const key = geminiKey || lsGet('gemini_key') || '';
+  const key = geminiKey || localStorage.getItem('eaim_gemini_key') || '';
   if(!key) throw new Error('API_KEY_MISSING');
   const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
   const res=await fetch(url,{
@@ -1288,9 +1308,9 @@ async function callGemini(prompt, maxTokens=800){
   return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
 }
 
-// ── 초기화 ────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   if(geminiKey) document.getElementById('apiKeyInput').value=geminiKey;
+  populateClassSelect();
   if(window.speechSynthesis.onvoiceschanged!==undefined) window.speechSynthesis.onvoiceschanged=()=>{};
 });
 </script>
