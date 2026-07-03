@@ -27,7 +27,6 @@ body {
   background: var(--bg); color: var(--ink); line-height: 1.7;
 }
 
-/* ── 상단 네비 ── */
 .top-nav {
   position: sticky; top: 0; z-index: 100;
   background: rgba(253,250,245,.94); backdrop-filter: blur(12px);
@@ -49,7 +48,6 @@ body {
 }
 .nav-home:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── 히어로 ── */
 .hero {
   background: linear-gradient(135deg, #2C1810 0%, #4A2818 40%, #2A3A12 100%);
   padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden;
@@ -70,7 +68,7 @@ body {
   font-size: clamp(1.8rem, 6vw, 2.6rem);
   color: white; margin-bottom: 12px; line-height: 1.25;
 }
-.hero p { font-size: .9rem; color: rgba(255,255,255,.72); max-width: 440px; margin: 0 auto 22px; }
+.hero p { font-size: .9rem; color: rgba(255,255,255,.72); max-width: 460px; margin: 0 auto 22px; }
 .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .hero-chip {
   background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2);
@@ -78,10 +76,8 @@ body {
   font-size: .73rem; color: white; font-weight: 700;
 }
 
-/* ── 페이지 ── */
 .page { max-width: 740px; margin: 0 auto; padding: 36px 20px 80px; }
 
-/* ── TOC ── */
 .toc {
   background: white; border: 2px solid var(--border);
   border-radius: var(--r); padding: 22px 26px; margin-bottom: 36px;
@@ -106,10 +102,9 @@ body {
 .toc-num {
   width: 22px; height: 22px; border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
-  font-size: .65rem; font-weight: 900; flex-shrink: 0;
+  font-size: .62rem; font-weight: 900; flex-shrink: 0;
 }
 
-/* ── 섹션 ── */
 .section { margin-bottom: 44px; }
 .section-header {
   display: flex; align-items: center; gap: 12px;
@@ -119,15 +114,14 @@ body {
 .section-num {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Nanum Myeongjo', serif; font-size: 1.1rem;
+  font-family: 'Nanum Myeongjo', serif; font-size: 1.05rem;
   color: white; flex-shrink: 0;
 }
 .section-header h2 {
-  font-family: 'Nanum Myeongjo', serif; font-size: 1.45rem; color: var(--ink);
+  font-family: 'Nanum Myeongjo', serif; font-size: 1.4rem; color: var(--ink);
 }
 .section-header .sub { font-size: .78rem; color: var(--ink3); font-weight: 400; }
 
-/* ── 카드 ── */
 .card {
   background: white; border: 1.5px solid var(--border);
   border-radius: var(--r); padding: 22px;
@@ -138,18 +132,12 @@ body {
   display: flex; align-items: center; gap: 8px; color: var(--ink2);
 }
 
-/* ── 스텝 플로우 ── */
 .step-flow { display: flex; flex-direction: column; gap: 0; }
 .step-item {
   display: flex; gap: 14px; padding: 14px 0;
   border-bottom: 1px dashed var(--border); position: relative;
 }
 .step-item:last-child { border-bottom: none; }
-.step-item::before {
-  content: ''; position: absolute; left: 17px; top: 42px;
-  width: 2px; height: calc(100% - 26px); background: var(--border);
-}
-.step-item:last-child::before { display: none; }
 .step-ico {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
@@ -164,7 +152,6 @@ body {
   font-size: .62rem; padding: 2px 8px; border-radius: 99px; font-weight: 700;
 }
 
-/* ── 비교 그리드 ── */
 .compare-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
 }
@@ -179,7 +166,6 @@ body {
 .compare-card ul { padding-left: 14px; }
 .compare-card ul li { font-size: .8rem; color: var(--ink3); margin-bottom: 5px; line-height: 1.5; }
 
-/* ── AI 기능 그리드 ── */
 .ai-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 10px;
 }
@@ -191,7 +177,6 @@ body {
 .ai-card h4 { font-weight: 900; font-size: .84rem; margin-bottom: 5px; }
 .ai-card p { font-size: .75rem; color: var(--ink3); line-height: 1.5; }
 
-/* ── 장르 그리드 ── */
 .genre-grid {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
 }
@@ -203,7 +188,6 @@ body {
 .genre-card h4 { font-size: .82rem; font-weight: 900; margin-bottom: 3px; }
 .genre-card p { font-size: .72rem; color: var(--ink3); line-height: 1.4; }
 
-/* ── 셋업 스텝 ── */
 .setup-steps { counter-reset: s; display: flex; flex-direction: column; gap: 10px; }
 .setup-step {
   display: flex; gap: 14px; align-items: flex-start;
@@ -220,7 +204,6 @@ body {
 .setup-step p { font-size: .8rem; color: var(--ink3); line-height: 1.55; }
 .code { background: var(--ink); color: #7ADE8A; border-radius: 7px; padding: 7px 13px; font-family: 'Courier New', monospace; font-size: .78rem; margin-top: 7px; word-break: break-all; }
 
-/* ── 팁 박스 ── */
 .tip {
   border-radius: 12px; padding: 14px 18px;
   display: flex; gap: 12px; align-items: flex-start; margin-top: 12px;
@@ -234,7 +217,6 @@ body {
 .tip-red { background: #FFF1F2; border: 1.5px solid #FECDD3; color: #BE123C; }
 .tip-blue { background: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1D4ED8; }
 
-/* ── Q&A ── */
 .qa-item { border-bottom: 1px solid var(--border); padding: 14px 0; }
 .qa-item:last-child { border-bottom: none; }
 .qa-q { font-weight: 900; font-size: .9rem; margin-bottom: 7px; display: flex; gap: 9px; }
@@ -242,7 +224,6 @@ body {
 .qa-a { font-size: .83rem; color: var(--ink3); line-height: 1.75; padding-left: 24px; }
 .qa-a::before { content: 'A. '; font-weight: 700; color: var(--accent2); }
 
-/* ── 구분선 ── */
 .divider {
   text-align: center; color: var(--gold); font-size: .82rem;
   letter-spacing: .25em; margin: 32px 0; opacity: .7;
@@ -258,16 +239,14 @@ body {
 </head>
 <body>
 
-<!-- 네비 -->
 <nav class="top-nav">
   <div class="nav-logo">
     <div class="dot"></div>
     EAIM 국어 창작 플랫폼 가이드
   </div>
-  <a href="korean-index.html" class="nav-home">← 홈으로</a>
+  <a href="index.html" class="nav-home">← 홈으로</a>
 </nav>
 
-<!-- 히어로 -->
 <div class="hero">
   <div class="hero-badge">📖 사용 가이드</div>
   <h1>어떻게 사용하나요?</h1>
@@ -275,15 +254,14 @@ body {
   <div class="hero-chips">
     <span class="hero-chip">📜 시 감상·창작</span>
     <span class="hero-chip">✍️ 글쓰기 창작</span>
-    <span class="hero-chip">🤖 AI 기능</span>
-    <span class="hero-chip">🎵 음악·낭독</span>
+    <span class="hero-chip">📰 신문 만들기</span>
+    <span class="hero-chip">🎮 어휘 게임방</span>
     <span class="hero-chip">👩‍🏫 교사 패널</span>
   </div>
 </div>
 
 <div class="page">
 
-  <!-- TOC -->
   <div class="toc">
     <h2>📋 목차</h2>
     <div class="toc-grid">
@@ -296,20 +274,26 @@ body {
       <a href="#writing" class="toc-item">
         <div class="toc-num" style="background:#DCFCE7;color:#15803D">3</div>글쓰기 창작
       </a>
+      <a href="#news" class="toc-item">
+        <div class="toc-num" style="background:#DBEAFE;color:#1E3A8A">4</div>신문 만들기
+      </a>
+      <a href="#game" class="toc-item">
+        <div class="toc-num" style="background:#EDE9FE;color:#5B21B6">5</div>어휘 게임방
+      </a>
       <a href="#ai" class="toc-item">
-        <div class="toc-num" style="background:#FDF4FF;color:#7C3AED">4</div>AI 기능 안내
+        <div class="toc-num" style="background:#FDF4FF;color:#7C3AED">6</div>AI 기능 안내
       </a>
       <a href="#music" class="toc-item">
-        <div class="toc-num" style="background:#FEF9C3;color:#A16207">5</div>음악 & 낭독
+        <div class="toc-num" style="background:#FEF9C3;color:#A16207">7</div>음악 & 낭독
       </a>
       <a href="#teacher" class="toc-item">
-        <div class="toc-num" style="background:#F1F5F9;color:#334155">6</div>교사 컨트롤
+        <div class="toc-num" style="background:#F1F5F9;color:#334155">8</div>교사 컨트롤 & 반/모둠
       </a>
       <a href="#github" class="toc-item">
-        <div class="toc-num" style="background:#1A1208;color:#C8A84B">7</div>GitHub 배포
+        <div class="toc-num" style="background:#1A1208;color:#C8A84B">9</div>GitHub 배포
       </a>
       <a href="#faq" class="toc-item">
-        <div class="toc-num" style="background:#FFF1F2;color:#BE123C">8</div>자주 묻는 질문
+        <div class="toc-num" style="background:#FFF1F2;color:#BE123C">10</div>자주 묻는 질문
       </a>
     </div>
   </div>
@@ -320,14 +304,14 @@ body {
       <div class="section-num" style="background:linear-gradient(135deg,#2563EB,#4F46E5)">1</div>
       <div>
         <h2>시작 전 준비</h2>
-        <div class="sub">Gemini API 키 설정 · 최초 1회</div>
+        <div class="sub">Gemini API 키 설정 · 반/모둠 만들기 · 최초 1회</div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">🔑 API 키가 필요한 이유</div>
       <p style="font-size:.86rem;color:var(--ink3);line-height:1.75;margin-bottom:12px">
-        AI 시 추천, AI 글감 추천, AI 첨삭·수정·이어쓰기, AI 음악 추천 기능 모두 Google Gemini 2.5 Flash를 사용합니다. API 키 없이도 기본 활동(감정 선택, 글쓰기)은 가능하지만 AI 기능은 키가 필요합니다.
+        AI 시 추천, AI 글감 추천, AI 첨삭·수정·이어쓰기, AI 기사 생성, AI 퀴즈, AI 음악 추천 기능 모두 Google Gemini 2.5 Flash를 사용합니다. API 키 없이도 기본 활동(감정 선택, 글쓰기, 직접 입력)은 가능하지만 AI 기능은 키가 필요합니다.
       </p>
       <div class="tip tip-gold">
         <div class="tip-ico">💡</div>
@@ -359,14 +343,25 @@ body {
         </div>
         <div class="setup-step">
           <div>
-            <h4>앱에 입력</h4>
-            <p>각 앱 하단 <strong>"선생님이신가요?"</strong> → 교사 패널 → Gemini API 키 입력 → 저장. 브라우저에 기억됩니다.</p>
+            <h4>앱에 입력 (한 번만!)</h4>
+            <p><strong>4개 앱 중 아무 곳에서나 한 번만</strong> "선생님이신가요?" → 교사 패널 → Gemini API 키 입력 → 저장. 나머지 3개 앱에도 자동으로 반영돼요.</p>
           </div>
         </div>
       </div>
       <div class="tip tip-red" style="margin-top:14px">
         <div class="tip-ico">⚠️</div>
         <div><h4>주의사항</h4><p>API 키는 개인 정보입니다. SNS·공개 게시물에 올리지 마세요. 학생 기기에는 선생님이 직접 입력해 주세요.</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏷️ 반/모둠 이름 만들기</div>
+      <p style="font-size:.86rem;color:var(--ink3);line-height:1.75;margin-bottom:12px">
+        학생 로그인 화면의 반/모둠 선택은 <strong>고정 목록이 아니라 선생님이 직접 만드는 이름</strong>이에요. "다詩", "3반 시창작반"처럼 원하는 이름을 자유롭게 만들 수 있어요. 교사 패널의 "🏷️ 반/모둠 이름 관리"에서 추가·삭제하면, 4개 앱 학생 로그인 화면에 똑같이 나타나요.
+      </p>
+      <div class="tip tip-blue">
+        <div class="tip-ico">📶</div>
+        <div><h4>여러 기기에서 공유하려면</h4><p>Firebase 설정이 되어 있어야 선생님 컴퓨터에서 만든 반 이름이 학생들 각자 폰에도 보여요. 설정 전에는 같은 기기 안에서만 보입니다.</p></div>
       </div>
     </div>
   </div>
@@ -390,49 +385,49 @@ body {
           <div class="step-ico" style="background:#FEF0E0">💭</div>
           <div class="step-body">
             <h3>Step 1 — 감정/주제 입력 <span class="step-tag" style="background:#FEF0E0;color:#A05010">시작</span></h3>
-            <p>지금 느끼는 감정이나 주제를 입력하거나, 12개 감정 칩 중 하나를 클릭해요. 외로움·그리움·설렘·희망 등 다양하게 선택할 수 있어요.</p>
+            <p>지금 느끼는 감정이나 주제를 입력하거나, 12개 감정 칩 중 하나를 클릭해요.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#FDF8EE">📚</div>
           <div class="step-body">
             <h3>Step 2 — AI 시 추천 <span class="step-tag" style="background:#FDF8EE;color:#806010">AI</span></h3>
-            <p>Gemini AI가 감정에 어울리는 한국 시 3편(윤동주·김소월·백석 등)을 추천해줘요. 추천 이유도 함께 표시돼요. 마음에 드는 시를 클릭해 선택하세요.</p>
+            <p>Gemini AI가 감정에 어울리는 한국 시 3편을 추천해줘요. 마음에 드는 시를 클릭해 선택하세요.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#FFF0F8">🎨</div>
           <div class="step-body">
             <h3>Step 3 — 감정 탭 선택 <span class="step-tag" style="background:#FFF0F8;color:#A02060">감상</span></h3>
-            <p>시 전문을 읽으며 느낀 감정을 15개 탭 중 여러 개 클릭해요. 슬픔·그리움·감동·쓸쓸함·몽환적 등 다양한 감정어가 준비돼 있어요.</p>
+            <p>시 전문을 읽으며 느낀 감정을 15개 탭 중 여러 개 클릭해요.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#F0FFF0">✏️</div>
           <div class="step-body">
-            <h3>Step 4 — 감상문 쓰기 <span class="step-tag" style="background:#F0FFF0;color:#206020">글쓰기</span></h3>
-            <p>왜 그런 감정이 들었는지, 어떤 구절이 마음에 남았는지 자유롭게 써요. AI 첨삭 버튼으로 피드백을 받을 수 있어요.</p>
+            <h3>Step 4 — 감상문 쓰기</h3>
+            <p>왜 그런 감정이 들었는지 자유롭게 써요. AI 첨삭으로 피드백을 받을 수 있어요.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#F0F0FF">🌸</div>
           <div class="step-body">
-            <h3>Step 5 — 나만의 시 창작 <span class="step-tag" style="background:#F0F0FF;color:#202080">창작</span></h3>
-            <p>읽은 시에서 영감을 받아 나만의 시를 써봐요. AI 첨삭·AI 영감받기 버튼을 활용할 수 있어요.</p>
+            <h3>Step 5 — 나만의 시 창작</h3>
+            <p>읽은 시에서 영감을 받아 나만의 시를 써봐요. AI 첨삭·영감받기를 활용할 수 있어요.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#FFF8E0">📖</div>
           <div class="step-body">
-            <h3>Step 6 — 감상 일지 완성 <span class="step-tag" style="background:#FFF8E0;color:#806000">완성</span></h3>
-            <p>감상한 시·느낀 감정·감상문·나만의 시가 한 페이지에 모여요. 인쇄하거나 텍스트 파일로 저장할 수 있어요.</p>
+            <h3>Step 6 — 감상 일지 완성</h3>
+            <p>모든 활동이 한 페이지에 모여요. 인쇄하거나 텍스트로 저장할 수 있어요.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#E0F8E0">🎵</div>
           <div class="step-body">
-            <h3>Step 7 — 음악 & 낭독 <span class="step-tag" style="background:#E0F8E0;color:#006000">낭독</span></h3>
-            <p>배경음악을 선택하고(유튜브/파일업로드/AI추천) TTS로 시를 낭독해요. 속도 조절 가능, 감상 시와 나의 시 모두 낭독 가능해요.</p>
+            <h3>Step 7 — 음악 & 낭독</h3>
+            <p>배경음악을 선택하고 TTS로 시를 낭독해요.</p>
           </div>
         </div>
       </div>
@@ -454,40 +449,16 @@ body {
     <div class="card">
       <div class="card-title">📝 6가지 글쓰기 장르</div>
       <div class="genre-grid">
-        <div class="genre-card">
-          <div class="g-ico">📔</div>
-          <h4>일기</h4>
-          <p style="font-size:.72rem;color:var(--ink3)">오늘의 경험·감정 솔직하게</p>
-        </div>
-        <div class="genre-card">
-          <div class="g-ico">🌿</div>
-          <h4>생활문</h4>
-          <p style="font-size:.72rem;color:var(--ink3)">경험을 생생하게 묘사</p>
-        </div>
-        <div class="genre-card">
-          <div class="g-ico">💌</div>
-          <h4>편지글</h4>
-          <p style="font-size:.72rem;color:var(--ink3)">마음을 전하는 글</p>
-        </div>
-        <div class="genre-card">
-          <div class="g-ico">⚖️</div>
-          <h4>주장하는 글</h4>
-          <p style="font-size:.72rem;color:var(--ink3)">근거로 설득하기</p>
-        </div>
-        <div class="genre-card">
-          <div class="g-ico">📊</div>
-          <h4>설명하는 글</h4>
-          <p style="font-size:.72rem;color:var(--ink3)">정보를 구조적으로</p>
-        </div>
-        <div class="genre-card">
-          <div class="g-ico">📖</div>
-          <h4>이야기</h4>
-          <p style="font-size:.72rem;color:var(--ink3)">사건과 인물 창작</p>
-        </div>
+        <div class="genre-card"><div class="g-ico">📔</div><h4>일기</h4><p>오늘의 경험·감정</p></div>
+        <div class="genre-card"><div class="g-ico">🌿</div><h4>생활문</h4><p>경험을 생생하게</p></div>
+        <div class="genre-card"><div class="g-ico">💌</div><h4>편지글</h4><p>마음 전하기</p></div>
+        <div class="genre-card"><div class="g-ico">⚖️</div><h4>주장하는 글</h4><p>근거로 설득</p></div>
+        <div class="genre-card"><div class="g-ico">📊</div><h4>설명하는 글</h4><p>정보를 구조적으로</p></div>
+        <div class="genre-card"><div class="g-ico">📖</div><h4>이야기</h4><p>사건과 인물 창작</p></div>
       </div>
       <div class="tip tip-gold" style="margin-top:12px">
         <div class="tip-ico">💡</div>
-        <div><h4>장르별 개요 자동 생성</h4><p>장르를 선택하면 Step 3 개요 구조가 자동으로 바뀌어요. 일기는 처음·중간·끝, 주장하는 글은 주장·근거1·근거2·마무리 형태로요.</p></div>
+        <div><h4>장르별 개요 자동 생성</h4><p>장르를 선택하면 Step 3 개요 구조가 자동으로 바뀌어요.</p></div>
       </div>
     </div>
 
@@ -496,52 +467,31 @@ body {
       <div class="step-flow">
         <div class="step-item">
           <div class="step-ico" style="background:#F0FDF4">📝</div>
-          <div class="step-body">
-            <h3>Step 1 — 장르·주제·감정</h3>
-            <p>6가지 장르 중 하나를 선택하고, 쓰고 싶은 주제를 입력해요. 감정 칩 12개로 분위기도 설정할 수 있어요.</p>
-          </div>
+          <div class="step-body"><h3>Step 1 — 장르·주제·감정</h3><p>6가지 장르 중 하나를 선택하고, 주제를 입력해요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#ECFDF5">💡</div>
-          <div class="step-body">
-            <h3>Step 2 — AI 글감 추천</h3>
-            <p>Gemini AI가 장르와 주제에 맞는 구체적인 글감 3가지를 추천해줘요. 마음에 드는 글감을 선택하세요.</p>
-          </div>
+          <div class="step-body"><h3>Step 2 — AI 글감 추천</h3><p>장르와 주제에 맞는 구체적 글감 3가지를 추천해줘요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#D1FAE5">🗂️</div>
-          <div class="step-body">
-            <h3>Step 3 — 개요 짜기</h3>
-            <p>장르에 맞는 개요 구조에 간단히 메모해요. AI 개요 도움받기 버튼으로 AI의 제안을 참고할 수 있어요.</p>
-          </div>
+          <div class="step-body"><h3>Step 3 — 개요 짜기</h3><p>장르에 맞는 개요 구조에 메모해요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#A7F3D0">✍️</div>
-          <div class="step-body">
-            <h3>Step 4 — 본문 쓰기 + AI 도구</h3>
-            <p>자유롭게 본문을 써요. AI 도구 4종(수정·첨삭·이어쓰기·다음 내용 제안)을 필요할 때 선택해서 사용할 수 있어요.</p>
-          </div>
+          <div class="step-body"><h3>Step 4 — 본문 쓰기 + AI 도구</h3><p>AI 도구 4종(수정·첨삭·이어쓰기·다음 내용 제안)을 사용할 수 있어요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#6EE7B7">🌟</div>
-          <div class="step-body">
-            <h3>Step 5 — AI 최종 다듬기</h3>
-            <p>전체 글을 AI가 종합 첨삭하거나, AI가 전체를 자연스럽게 다듬어줘요. 적용 여부는 학생이 직접 선택해요.</p>
-          </div>
+          <div class="step-body"><h3>Step 5 — AI 최종 다듬기</h3><p>전체 글을 종합 첨삭하거나 다듬어요. 적용 여부는 학생이 직접 선택해요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#34D399">📖</div>
-          <div class="step-body">
-            <h3>Step 6 — 완성 & 저장</h3>
-            <p>글감·개요·본문이 한 페이지에 완성돼요. 인쇄하거나 텍스트 파일로 저장해요.</p>
-          </div>
+          <div class="step-body"><h3>Step 6 — 완성 & 저장</h3><p>인쇄하거나 텍스트 파일로 저장해요.</p></div>
         </div>
         <div class="step-item">
           <div class="step-ico" style="background:#10B981">🎵</div>
-          <div class="step-body">
-            <h3>Step 7 — 음악 & 낭독</h3>
-            <p>배경음악과 함께 완성된 글을 TTS로 낭독해요.</p>
-          </div>
+          <div class="step-body"><h3>Step 7 — 음악 & 낭독</h3><p>배경음악과 함께 완성된 글을 TTS로 낭독해요.</p></div>
         </div>
       </div>
     </div>
@@ -549,10 +499,88 @@ body {
 
   <div class="divider">— · — · — · —</div>
 
-  <!-- ══ 4. AI 기능 ══ -->
+  <!-- ══ 4. 신문 만들기 ══ -->
+  <div class="section" id="news">
+    <div class="section-header">
+      <div class="section-num" style="background:linear-gradient(135deg,#1A1A2E,#0F3460)">4</div>
+      <div>
+        <h2>📰 국어 신문 만들기</h2>
+        <div class="sub">eaim-korean-news.html · 5단계</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚀 전체 흐름</div>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-ico" style="background:#DBEAFE">📰</div>
+          <div class="step-body"><h3>Step 1 — 신문 설정</h3><p>신문 이름(AI 추천 가능)·발행일·호수를 정하고, 4가지 스타일(조선일보형·2단 컬러형·복고형·타블로이드형) 중 골라요.</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-ico" style="background:#BFDBFE">✍️</div>
+          <div class="step-body"><h3>Step 2 — 기사 작성</h3><p>"🤖 AI 자동 생성"(주제·섹션·유형·길이 지정)과 "✏️ 직접 입력(모둠)" 두 방식을 섞어서 기사를 여러 개 추가해요.</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-ico" style="background:#93C5FD">🗞️</div>
+          <div class="step-body"><h3>Step 3 — 완성된 신문</h3><p>선택한 스타일로 신문이 자동 조판돼요. 복사·저장·인쇄 가능해요.</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-ico" style="background:#E0FBF2">✍️</div>
+          <div class="step-body"><h3>Step 4 — 감상문</h3><p>신문을 만들며 느낀 점을 쓰고 AI 첨삭·도움받기를 활용해요.</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-ico" style="background:#FFFBEB">🎸</div>
+          <div class="step-body"><h3>Step 5 — 수노 프롬프트</h3><p>신문 기사들을 주제로 한 노래 가사와 수노(Suno AI) 프롬프트를 생성해요.</p></div>
+        </div>
+      </div>
+      <div class="tip tip-green" style="margin-top:12px">
+        <div class="tip-ico">👥</div>
+        <div><h4>모둠 활동에 최적화</h4><p>"직접 입력" 탭은 모둠원별로 기사를 나눠 쓰고 기자 이름을 남길 수 있어, 모둠 협업 신문 제작에 특히 잘 맞아요.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">— · — · — · —</div>
+
+  <!-- ══ 5. 어휘 게임방 ══ -->
+  <div class="section" id="game">
+    <div class="section-header">
+      <div class="section-num" style="background:linear-gradient(135deg,#221540,#0F0A1A)">5</div>
+      <div>
+        <h2>🎮 국어 어휘 게임방</h2>
+        <div class="sub">eaim-korean-game.html · 8가지 게임</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📚 어휘 카테고리 6종</div>
+      <p style="font-size:.85rem;color:var(--ink3);line-height:1.7;margin-bottom:12px">
+        속담 · 관용어 · 한자성어 · 순우리말 · 문학어휘 · 맞춤법, 총 72개 어휘가 기본 내장되어 있어요. 로비에서 카테고리별로 원하는 어휘만 골라 게임에 사용할 수 있어요.
+      </p>
+      <div class="card-title" style="margin-top:16px">🎯 게임 8종</div>
+      <div class="ai-grid">
+        <div class="ai-card"><div class="ai-ico">⭕❌</div><h4>OX 퀴즈</h4><p>설명이 맞으면 O, 틀리면 X</p></div>
+        <div class="ai-card"><div class="ai-ico">⏱️</div><h4>스피드 퀴즈</h4><p>30초 안에 최대한 많이!</p></div>
+        <div class="ai-card"><div class="ai-ico">🔤</div><h4>빈칸 채우기</h4><p>뜻을 보고 어휘를 직접 입력</p></div>
+        <div class="ai-card"><div class="ai-ico">🃏</div><h4>카드 매칭</h4><p>어휘와 뜻 짝지어 맞추기</p></div>
+        <div class="ai-card"><div class="ai-ico">🎯</div><h4>어휘 맞추기</h4><p>뜻을 보고 4지선다</p></div>
+        <div class="ai-card"><div class="ai-ico">🎰</div><h4>AI 랜덤 퀴즈</h4><p>AI가 매번 새 문제를 출제</p></div>
+        <div class="ai-card"><div class="ai-ico">🏆</div><h4>팀 대항전</h4><p>두 팀이 번갈아 대결</p></div>
+        <div class="ai-card"><div class="ai-ico">📖</div><h4>이야기 퀴즈</h4><p>AI가 만든 이야기 속 어휘 찾기</p></div>
+      </div>
+      <div class="tip tip-blue" style="margin-top:12px">
+        <div class="tip-ico">🏆</div>
+        <div><h4>랭킹 시스템</h4><p>로비 화면에 오늘의 랭킹 TOP 5가 표시돼요. 게임을 마치면 점수가 자동으로 기록됩니다.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">— · — · — · —</div>
+
+  <!-- ══ 6. AI 기능 ══ -->
   <div class="section" id="ai">
     <div class="section-header">
-      <div class="section-num" style="background:linear-gradient(135deg,#7C3AED,#6D28D9)">4</div>
+      <div class="section-num" style="background:linear-gradient(135deg,#7C3AED,#6D28D9)">6</div>
       <div>
         <h2>🤖 AI 기능 안내</h2>
         <div class="sub">모두 선택 사용 — 강제 아님</div>
@@ -562,84 +590,59 @@ body {
     <div class="card">
       <div class="card-title">📜 시 앱 AI 기능</div>
       <div class="ai-grid">
-        <div class="ai-card">
-          <div class="ai-ico">📚</div>
-          <h4>시 추천</h4>
-          <p>감정 분석 후 교과서 시인 중심 3편 추천 + 이유 설명</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">✏️</div>
-          <h4>감상문 첨삭</h4>
-          <p>잘한 점·고칠 점·표현 제안·격려 한마디</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">🌸</div>
-          <h4>시 첨삭</h4>
-          <p>시적 표현·시어 추천·다듬기 제안</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">💡</div>
-          <h4>시 영감받기</h4>
-          <p>첫 행 예시·이미지·감정 단어 제안</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">🎵</div>
-          <h4>음악 추천</h4>
-          <p>시 분위기 분석 후 낭독용 배경음악 4곡 추천</p>
-        </div>
+        <div class="ai-card"><div class="ai-ico">📚</div><h4>시 추천</h4><p>감정 분석 후 교과서 시인 중심 3편 추천</p></div>
+        <div class="ai-card"><div class="ai-ico">✏️</div><h4>감상문 첨삭</h4><p>잘한 점·고칠 점·표현 제안</p></div>
+        <div class="ai-card"><div class="ai-ico">🌸</div><h4>시 첨삭</h4><p>시적 표현·시어 추천</p></div>
+        <div class="ai-card"><div class="ai-ico">💡</div><h4>시 영감받기</h4><p>첫 행 예시·이미지 제안</p></div>
+        <div class="ai-card"><div class="ai-ico">🎵</div><h4>음악 추천</h4><p>분위기 분석 후 낭독용 배경음악 4곡</p></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">✍️ 글쓰기 앱 AI 기능</div>
       <div class="ai-grid">
-        <div class="ai-card">
-          <div class="ai-ico">💡</div>
-          <h4>글감 추천</h4>
-          <p>장르·주제에 맞는 구체적 글감 3가지</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">🗂️</div>
-          <h4>개요 도움</h4>
-          <p>단계별 쓸 내용 구체적으로 제안</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">🔧</div>
-          <h4>AI 수정</h4>
-          <p>글 자동 다듬기 → 적용/취소 선택 가능</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">✏️</div>
-          <h4>AI 첨삭</h4>
-          <p>피드백만 제공, 글 변경 없음</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">✨</div>
-          <h4>이어쓰기</h4>
-          <p>자연스러운 다음 2~3문장 제안</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">🌟</div>
-          <h4>최종 다듬기</h4>
-          <p>전체 글 자연스럽게 개선 → 적용 선택</p>
-        </div>
+        <div class="ai-card"><div class="ai-ico">💡</div><h4>글감 추천</h4><p>장르·주제 맞춤 글감 3가지</p></div>
+        <div class="ai-card"><div class="ai-ico">🗂️</div><h4>개요 도움</h4><p>단계별 내용 구체적 제안</p></div>
+        <div class="ai-card"><div class="ai-ico">🔧</div><h4>AI 수정</h4><p>자동 다듬기 → 적용/취소 선택</p></div>
+        <div class="ai-card"><div class="ai-ico">✏️</div><h4>AI 첨삭</h4><p>피드백만 제공, 글 변경 없음</p></div>
+        <div class="ai-card"><div class="ai-ico">✨</div><h4>이어쓰기</h4><p>다음 2~3문장 제안</p></div>
+        <div class="ai-card"><div class="ai-ico">🌟</div><h4>최종 다듬기</h4><p>전체 글 개선 → 적용 선택</p></div>
       </div>
-      <div class="tip tip-blue" style="margin-top:12px">
-        <div class="tip-ico">💙</div>
-        <div><h4>AI는 도우미예요</h4><p>모든 AI 기능은 선택 사용입니다. 학생이 직접 쓰는 것이 기본, AI는 막힐 때 참고하는 도구로 활용해 주세요.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📰 신문 앱 AI 기능</div>
+      <div class="ai-grid">
+        <div class="ai-card"><div class="ai-ico">🏷️</div><h4>신문 이름 추천</h4><p>어울리는 이름 5가지 제안</p></div>
+        <div class="ai-card"><div class="ai-ico">📝</div><h4>기사 자동 생성</h4><p>주제·섹션·유형·길이 지정해 기사 완성</p></div>
+        <div class="ai-card"><div class="ai-ico">✏️</div><h4>감상문 첨삭·도움</h4><p>피드백 및 시작 문장 힌트 제공</p></div>
+        <div class="ai-card"><div class="ai-ico">🎸</div><h4>수노 프롬프트</h4><p>기사 내용으로 가사·프롬프트 생성</p></div>
       </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎮 게임 앱 AI 기능</div>
+      <div class="ai-grid">
+        <div class="ai-card"><div class="ai-ico">🎰</div><h4>AI 랜덤 퀴즈</h4><p>예문·반의어·비슷한 표현 등 매번 새 문제</p></div>
+        <div class="ai-card"><div class="ai-ico">📖</div><h4>이야기 퀴즈</h4><p>어휘가 담긴 짧은 이야기를 즉석 생성</p></div>
+      </div>
+    </div>
+
+    <div class="tip tip-blue" style="margin-top:4px">
+      <div class="tip-ico">💙</div>
+      <div><h4>AI는 도우미예요</h4><p>모든 AI 기능은 선택 사용입니다. 학생이 직접 쓰는 것이 기본, AI는 막힐 때 참고하는 도구로 활용해 주세요.</p></div>
     </div>
   </div>
 
   <div class="divider">— · — · — · —</div>
 
-  <!-- ══ 5. 음악 & 낭독 ══ -->
+  <!-- ══ 7. 음악 & 낭독 ══ -->
   <div class="section" id="music">
     <div class="section-header">
-      <div class="section-num" style="background:linear-gradient(135deg,#A16207,#CA8A04)">5</div>
+      <div class="section-num" style="background:linear-gradient(135deg,#A16207,#CA8A04)">7</div>
       <div>
         <h2>🎵 음악 & 낭독</h2>
-        <div class="sub">Step 7 · 두 앱 동일</div>
+        <div class="sub">시·글쓰기 앱 Step 7 · 신문 앱은 수노 프롬프트만 지원</div>
       </div>
     </div>
 
@@ -652,7 +655,6 @@ body {
             <li>유튜브 URL 붙여넣기</li>
             <li>일반·단축 링크 모두 OK</li>
             <li>앱 안에서 바로 재생</li>
-            <li>학교 유튜브 허용 환경 필요</li>
           </ul>
         </div>
         <div class="compare-card" style="border-color:#BBF7D0">
@@ -661,40 +663,31 @@ body {
             <li>mp3·wav·ogg 지원</li>
             <li>드래그앤드롭 가능</li>
             <li>인터넷 없이도 재생</li>
-            <li>저작권 없는 음원 사용 권장</li>
           </ul>
         </div>
       </div>
       <div class="compare-card" style="border-color:#DDD6FE;margin-top:10px">
         <h3 style="color:#7C3AED">🤖 AI 음악 추천</h3>
-        <p style="font-size:.82rem;color:var(--ink3);line-height:1.7">시/글의 분위기를 분석해서 낭독에 어울리는 음악 4곡을 추천해요. 카드 클릭 → 검색어 복사 → 유튜브에서 검색 → URL 복사 → 유튜브 탭에 붙여넣기</p>
+        <p style="font-size:.82rem;color:var(--ink3);line-height:1.7">시/글의 분위기를 분석해서 어울리는 음악 4곡을 추천해요. 카드 클릭 → 검색어 복사 → 유튜브에서 검색 → URL 복사 → 유튜브 탭에 붙여넣기</p>
       </div>
       <div class="tip tip-gold" style="margin-top:12px">
         <div class="tip-ico">⚠️</div>
-        <div><h4>유튜브 재생이 안 될 때</h4><p>영상이 <strong>퍼가기 차단</strong>된 경우예요. 유튜브에서 공유 → 퍼가기 옵션이 있는 영상으로 교체하거나, 파일 업로드 방식을 사용하세요. 클래식·국악 영상은 대부분 퍼가기 허용돼 있어요.</p></div>
+        <div><h4>유튜브 재생이 안 될 때</h4><p>영상이 <strong>퍼가기 차단</strong>된 경우예요. 다른 영상으로 교체하거나 파일 업로드 방식을 사용하세요.</p></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">🗣️ TTS 낭독 기능</div>
-      <p style="font-size:.84rem;color:var(--ink3);line-height:1.75;margin-bottom:10px">
-        배경음악과 동시에 TTS(Text-to-Speech)로 시·글을 낭독해요. 한국어 음성으로 자동 읽어줍니다.
-      </p>
+      <p style="font-size:.84rem;color:var(--ink3);line-height:1.75;margin-bottom:10px">시·글쓰기 앱에서 배경음악과 동시에 TTS(Text-to-Speech)로 한국어 낭독을 지원해요.</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:1.3rem;margin-bottom:4px">🐌</div>
-          <div style="font-size:.78rem;font-weight:700">천천히</div>
-          <div style="font-size:.7rem;color:var(--ink3)">0.6배속</div>
+          <div style="font-size:1.3rem;margin-bottom:4px">🐌</div><div style="font-size:.78rem;font-weight:700">천천히</div><div style="font-size:.7rem;color:var(--ink3)">0.6~0.7배속</div>
         </div>
         <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:1.3rem;margin-bottom:4px">🚶</div>
-          <div style="font-size:.78rem;font-weight:700">보통</div>
-          <div style="font-size:.7rem;color:var(--ink3)">0.8~0.9배속</div>
+          <div style="font-size:1.3rem;margin-bottom:4px">🚶</div><div style="font-size:.78rem;font-weight:700">보통</div><div style="font-size:.7rem;color:var(--ink3)">0.8~0.9배속</div>
         </div>
         <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:1.3rem;margin-bottom:4px">🏃</div>
-          <div style="font-size:.78rem;font-weight:700">빠르게</div>
-          <div style="font-size:.7rem;color:var(--ink3)">1.0~1.1배속</div>
+          <div style="font-size:1.3rem;margin-bottom:4px">🏃</div><div style="font-size:.78rem;font-weight:700">빠르게</div><div style="font-size:.7rem;color:var(--ink3)">1.0~1.1배속</div>
         </div>
       </div>
       <div class="tip tip-blue" style="margin-top:12px">
@@ -706,13 +699,13 @@ body {
 
   <div class="divider">— · — · — · —</div>
 
-  <!-- ══ 6. 교사 패널 ══ -->
+  <!-- ══ 8. 교사 컨트롤 & 반/모둠 ══ -->
   <div class="section" id="teacher">
     <div class="section-header">
-      <div class="section-num" style="background:linear-gradient(135deg,#1A1208,#2A1E10)">6</div>
+      <div class="section-num" style="background:linear-gradient(135deg,#1A1208,#2A1E10)">8</div>
       <div>
-        <h2>👩‍🏫 교사 컨트롤 패널</h2>
-        <div class="sub">두 앱 동일 방식 · 기본 비밀번호: 1234</div>
+        <h2>👩‍🏫 교사 컨트롤 & 반/모둠</h2>
+        <div class="sub">4개 앱 동일 방식 · 기본 비밀번호: 1234</div>
       </div>
     </div>
 
@@ -723,51 +716,47 @@ body {
           <div><h4>로그인 화면에서</h4><p>이름 입력 모달 하단 <strong>"선생님이신가요?"</strong> 클릭</p></div>
         </div>
         <div class="setup-step">
-          <div><h4>비밀번호 입력</h4><p>기본 비밀번호 <strong>1234</strong> 입력. 패널 내에서 변경 가능해요.</p></div>
+          <div><h4>비밀번호 입력</h4><p>기본 비밀번호 <strong>1234</strong> 입력</p></div>
         </div>
         <div class="setup-step">
-          <div><h4>교사 패널 사용</h4><p>API 키 설정·학생 현황 확인·CSV 내보내기·전체 초기화 가능</p></div>
+          <div><h4>교사 패널 사용</h4><p>반/모둠 이름 관리 · API 키 설정 · 학생 현황 확인 · CSV 내보내기 · 전체 초기화 가능</p></div>
         </div>
       </div>
     </div>
 
     <div class="card">
+      <div class="card-title">🏷️ 반/모둠 이름 관리</div>
+      <p style="font-size:.85rem;color:var(--ink3);line-height:1.75;margin-bottom:10px">
+        교사 패널의 "반/모둠 이름 관리"에서 원하는 이름(예: "다詩", "3반 신문반")을 추가하면, 학생 로그인 화면 선택지에 바로 나타나요. 삭제도 가능해요. 4개 앱이 같은 목록을 공유하므로, 한 앱에서 만든 이름이 나머지 앱에도 똑같이 보여요.
+      </p>
+    </div>
+
+    <div class="card">
       <div class="card-title">⚙️ 교사 전용 기능</div>
       <div class="ai-grid">
-        <div class="ai-card">
-          <div class="ai-ico">🔑</div>
-          <h4>API 키 관리</h4>
-          <p>입력 후 브라우저에 저장 — 다음엔 재입력 불필요</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">👥</div>
-          <h4>학생 현황</h4>
-          <p>이름·단계·글자수·최근 활동 시각 실시간 확인</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">📊</div>
-          <h4>CSV 내보내기</h4>
-          <p>전체 학생 활동 데이터를 엑셀 파일로 저장</p>
-        </div>
-        <div class="ai-card">
-          <div class="ai-ico">🗑️</div>
-          <h4>전체 초기화</h4>
-          <p>새 반 수업 전 모든 데이터 삭제</p>
-        </div>
+        <div class="ai-card"><div class="ai-ico">🏷️</div><h4>반/모둠 관리</h4><p>이름 추가·삭제, 4개 앱 공유</p></div>
+        <div class="ai-card"><div class="ai-ico">🔑</div><h4>API 키 관리</h4><p>한 곳에서 저장하면 4개 앱 모두 적용</p></div>
+        <div class="ai-card"><div class="ai-ico">👥</div><h4>학생 현황</h4><p>이름·단계·글자수·최근 활동 시각 확인</p></div>
+        <div class="ai-card"><div class="ai-ico">📊</div><h4>CSV 내보내기</h4><p>전체 학생 활동 데이터를 엑셀로 저장</p></div>
+        <div class="ai-card"><div class="ai-ico">🗑️</div><h4>전체 초기화</h4><p>새 반 수업 전 데이터 삭제</p></div>
       </div>
       <div class="tip tip-green" style="margin-top:12px">
         <div class="tip-ico">🔗</div>
-        <div><h4>두 앱이 데이터 공유</h4><p>시 앱과 글쓰기 앱은 같은 localStorage를 사용해요. API 키를 한 앱에서 저장하면 다른 앱에서도 사용 가능합니다.</p></div>
+        <div><h4>4개 앱이 API 키·반이름을 공유해요</h4><p>시·글쓰기·신문·게임 앱은 같은 이름의 브라우저 저장 항목을 사용해서, API 키와 반/모둠 목록을 한 곳에서만 설정하면 됩니다. 단, 각 앱의 학생 활동 기록(누가 어디까지 썼는지)은 앱별로 따로 저장돼요.</p></div>
+      </div>
+      <div class="tip tip-blue" style="margin-top:10px">
+        <div class="tip-ico">📶</div>
+        <div><h4>여러 기기에서 반이름을 공유하려면</h4><p>기본 상태로는 반/모둠 이름이 "이 브라우저 안에서만" 보여요. 학생들이 각자 폰으로 접속하는 환경이라면, Firebase 프로젝트를 설정해야 선생님이 만든 반이름이 학생 기기에도 똑같이 나타납니다. (설정 방법은 별도 안내)</p></div>
       </div>
     </div>
   </div>
 
   <div class="divider">— · — · — · —</div>
 
-  <!-- ══ 7. GitHub 배포 ══ -->
+  <!-- ══ 9. GitHub 배포 ══ -->
   <div class="section" id="github">
     <div class="section-header">
-      <div class="section-num" style="background:linear-gradient(135deg,#1A1208,#1A2E0E)">7</div>
+      <div class="section-num" style="background:linear-gradient(135deg,#1A1208,#1A2E0E)">9</div>
       <div>
         <h2>🚀 GitHub Pages 배포</h2>
         <div class="sub">무료 배포 · QR코드로 학생 접속</div>
@@ -777,11 +766,13 @@ body {
     <div class="card">
       <div class="card-title">📁 파일 구조</div>
       <div class="code" style="line-height:2">
-        📁 리포지토리 루트/<br>
-        ├── korean-index.html &nbsp;&nbsp;&nbsp;&nbsp;← 메인 허브<br>
+        📁 eaim-Korean-play/<br>
+        ├── index.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 메인 허브<br>
         ├── eaim-korean-poetry.html &nbsp;← 시 감상·창작<br>
         ├── eaim-korean-writing.html &nbsp;← 글쓰기 창작<br>
-        └── guide.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 이 가이드
+        ├── eaim-korean-news.html &nbsp;&nbsp;&nbsp;← 신문 만들기<br>
+        ├── eaim-korean-game.html &nbsp;&nbsp;&nbsp;← 어휘 게임방<br>
+        └── korean-guide.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 이 가이드
       </div>
     </div>
 
@@ -789,25 +780,21 @@ body {
       <div class="card-title">🚀 배포 5단계</div>
       <div class="setup-steps">
         <div class="setup-step">
-          <div><h4>GitHub 계정 로그인</h4>
-          <p>github.com 접속 → 로그인 (계정 없으면 무료 가입)</p></div>
+          <div><h4>GitHub 계정 로그인</h4><p>github.com 접속 → 로그인</p></div>
         </div>
         <div class="setup-step">
-          <div><h4>새 리포지토리 생성</h4>
-          <p>+ → New repository → 이름 입력 → <strong>Public</strong> 설정 → Create</p></div>
+          <div><h4>리포지토리에 파일 올리기</h4><p>Add file → Upload files → 위 6개 HTML 파일을 드래그앤드롭 → Commit</p></div>
         </div>
         <div class="setup-step">
-          <div><h4>파일 업로드</h4>
-          <p>Add file → Upload files → HTML 파일 4개 드래그앤드롭 → Commit</p></div>
+          <div><h4>파일명 그대로 유지</h4><p>서로 링크로 연결돼 있어서, 파일명을 바꾸면 이동 버튼이 깨져요. 꼭 같은 이름으로 덮어쓰세요.</p></div>
         </div>
         <div class="setup-step">
-          <div><h4>GitHub Pages 활성화</h4>
-          <p>Settings → Pages → Source: <strong>main / (root)</strong> → Save</p></div>
+          <div><h4>GitHub Pages 확인</h4><p>Settings → Pages에서 Source가 <strong>main / (root)</strong>로 되어 있는지 확인</p></div>
         </div>
         <div class="setup-step">
           <div><h4>URL 확인 & QR 생성</h4>
-          <p>1~2분 후 Pages에서 URL 확인. qr.io 등에서 QR코드 생성!</p>
-          <div class="code">https://[계정명].github.io/[리포명]/korean-index.html</div></div>
+          <p>배포 완료 후 아래 주소로 접속 가능. qr.io 등에서 QR코드 생성!</p>
+          <div class="code">https://[계정명].github.io/[리포명]/index.html</div></div>
         </div>
       </div>
     </div>
@@ -815,10 +802,10 @@ body {
 
   <div class="divider">— · — · — · —</div>
 
-  <!-- ══ 8. FAQ ══ -->
+  <!-- ══ 10. FAQ ══ -->
   <div class="section" id="faq">
     <div class="section-header">
-      <div class="section-num" style="background:linear-gradient(135deg,#BE123C,#E11D48)">8</div>
+      <div class="section-num" style="background:linear-gradient(135deg,#BE123C,#E11D48)">10</div>
       <div>
         <h2>❓ 자주 묻는 질문</h2>
         <div class="sub">FAQ</div>
@@ -828,23 +815,27 @@ body {
     <div class="card">
       <div class="qa-item">
         <div class="qa-q">AI 기능이 작동하지 않아요.</div>
-        <div class="qa-a">교사 패널에서 Gemini API 키가 올바르게 입력됐는지 확인하세요. <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">AIzaSy...</code>로 시작하는지, 앞뒤 공백이 없는지 확인해 주세요.</div>
+        <div class="qa-a">교사 패널에서 Gemini API 키가 올바르게 입력됐는지 확인하세요. <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">AIzaSy...</code>로 시작하는지, 앞뒤 공백이 없는지 확인해 주세요. 4개 앱 중 하나에만 입력하면 나머지에도 자동 반영돼요.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">학생 로그인 화면에 반/모둠 목록이 안 보여요.</div>
+        <div class="qa-a">아직 선생님이 반/모둠 이름을 하나도 만들지 않은 상태예요. 교사 패널 → 반/모둠 이름 관리에서 먼저 하나 이상 추가해 주세요.</div>
       </div>
       <div class="qa-item">
         <div class="qa-q">유튜브 음악이 재생되지 않아요.</div>
-        <div class="qa-a">두 가지 원인이 있어요. ① 학교 네트워크에서 유튜브가 차단된 경우 → 파일 업로드 방식 사용. ② 영상의 퍼가기가 차단된 경우 → 다른 영상(클래식·국악)으로 교체하세요.</div>
+        <div class="qa-a">① 학교 네트워크에서 유튜브가 차단된 경우 → 파일 업로드 방식 사용. ② 영상의 퍼가기가 차단된 경우 → 다른 영상(클래식·국악)으로 교체하세요.</div>
       </div>
       <div class="qa-item">
-        <div class="qa-q">AI가 추천한 시가 없거나 이상해요.</div>
-        <div class="qa-a">감정/주제 입력이 너무 짧거나 모호할 때 발생해요. "외로움", "가을 방과 후" 처럼 구체적으로 입력하면 더 좋은 결과가 나와요. 다시 시도 버튼을 눌러보세요.</div>
+        <div class="qa-q">AI가 추천한 시/글감/기사가 이상해요.</div>
+        <div class="qa-a">입력이 너무 짧거나 모호할 때 발생해요. 구체적으로 입력하면 더 좋은 결과가 나와요. 다시 시도 버튼을 눌러보세요.</div>
       </div>
       <div class="qa-item">
         <div class="qa-q">학생 활동 기록이 다른 기기에서 안 보여요.</div>
-        <div class="qa-a">현재 버전은 localStorage 기반으로 같은 기기·브라우저 내에서만 공유됩니다. 교사는 CSV 내보내기로 데이터를 통합 관리하세요.</div>
+        <div class="qa-a">각 앱의 학생 활동(진행 단계·작성 글자 수 등)은 그 학생이 접속한 기기·브라우저에만 저장돼요. 교사는 그 기기의 교사 패널에서 CSV로 내보내 통합 관리하세요. (반/모둠 이름 목록은 Firebase 설정 시 기기 간 공유가 가능해요 — 활동 기록과는 별개예요)</div>
       </div>
       <div class="qa-item">
         <div class="qa-q">TTS 소리가 나오지 않아요.</div>
-        <div class="qa-a">Chrome 브라우저 사용 여부를 확인하세요. 첫 번째 사용자 클릭 이후에만 소리가 활성화되는 경우가 있어요. 기기 볼륨·음소거도 확인해 주세요.</div>
+        <div class="qa-a">Chrome 브라우저 사용 여부를 확인하세요. 첫 사용자 클릭 이후에만 소리가 활성화되는 경우가 있어요. 기기 볼륨·음소거도 확인해 주세요.</div>
       </div>
       <div class="qa-item">
         <div class="qa-q">AI 수정 기능을 쓰면 원래 글이 사라지나요?</div>
@@ -857,14 +848,13 @@ body {
     </div>
   </div>
 
-  <!-- 푸터 -->
   <div style="text-align:center;padding:28px 0;border-top:2px solid var(--border)">
     <div style="font-family:'Nanum Myeongjo',serif;font-size:1.15rem;color:var(--accent);margin-bottom:8px">EAIM 국어 창작 플랫폼</div>
     <p style="font-size:.8rem;color:var(--ink3);line-height:1.9">
       Emotion · Artscape · Interactive · Musicalization<br>
       <strong style="color:var(--ink2)">박성애</strong> 선생님 제작 · Powered by Gemini AI
     </p>
-    <a href="korean-index.html" style="display:inline-block;margin-top:16px;padding:10px 24px;background:var(--accent);color:white;border-radius:12px;text-decoration:none;font-weight:700;font-size:.86rem">← 홈으로 돌아가기</a>
+    <a href="index.html" style="display:inline-block;margin-top:16px;padding:10px 24px;background:var(--accent);color:white;border-radius:12px;text-decoration:none;font-weight:700;font-size:.86rem">← 홈으로 돌아가기</a>
   </div>
 
 </div>
