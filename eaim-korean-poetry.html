@@ -643,30 +643,41 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   <div class="screen" id="step4">
     <div class="section-header">
       <div class="section-num">✍️ Step 4</div>
-      <h2>시 감상문 쓰기</h2>
-      <p>왜 그런 감정이 들었는지 자유롭게 써봐요</p>
+      <h2>감상 표현하기</h2>
+      <p>글로 쓰거나, 이미지로 표현하거나 — 하나를 골라봐요</p>
     </div>
 
-    <div class="card">
-      <div class="card-title">📝 나의 감상문</div>
-      <p style="font-size:.8rem;color:var(--ink3);margin-bottom:10px">선택한 감정: <span id="step4Feelings" style="color:var(--accent);font-weight:700"></span></p>
-      <textarea class="input-field" id="reviewText" rows="7"
-        placeholder="이 시를 읽으면서 어떤 느낌이 들었나요?&#10;어떤 구절이 마음에 남았나요?&#10;왜 그런 감정이 들었는지 자유롭게 써봐요..."></textarea>
-      <button class="btn btn-gold btn-sm" style="margin-top:10px" onclick="aiReviewCheck()">
-        🤖 AI 첨삭받기
-      </button>
-      <div id="reviewAiResult" style="display:none" class="ai-result">
-        <div class="ai-result-header">🤖 AI 선생님 피드백</div>
-        <div class="ai-result-text" id="reviewAiText"></div>
+    <div class="card" style="padding-bottom:14px">
+      <p style="font-size:.8rem;color:var(--ink3);margin-bottom:12px">선택한 감정: <span id="step4Feelings" style="color:var(--accent);font-weight:700"></span></p>
+      <div class="music-tabs" style="margin-bottom:0">
+        <button class="music-tab active" id="step4TabWrite" onclick="switchStep4Tab('write')">✍️ 감상문 쓰기</button>
+        <button class="music-tab" id="step4TabImage" onclick="switchStep4Tab('image')">🎨 이미지로 표현하기</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">🎨 AI 이미지로 영감받기 (선택)</div>
-      <p style="font-size:.8rem;color:var(--ink3);margin-bottom:10px">감상문 대신, 선택한 감정을 그림으로 표현해서 그 이미지를 보며 나만의 시를 써볼 수도 있어요.</p>
-      <button class="btn btn-gold btn-sm" onclick="generateInspirationImage()" id="inspirationBtn">🎨 이미지 생성하기</button>
-      <div id="inspirationImageLoading" class="loading-dots" style="display:none;margin-top:12px"><span></span><span></span><span></span></div>
-      <img id="inspirationImage" style="display:none;width:100%;border-radius:12px;margin-top:12px;border:1px solid var(--border)">
+    <div class="music-panel active" id="step4PanelWrite">
+      <div class="card">
+        <div class="card-title">📝 나의 감상문</div>
+        <textarea class="input-field" id="reviewText" rows="7"
+          placeholder="이 시를 읽으면서 어떤 느낌이 들었나요?&#10;어떤 구절이 마음에 남았나요?&#10;왜 그런 감정이 들었는지 자유롭게 써봐요..."></textarea>
+        <button class="btn btn-gold btn-sm" style="margin-top:10px" onclick="aiReviewCheck()">
+          🤖 AI 첨삭받기
+        </button>
+        <div id="reviewAiResult" style="display:none" class="ai-result">
+          <div class="ai-result-header">🤖 AI 선생님 피드백</div>
+          <div class="ai-result-text" id="reviewAiText"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="music-panel" id="step4PanelImage">
+      <div class="card">
+        <div class="card-title">🎨 AI 이미지로 표현하기</div>
+        <p style="font-size:.8rem;color:var(--ink3);margin-bottom:10px">감상문 대신, 선택한 감정을 그림으로 표현해봐요. 이 이미지는 다음 단계(나의 시 창작)에서 계속 보면서 쓸 수 있어요.</p>
+        <button class="btn btn-gold btn-sm" onclick="generateInspirationImage()" id="inspirationBtn">🎨 이미지 생성하기</button>
+        <div id="inspirationImageLoading" class="loading-dots" style="display:none;margin-top:12px"><span></span><span></span><span></span></div>
+        <img id="inspirationImage" style="display:none;width:100%;border-radius:12px;margin-top:12px;border:1px solid var(--border)">
+      </div>
     </div>
 
     <button class="btn btn-primary btn-full" onclick="goStep(5)">나만의 시 쓰러 가기 →</button>
@@ -1452,6 +1463,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
     };
   });
 });
+
+function switchStep4Tab(tab){
+  document.getElementById('step4PanelWrite').classList.toggle('active', tab==='write');
+  document.getElementById('step4PanelImage').classList.toggle('active', tab==='image');
+  document.getElementById('step4TabWrite').classList.toggle('active', tab==='write');
+  document.getElementById('step4TabImage').classList.toggle('active', tab==='image');
+}
 
 // ══ AI 이미지 영감받기 (Gemini 2.5 Flash Image) ══
 let inspirationImageUrl = null;
