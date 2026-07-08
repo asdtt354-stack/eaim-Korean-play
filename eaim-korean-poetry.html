@@ -14,6 +14,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -64,6 +66,8 @@ header::after {
   font-family: 'Nanum Myeongjo', serif;
   pointer-events: none;
 }
+.header-left { display:flex; align-items:center; gap:12px; }
+.hub-link { font-size:.68rem; color:rgba(255,255,255,.35); text-decoration:none; padding:4px 9px; border:1px solid rgba(255,255,255,.15); border-radius:7px; flex-shrink:0; }
 .header-left h1 {
   font-family: 'Nanum Myeongjo', serif;
   font-size: 1.4rem; color: var(--gold);
@@ -79,6 +83,7 @@ header::after {
   border-radius: 99px; padding: 5px 14px;
   font-size: .8rem; color: var(--gold); font-weight: 700;
 }
+.logout-btn { font-size:.68rem; color:rgba(255,255,255,.4); background:none; border:1px solid rgba(255,255,255,.15); border-radius:7px; padding:5px 10px; cursor:pointer; font-family:inherit; }
 
 .sticky-nav {
   position: sticky; top: 0; z-index: 50;
@@ -165,6 +170,7 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,69,19,.35); }
 .btn-primary:active { transform: scale(.97); }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
 .btn-secondary {
   background: var(--surface2); color: var(--ink2);
   border: 2px solid var(--border);
@@ -372,18 +378,14 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
 .loading-dots span:nth-child(3) { animation-delay: .4s; }
 @keyframes blink { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
 
-.teacher-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.6);
-  z-index: 200; display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-}
-.teacher-box {
+.ov { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,.55); }
+.mb {
   background: white; border-radius: 1.5rem;
   width: 100%; max-width: 420px; max-height: 85vh;
   overflow-y: auto; padding: 28px;
-  box-shadow: 0 24px 60px rgba(0,0,0,.3);
+  box-shadow: 0 24px 60px rgba(0,0,0,.3); text-align:left;
 }
-.teacher-box h2 {
+.mb h2 {
   font-family: 'Nanum Myeongjo', serif;
   font-size: 1.2rem; margin-bottom: 20px;
   color: var(--accent); display: flex; align-items: center; gap: 8px;
@@ -447,71 +449,103 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   padding: 14px 16px; font-size: .82rem; color: #B91C1C; line-height: 1.8; margin-top: 10px;
 }
 .error-box strong { display: block; margin-bottom: 4px; }
+
+/* ══ 교사 대시보드 ══ */
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#3c4043;border:1.5px solid var(--border);border-radius:12px;font-weight:700;font-size:.95rem;padding:14px;width:100%;cursor:pointer;transition:all .2s;font-family:inherit;}
+.google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translateY(-1px);}
+.google-icon{width:20px;height:20px;flex-shrink:0;}
+.teacher-chip{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:16px;}
+.teacher-avatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;}
+.dash-tab-bar{display:flex;background:rgba(0,0,0,.03);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60;}
+.dash-tab{flex:1;padding:12px 4px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;background:none;color:var(--ink3);font-family:inherit;transition:all .2s;border-bottom:2px solid transparent;}
+.dash-tab.on{color:var(--accent);border-bottom-color:var(--accent);}
+.badge-count{background:rgba(139,69,19,.15);color:var(--accent);border-radius:8px;padding:1px 6px;font-size:.62rem;margin-left:4px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);}
+.toggle-track{width:50px;height:26px;border-radius:13px;background:rgba(0,0,0,.12);position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;}
+.toggle-track.on{background:rgba(74,124,89,.4);border:1px solid var(--green);}
+.toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:all .3s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.toggle-track.on .toggle-thumb{left:26px;}
+.invite-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.72rem;color:var(--ink3);word-break:break-all;font-family:monospace;margin-top:8px;}
+.invite-qr-box{background:#fff;border-radius:10px;padding:14px;display:inline-block;margin-top:12px;text-align:center;border:1px solid var(--border);}
+.invite-qr-caption{font-size:.62rem;color:var(--ink3);margin-top:6px;letter-spacing:.05em;}
+.no-teacher-wrap,.loading-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--ink3);}
+.locked-notice{background:rgba(196,114,42,.08);border:1.5px solid rgba(196,114,42,.25);border-radius:10px;padding:14px;text-align:center;margin-bottom:14px;font-size:.82rem;color:var(--accent2);}
+.api-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;}
+.dot-on{background:var(--green);box-shadow:0 0 6px var(--green);}
+.student-row{padding:10px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--ink2);}
+.student-row .s-meta{color:var(--ink3);font-size:.73rem;display:block;margin-top:2px;}
+.group-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--ink2)}
+.group-del{background:none;border:none;color:#DC2626;cursor:pointer;font-size:.75rem}
 </style>
 </head>
 <body>
 
-<div class="login-overlay" id="loginOverlay">
+<!-- 로딩 -->
+<div class="loading-wrap" id="loadingOverlay">✦ 불러오는 중...</div>
+
+<!-- 학생: 초대링크 없음 -->
+<div class="no-teacher-wrap" id="noTeacherOverlay" style="display:none">
+  <div>
+    <div style="font-size:1.6rem;margin-bottom:10px">🔗</div>
+    <div style="font-size:.95rem;color:var(--ink);margin-bottom:8px">선생님께 받은 초대 링크로 접속해주세요</div>
+    <div style="font-size:.75rem;color:var(--ink3)">이 링크에는 우리 반 정보가 담겨 있어요</div>
+  </div>
+</div>
+
+<!-- 교사: 구글 로그인 -->
+<div id="teacherGoogleOverlay" class="login-overlay" style="display:none">
+  <div class="login-box">
+    <div style="font-size:3rem;margin-bottom:12px">📜</div>
+    <h2>시 감상 & 창작</h2>
+    <p>교사 로그인</p>
+    <div id="googleLoginErr" style="font-size:.72rem;color:#B91C1C;margin-bottom:10px"></div>
+    <button class="google-btn" onclick="googleLogin()">
+      <svg class="google-icon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.6 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 7.1 29.5 5 24 5 16.3 5 9.7 9.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.8-5.4l-6.4-5.4C29.3 34.9 26.8 35.8 24 35.8c-5.3 0-9.8-3.4-11.4-8.1l-6.6 5.1C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.8l6.4 5.4C40.6 36.4 44 30.8 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+      구글 계정으로 로그인
+    </button>
+    <a href="index.html" style="display:block;margin-top:16px;font-size:.7rem;color:var(--ink3);text-decoration:none">← 허브로 돌아가기</a>
+  </div>
+</div>
+
+<!-- 학생: 번호+이름 -->
+<div class="login-overlay" id="loginOverlay" style="display:none">
   <div class="login-box">
     <div style="font-size:3rem;margin-bottom:12px">📜</div>
     <h2>시 감상 & 창작</h2>
     <p>감정을 담아 시를 읽고, 나만의 시를 써봐요</p>
-    <select class="input-field" id="loginClass" style="margin-bottom:10px" onchange="onLoginClassChange()">
+    <div class="locked-notice" id="lockedNotice" style="display:none">🔒 선생님이 아직 수업을 열지 않았어요</div>
+    <select class="input-field" id="loginClass" style="margin-bottom:10px">
       <option value="">반/모둠 선택</option>
-      <option value="교사">교사</option>
     </select>
     <input type="text" class="input-field" id="loginNumber" placeholder="번호" maxlength="3" inputmode="numeric" style="margin-bottom:10px;text-align:center;font-size:1.1rem">
     <input type="text" class="input-field" id="loginName" placeholder="이름을 입력하세요" maxlength="10" style="margin-bottom:20px;text-align:center;font-size:1.1rem">
-    <button class="btn btn-primary btn-full" onclick="doLogin()">✍️ 시작하기</button>
-    <button onclick="showTeacherLogin()" style="margin-top:12px;background:none;border:none;font-size:.78rem;color:var(--ink3);cursor:pointer">선생님이신가요?</button>
+    <button class="btn btn-primary btn-full" id="loginSubmitBtn" onclick="doLogin()">✍️ 시작하기</button>
   </div>
 </div>
 
-<div id="teacherLoginOverlay" class="login-overlay" style="display:none">
-  <div class="login-box">
-    <h2>교사 로그인</h2>
-    <input type="password" class="input-field" id="teacherPw" placeholder="비밀번호 (기본: 1234)" style="margin-bottom:12px">
-    <button class="btn btn-primary btn-full" onclick="doTeacherLogin()">로그인</button>
-    <button onclick="hideTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.78rem;color:var(--ink3);cursor:pointer">← 돌아가기</button>
-  </div>
-</div>
-
-<div class="teacher-overlay" id="teacherPanel" style="display:none">
-  <div class="teacher-box">
-    <h2>📋 교사 컨트롤</h2>
-    <div style="margin-bottom:16px">
-      <label style="font-size:.8rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🏷️ 반/모둠 이름 관리</label>
-      <div style="display:flex;gap:6px;margin-bottom:8px">
-        <input type="text" class="input-field" id="newGroupName" placeholder="예: 다詩, 3반 시창작반" style="flex:1">
-        <button class="btn btn-primary btn-sm" onclick="addGroupUI()">추가</button>
+<!-- 교사 대시보드 -->
+<div id="teacherDashboardPage" style="display:none">
+  <header>
+    <div class="header-left">
+      <a href="index.html" class="hub-link">🏠 허브</a>
+      <div>
+        <h1>📜 시 감상 & 창작 · 교사</h1>
+        <p>Emotion · Artscape · Interactive · Musicalization</p>
       </div>
-      <div id="groupList" style="font-size:.82rem;color:var(--ink3)"></div>
-      <p id="groupSyncStatus" style="font-size:.7rem;color:var(--ink3);margin-top:6px"></p>
     </div>
-    <div style="margin-bottom:16px">
-      <label style="font-size:.8rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
-      <input type="text" class="input-field" id="apiKeyInput" placeholder="AIzaSy...">
-      <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%" onclick="saveApiKey()">저장</button>
-      <p id="apiStatus" style="font-size:.75rem;color:var(--green);margin-top:4px;text-align:center"></p>
+    <div class="header-right">
+      <button class="logout-btn" onclick="teacherLogout()">로그아웃</button>
     </div>
-    <div style="margin-bottom:16px">
-      <label style="font-size:.8rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">📊 구글시트 연동 (선택)</label>
-      <input type="text" class="input-field" id="sheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
-      <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%" onclick="saveSheetUrl()">저장</button>
-      <p id="sheetUrlStatus" style="font-size:.75rem;color:var(--green);margin-top:4px;text-align:center"></p>
-    </div>
-    <div style="margin-bottom:16px">
-      <label style="font-size:.8rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:8px">👥 학생 현황</label>
-      <div id="studentList" style="font-size:.82rem;color:var(--ink3);max-height:200px;overflow-y:auto"></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary btn-sm" style="flex:1" onclick="exportStudents()">📊 내보내기</button>
-      <button class="btn btn-sm" style="flex:1;background:#FEE2E2;color:#DC2626;border:none" onclick="resetAll()">🗑️ 초기화</button>
-    </div>
-    <button class="btn btn-secondary btn-full" style="margin-top:12px" onclick="closeTeacherPanel()">닫기</button>
+  </header>
+  <div class="dash-tab-bar">
+    <button class="dash-tab on" id="dashTabSettings" onclick="setDashTab('settings')">⚙️ 설정</button>
+    <button class="dash-tab" id="dashTabStudents" onclick="setDashTab('students')">📋 학생현황<span class="badge-count" id="studentCountBadge" style="display:none"></span></button>
   </div>
+  <main><div id="dashContent"></div></main>
 </div>
 
+<!-- 학생 앱 화면 -->
+<div id="studentAppPage" style="display:none">
 <header>
   <div class="header-left">
     <h1>📜 EAIM 국어 — 시 감상 & 창작</h1>
@@ -519,7 +553,7 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
   </div>
   <div class="header-right">
     <div class="student-chip" id="studentChip" style="display:none"></div>
-    <button onclick="openTeacherPanel()" style="background:rgba(212,168,71,.15);border:1px solid rgba(212,168,71,.3);border-radius:8px;padding:6px 12px;color:var(--gold);font-size:.72rem;font-weight:700;cursor:pointer">교사</button>
+    <button class="logout-btn" onclick="studentLogout()">나가기</button>
   </div>
 </header>
 
@@ -933,25 +967,20 @@ textarea.input-field { resize: vertical; line-height: 1.8; }
     <span class="nav-icon">🎸</span>수노
   </button>
 </nav>
+</div><!-- /studentAppPage -->
 
 <script>
-const LS = 'eaim_korean_';
 let student = null;
-let geminiKey = localStorage.getItem('eaim_gemini_key') || '';
-let sheetUrl = localStorage.getItem('eaim_sheet_url') || '';
-let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
 let selectedEmotion = '';
 let selectedPoem = null;
 let selectedFeelings = [];
-let reviewText = '';
 let myPoem = { title:'', text:'' };
 let currentStep = 1;
 let ttsUtterance = null;
 
-// ══ Firebase 설정 ══
-// 다른 EAIM 앱(뮤지컬메이커 허브 등)과 같은 Firebase 프로젝트를 쓰시려면
-// 그 프로젝트의 설정값을 아래에 그대로 붙여넣으세요.
-// 비워두면 이 기기(브라우저) 안에서만 반/모둠 이름이 저장/공유돼요 (다른 기기와는 공유 안 됨).
+// ══════════════════════════
+// 🔥 Firebase — teachers/{uid}/... 구조
+// ══════════════════════════
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBalg0f5x0ydfHxn_nzgZ1pAELvJw6PzoY",
   authDomain: "eaim-classroom.firebaseapp.com",
@@ -960,190 +989,256 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "294479576192",
   appId: "1:294479576192:web:c60e994e319dbd2f11ba65"
 };
+let db=null, auth=null, firebaseReady=false;
+try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.firestore(); auth=firebase.auth(); firebaseReady=true;
+}catch(e){ console.error('Firebase 초기화 실패', e); firebaseReady=false; }
 
-let db = null;
-let firebaseReady = false;
-try {
-  if (FIREBASE_CONFIG.apiKey) {
-    firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.firestore();
-    firebaseReady = true;
-  }
-} catch(e) {
-  console.warn('Firebase 초기화 실패, 이 기기 저장 모드로 동작합니다.', e);
-  firebaseReady = false;
-}
+const teacherDocRef   = (uid) => db.collection('teachers').doc(uid);
+const settingsDocRef  = (uid) => teacherDocRef(uid).collection('meta').doc('settings');
+const groupsColRef    = (uid) => teacherDocRef(uid).collection('groups');
+const sharedPiecesCol = (uid) => teacherDocRef(uid).collection('sharedPieces');
+const studentsColRef  = (uid) => teacherDocRef(uid).collection('students');
 
-// ── 반/모둠 이름 CRUD (Firebase 연결 시 여러 기기 공유, 아니면 이 기기에만 저장) ──
-async function getGroups(){
-  if(firebaseReady){
-    try{
-      const snap = await db.collection('classGroups').orderBy('createdAt','asc').get();
-      return snap.docs.map(d=>({ id:d.id, name:d.data().name }));
-    }catch(e){ console.warn('Firestore 그룹 조회 실패, 로컬 저장소 사용', e); }
-  }
-  return JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
-}
+let authLoaded=false, currentUser=null, teacherUid=null, isStudentMode=false;
+let dashTab='settings';
+let settings = { apiKey:'', classOn:false, sheetUrl:'' };
+let groups=[]; let dashStudents=[];
+let unsubSettings=null, unsubGroups=null, unsubStudents=null;
 
 async function addGroup(name){
-  if(firebaseReady){
-    try{
-      await db.collection('classGroups').add({
-        name,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      return;
-    }catch(e){ console.warn('Firestore 그룹 추가 실패, 로컬 저장소 사용', e); }
-  }
-  const groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
-  groups.push({ id: 'local_'+Date.now(), name });
-  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+  try{ await groupsColRef(teacherUid).add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
+  catch(e){ showToast('❌ 저장 실패: '+e.message); }
 }
-
 async function deleteGroup(id){
-  if(firebaseReady){
-    try{
-      await db.collection('classGroups').doc(id).delete();
-      return;
-    }catch(e){ console.warn('Firestore 그룹 삭제 실패, 로컬 저장소 사용', e); }
+  try{ await groupsColRef(teacherUid).doc(id).delete(); }
+  catch(e){ showToast('❌ 삭제 실패: '+e.message); }
+}
+function subscribeGroups(uid){
+  if(unsubGroups) unsubGroups();
+  unsubGroups = groupsColRef(uid).orderBy('createdAt','asc').onSnapshot(snap=>{
+    groups = snap.docs.map(d=>({id:d.id, name:d.data().name}));
+    if(isStudentMode) populateClassSelect();
+    if(!isStudentMode && dashTab==='settings') renderDashContent();
+  }, err=>console.warn('그룹 동기화 오류', err));
+}
+function populateClassSelect(){
+  const sel=document.getElementById('loginClass'); if(!sel) return;
+  sel.innerHTML='<option value="">반/모둠 선택</option>';
+  if(!groups.length){
+    const opt=document.createElement('option'); opt.disabled=true; opt.textContent='(선생님이 아직 반/모둠을 만들지 않았어요)';
+    sel.appendChild(opt);
+  } else {
+    groups.forEach(g=>{ const opt=document.createElement('option'); opt.value=g.name; opt.textContent=g.name; sel.appendChild(opt); });
   }
-  let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
-  groups = groups.filter(g=>g.id!==id);
-  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
 }
 
-// ══ 신문 앱과 공유하는 글(시/글쓰기 → 신문 기사 재료) ══
-async function getSharedPieces(){
-  if(firebaseReady){
-    try{
-      const snap = await db.collection('sharedPieces').orderBy('createdAt','desc').limit(200).get();
-      return snap.docs.map(d=>({ id:d.id, ...d.data() }));
-    }catch(e){ console.warn('Firestore sharedPieces 조회 실패, 로컬 저장소 사용', e); }
-  }
-  return JSON.parse(localStorage.getItem('eaim_sharedPieces')||'[]');
-}
 async function addSharedPiece(piece){
-  if(firebaseReady){
-    try{
-      await db.collection('sharedPieces').add({ ...piece, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-      return;
-    }catch(e){ console.warn('Firestore sharedPieces 저장 실패, 로컬 저장소 사용', e); }
-  }
-  const list = JSON.parse(localStorage.getItem('eaim_sharedPieces')||'[]');
-  list.unshift({ id:'local_'+Date.now(), ...piece, createdAt: Date.now() });
-  localStorage.setItem('eaim_sharedPieces', JSON.stringify(list));
+  try{
+    await sharedPiecesCol(teacherUid).add({ ...piece, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  }catch(e){ showToast('❌ 전송 실패: '+e.message); throw e; }
 }
 async function sendToNewspaper(){
   const title = document.getElementById('myPoemTitle').value.trim();
   const body = document.getElementById('myPoemText').value.trim();
   if(!body){ alert('먼저 Step 5에서 나만의 시를 써주세요!'); goStep(5); return; }
-  await addSharedPiece({
-    title: title || '(제목 없음)',
-    body,
-    author: student?.name || '',
-    type: '시',
-    theme: selectedEmotion || ''
-  });
-  alert('📰 신문 앱으로 보냈어요! 신문 앱 Step 2의 "📥 가져오기" 탭에서 확인하세요.');
-  logToSheet('신문전송', title || '(제목 없음)', body.length+'자');
-}
-
-async function populateClassSelect(){
-  const sel = document.getElementById('loginClass');
-  if(!sel) return;
-  const groups = await getGroups();
-  sel.innerHTML = '<option value="">반/모둠 선택</option>';
-  if(!groups.length){
-    const opt = document.createElement('option');
-    opt.disabled = true;
-    opt.textContent = '(선생님이 아직 반/모둠을 만들지 않았어요)';
-    sel.appendChild(opt);
-  } else {
-    groups.forEach(g=>{
-      const opt = document.createElement('option');
-      opt.value = g.name;
-      opt.textContent = g.name;
-      sel.appendChild(opt);
+  try{
+    await addSharedPiece({
+      title: title || '(제목 없음)',
+      body,
+      author: student?.name || '',
+      type: '시',
+      theme: selectedEmotion || ''
     });
-  }
-  const teacherOpt = document.createElement('option');
-  teacherOpt.value = '교사';
-  teacherOpt.textContent = '교사';
-  sel.appendChild(teacherOpt);
+    alert('📰 신문 앱으로 보냈어요! 신문 앱 Step 2의 "📥 가져오기" 탭에서 확인하세요.');
+  }catch(e){}
 }
-
-async function refreshGroupList(){
-  const groups = await getGroups();
-  const el = document.getElementById('groupList');
-  if(!el) return;
-  if(!groups.length){
-    el.innerHTML = '<p>아직 만든 반/모둠이 없어요</p>';
-  } else {
-    el.innerHTML = groups.map(g=>`
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-        <span>${g.name}</span>
-        <button onclick="deleteGroupUI('${g.id}')" style="background:none;border:none;color:#DC2626;cursor:pointer;font-size:.78rem">삭제</button>
-      </div>`).join('');
-  }
-  const statusEl = document.getElementById('groupSyncStatus');
-  if(statusEl){
-    statusEl.textContent = firebaseReady
-      ? '✅ Firebase 연결됨 — 학생들이 어떤 기기에서 접속해도 같은 목록이 보여요'
-      : '⚠️ Firebase 미설정 — 지금은 이 기기(이 브라우저)에서만 반/모둠 이름이 보여요';
-  }
-}
-
-async function addGroupUI(){
-  const input = document.getElementById('newGroupName');
-  const name = input.value.trim();
-  if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
-  await addGroup(name);
-  input.value = '';
-  await refreshGroupList();
-  await populateClassSelect();
-}
-
-async function deleteGroupUI(id){
-  if(!confirm('이 반/모둠을 삭제할까요? 이미 이 이름으로 들어온 학생 기록은 남아있어요.')) return;
-  await deleteGroup(id);
-  await refreshGroupList();
-  await populateClassSelect();
-}
-
-function lsGet(k){ try{return JSON.parse(localStorage.getItem(LS+k))}catch{return null} }
-function lsSet(k,v){ try{localStorage.setItem(LS+k, JSON.stringify(v))}catch{} }
 
 function saveActivity(){
-  if(!student) return;
-  const all = lsGet('students') || {};
-  all[student.name] = {
-    ...student,
-    step: currentStep,
-    emotion: selectedEmotion,
-    poem: selectedPoem?.title || '',
-    feelings: selectedFeelings,
-    reviewLen: document.getElementById('reviewText').value.length,
-    myPoemTitle: document.getElementById('myPoemTitle').value,
-    updatedAt: new Date().toLocaleTimeString('ko-KR')
+  if(!student || !teacherUid) return;
+  const key = (student.name||'익명').trim();
+  const data = {
+    name: student.name, number: student.number||'', class: student.class,
+    step: currentStep, emotion: selectedEmotion, poem: selectedPoem?.title || '',
+    feelings: selectedFeelings, reviewLen: document.getElementById('reviewText')?.value.length||0,
+    myPoemTitle: document.getElementById('myPoemTitle')?.value||'',
+    updatedAt: new Date().toLocaleString('ko-KR')
   };
-  lsSet('students', all);
+  studentsColRef(teacherUid).doc(key).set(data,{merge:true}).catch(e=>console.warn('활동 기록 실패', e));
+}
+function subscribeStudents(uid){
+  if(unsubStudents) unsubStudents();
+  unsubStudents = studentsColRef(uid).onSnapshot(snap=>{
+    dashStudents = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    const badge=document.getElementById('studentCountBadge');
+    if(badge){ badge.style.display=dashStudents.length?'inline-block':'none'; badge.textContent=dashStudents.length; }
+    if(!isStudentMode && dashTab==='students') renderDashContent();
+  }, err=>console.warn('학생현황 동기화 오류', err));
 }
 
-function onLoginClassChange(){
-  const cls = document.getElementById('loginClass').value;
-  if(cls === '교사'){ showTeacherLogin(); document.getElementById('loginClass').value=''; }
+function subscribeSettings(uid, cb){
+  if(unsubSettings) unsubSettings();
+  unsubSettings = settingsDocRef(uid).onSnapshot(snap=>{
+    settings = snap.exists ? snap.data() : {apiKey:'', classOn:false, sheetUrl:''};
+    cb && cb();
+  }, err=>{ console.warn('설정 동기화 오류', err); cb && cb(); });
+}
+function setSettings(uid, fields){
+  settings = {...settings, ...fields};
+  settingsDocRef(uid).set(fields,{merge:true}).catch(e=>showToast('❌ 저장 실패: '+e.message));
+}
+
+function hideAllOverlays(){
+  ['loadingOverlay','noTeacherOverlay','teacherGoogleOverlay','loginOverlay'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  document.getElementById('teacherDashboardPage').style.display='none';
+  document.getElementById('studentAppPage').style.display='none';
+}
+function renderNoTeacherLink(){ hideAllOverlays(); document.getElementById('noTeacherOverlay').style.display='flex'; }
+function renderTeacherGoogleGate(err){
+  hideAllOverlays();
+  document.getElementById('teacherGoogleOverlay').style.display='flex';
+  document.getElementById('googleLoginErr').textContent = err||'';
+}
+function renderStudentLoginGate(){
+  hideAllOverlays();
+  document.getElementById('loginOverlay').style.display='flex';
+  document.getElementById('lockedNotice').style.display = settings.classOn? 'none':'block';
+  document.getElementById('loginSubmitBtn').disabled = !settings.classOn;
+  populateClassSelect();
+}
+function enterStudentApp(){
+  hideAllOverlays();
+  document.getElementById('studentAppPage').style.display='block';
+}
+function enterTeacherDashboard(){
+  hideAllOverlays();
+  document.getElementById('teacherDashboardPage').style.display='block';
+  subscribeGroups(teacherUid);
+  subscribeStudents(teacherUid);
+  renderDashContent();
+}
+
+function googleLogin(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e=>{ document.getElementById('googleLoginErr').textContent='로그인 실패: '+e.message; });
+}
+function teacherLogout(){
+  if(unsubSettings){unsubSettings();unsubSettings=null;}
+  if(unsubGroups){unsubGroups();unsubGroups=null;}
+  if(unsubStudents){unsubStudents();unsubStudents=null;}
+  auth.signOut(); teacherUid=null;
+  renderTeacherGoogleGate();
+}
+function studentLogout(){
+  if(unsubSettings){unsubSettings();unsubSettings=null;}
+  student=null;
+  renderStudentLoginGate();
+}
+
+function setDashTab(tab){ dashTab=tab;
+  document.getElementById('dashTabSettings').classList.toggle('on', tab==='settings');
+  document.getElementById('dashTabStudents').classList.toggle('on', tab==='students');
+  renderDashContent();
+}
+function renderDashContent(){
+  const el=document.getElementById('dashContent'); if(!el) return;
+  if(dashTab==='settings'){
+    const inviteUrl = `${location.origin}${location.pathname}?role=student&teacher=${teacherUid||''}`;
+    el.innerHTML = `
+    <div class="teacher-chip">
+      <img class="teacher-avatar" src="${currentUser?.photoURL||''}" onerror="this.style.display='none'">
+      <div style="font-size:.8rem;color:var(--ink)">${currentUser?.displayName||''} · ${currentUser?.email||''}</div>
+    </div>
+    <div class="card"><div class="card-title">🎓 수업 상태</div>
+      <div class="toggle-row"><div><div style="font-weight:700;font-size:.95rem">${settings.classOn?'수업 진행 중':'수업 종료'}</div>
+        <div style="font-size:.72rem;color:var(--ink3);margin-top:3px">${settings.classOn?'학생들이 접속할 수 있어요':'학생 접속이 차단됩니다'}</div></div>
+        <div class="toggle-track ${settings.classOn?'on':''}" onclick="toggleClass()"><div class="toggle-thumb"></div></div>
+      </div>
+      <div style="font-size:.7rem;color:var(--ink3);margin-top:12px;letter-spacing:.1em;text-transform:uppercase">학생 초대 링크</div>
+      <div class="invite-box">${inviteUrl}</div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="copyInvite('${inviteUrl}')">🔗 링크 복사</button>
+      <div><div class="invite-qr-box" id="inviteQr"></div>
+        <div class="invite-qr-caption">📱 학생들이 이 QR을 스캔하면 바로 접속돼요</div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">🏷️ 반/모둠 이름 관리</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" class="input-field" id="newGroupName" placeholder="예: 다詩, 3반 시창작반" style="flex:1">
+        <button class="btn btn-primary btn-sm" onclick="addGroupUI()">추가</button>
+      </div>
+      <div id="groupListDash">
+        ${groups.length? groups.map(g=>`<div class="group-item"><span>${g.name}</span><button class="group-del" onclick="deleteGroupUI('${g.id}')">삭제</button></div>`).join('')
+                       : '<p style="font-size:.8rem;color:var(--ink3)">아직 만든 반/모둠이 없어요</p>'}
+      </div>
+    </div>
+    <div class="card"><div class="card-title">🔑 Gemini API 키</div>
+      <input class="input-field" type="password" id="apiKeyInput" value="${settings.apiKey||''}" placeholder="AIzaSy... (학생에게 노출되지 않아요)" oninput="saveApiKeyDash(this.value)">
+      ${settings.apiKey?`<div style="display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--green);margin-top:6px"><span class="api-dot dot-on"></span>API 키 저장됨</div>`:''}
+    </div>
+    <div class="card"><div class="card-title">📊 구글시트 연동 (선택)</div>
+      <input class="input-field" type="text" id="sheetUrlInput" value="${settings.sheetUrl||''}" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveSheetUrlDash(this.value)">
+    </div>
+    <div style="background:rgba(139,69,19,.06);border:1px solid rgba(139,69,19,.15);border-radius:12px;padding:16px;font-size:.78rem;color:var(--ink3);line-height:1.9">
+      💡 <strong style="color:var(--ink2)">사용 순서</strong><br>1. API 키 입력 → 2. 반/모둠 이름 추가 → 3. 수업 ON → 4. 초대 링크 공유</div>`;
+    generateInviteQR(inviteUrl);
+  } else {
+    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:.75rem;color:var(--ink3)">총 ${dashStudents.length}명 참여</div>
+      ${dashStudents.length?`<div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm" onclick="exportStudentsDash()">📊 CSV 내보내기</button><button class="btn btn-sm" style="background:#FEE2E2;color:#DC2626" onclick="resetStudentsDash()">🗑️ 초기화</button></div>`:''}
+    </div>
+    ${dashStudents.length===0? '<div class="card" style="text-align:center;padding:40px 20px;color:var(--ink3)">아직 참여한 학생이 없어요 📜</div>' :
+      '<div class="card">'+dashStudents.slice().sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')).map(s=>`
+        <div class="student-row"><strong>${s.class||''} ${s.number||''}번 ${s.name}</strong> — Step ${s.step||1}
+          <span class="s-meta">${s.emotion||''} · 감상문 ${s.reviewLen||0}자 · ${s.updatedAt||''}</span>
+        </div>`).join('')+'</div>'}`;
+  }
+}
+function toggleClass(){ setSettings(teacherUid, {classOn: !settings.classOn}); renderDashContent(); }
+function saveApiKeyDash(v){ setSettings(teacherUid, {apiKey: v}); }
+function saveSheetUrlDash(v){ setSettings(teacherUid, {sheetUrl: v}); }
+function copyInvite(url){ navigator.clipboard.writeText(url).then(()=>showToast('✅ 초대 링크 복사됨!')); }
+function generateInviteQR(url){
+  const el=document.getElementById('inviteQr'); if(!el) return;
+  el.innerHTML='';
+  if(typeof QRCode==='undefined'){ el.textContent='QR 로딩 실패'; return; }
+  new QRCode(el, { text:url, width:140, height:140, colorDark:'#2C1810', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
+}
+async function addGroupUI(){
+  const input=document.getElementById('newGroupName');
+  const name=input.value.trim();
+  if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
+  await addGroup(name); input.value='';
+}
+async function deleteGroupUI(id){
+  if(!confirm('이 반/모둠을 삭제할까요?')) return;
+  await deleteGroup(id);
+}
+function exportStudentsDash(){
+  const rows=[['이름','반','번호','단계','감정','시제목','감상문길이','수정시각']];
+  dashStudents.forEach(s=>rows.push([s.name,s.class||'',s.number||'',s.step||1,s.emotion||'',s.poem||'',s.reviewLen||0,s.updatedAt||'']));
+  const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='eaim_poetry_students.csv'; a.click();
+}
+async function resetStudentsDash(){
+  if(!confirm('모든 학생 활동 기록을 초기화할까요?')) return;
+  try{ const snap=await studentsColRef(teacherUid).get(); const batch=db.batch(); snap.docs.forEach(d=>batch.delete(d.ref)); await batch.commit(); }
+  catch(e){ showToast('❌ 초기화 실패: '+e.message); }
 }
 
 function doLogin(){
   const cls = document.getElementById('loginClass').value;
+  if(!settings.classOn){ alert('선생님이 아직 수업을 열지 않았어요'); return; }
   if(!cls){ alert('반/모둠을 선택해주세요!'); return; }
-  if(cls === '교사'){ showTeacherLogin(); return; }
   const number = document.getElementById('loginNumber').value.trim();
   const name = document.getElementById('loginName').value.trim();
   if(!number){ alert('번호를 입력해주세요!'); return; }
   if(!name){ alert('이름을 입력해주세요!'); return; }
   student = { name, number, class: cls };
-  document.getElementById('loginOverlay').style.display = 'none';
+  enterStudentApp();
   document.getElementById('studentChip').textContent = cls + ' ' + number + '번 ' + name + ' 🌸';
   document.getElementById('studentChip').style.display = '';
   document.getElementById('stepNav').style.display = 'flex';
@@ -1151,99 +1246,15 @@ function doLogin(){
   saveActivity();
 }
 
-function showTeacherLogin(){
-  document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('teacherLoginOverlay').style.display = 'flex';
+let toastT;
+function showToast(msg){
+  let el = document.getElementById('toast');
+  if(!el){ el=document.createElement('div'); el.id='toast';
+    el.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:.82rem;background:rgba(74,124,89,.95);color:#fff;';
+    document.body.appendChild(el); }
+  el.textContent=msg; el.style.display='block';
+  clearTimeout(toastT); toastT=setTimeout(()=>{el.style.display='none';},2000);
 }
-function hideTeacherLogin(){
-  document.getElementById('teacherLoginOverlay').style.display = 'none';
-  document.getElementById('loginOverlay').style.display = 'flex';
-}
-function doTeacherLogin(){
-  const pw = document.getElementById('teacherPw').value;
-  if(pw !== teacherPw){ alert('비밀번호가 틀렸어요!'); return; }
-  document.getElementById('teacherLoginOverlay').style.display = 'none';
-  document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('stepNav').style.display = 'flex';
-  document.getElementById('bottomNav').style.display = 'flex';
-  student = { name:'선생님', class:'교사' };
-  document.getElementById('studentChip').textContent = '👩‍🏫 선생님';
-  document.getElementById('studentChip').style.display = '';
-  openTeacherPanel();
-}
-function openTeacherPanel(){
-  if(geminiKey) document.getElementById('apiKeyInput').value = geminiKey;
-  if(sheetUrl) document.getElementById('sheetUrlInput').value = sheetUrl;
-  loadStudentList();
-  refreshGroupList();
-  document.getElementById('teacherPanel').style.display = 'flex';
-}
-function closeTeacherPanel(){ document.getElementById('teacherPanel').style.display = 'none'; }
-function saveApiKey(){
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if(!key){ alert('API 키를 입력하세요!'); return; }
-  geminiKey = key; localStorage.setItem('eaim_gemini_key', key);
-  document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
-  setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
-}
-async function getSheetUrlRemote(){
-  if(firebaseReady){
-    try{
-      const doc = await db.collection('settings').doc('sheetUrl').get();
-      if(doc.exists) return doc.data().url || '';
-    }catch(e){}
-  }
-  return localStorage.getItem('eaim_sheet_url') || '';
-}
-async function setSheetUrlRemote(url){
-  if(firebaseReady){
-    try{ await db.collection('settings').doc('sheetUrl').set({url}); }catch(e){}
-  }
-  localStorage.setItem('eaim_sheet_url', url);
-}
-async function saveSheetUrl(){
-  const url = document.getElementById('sheetUrlInput').value.trim();
-  sheetUrl = url; await setSheetUrlRemote(url);
-  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요! (다른 기기에도 곧 적용돼요)' : '연동 해제됨';
-  setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
-}
-function logToSheet(activity, title, detail){
-  const url = sheetUrl || localStorage.getItem('eaim_sheet_url') || '';
-  if(!url) return;
-  try{
-    fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        name: student?.name || '',
-        group: student?.class || '',
-        app: '시 감상',
-        activity, title: title || '', detail: detail || ''
-      })
-    });
-  }catch(e){ console.warn('시트 기록 실패', e); }
-}
-function loadStudentList(){
-  const all = lsGet('students') || {};
-  const students = Object.values(all);
-  const el = document.getElementById('studentList');
-  if(!students.length){ el.innerHTML = '<p style="color:var(--ink3)">아직 참여한 학생이 없어요</p>'; return; }
-  el.innerHTML = students.map(s=>`
-    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
-      <strong>${s.class} ${s.number||''}번 ${s.name}</strong> — Step ${s.step}
-      <span style="color:var(--ink3);font-size:.75rem;display:block">${s.emotion||''} | 감상문 ${s.reviewLen||0}자 | ${s.updatedAt||''}</span>
-    </div>`).join('');
-}
-function exportStudents(){
-  const all = lsGet('students') || {};
-  const rows = [['이름','반','단계','감정','시제목','감상문길이','수정시각']];
-  Object.values(all).forEach(s=>rows.push([s.name,s.class,s.step,s.emotion||'',s.poem||'',s.reviewLen||0,s.updatedAt||'']));
-  const csv = '\uFEFF' + rows.map(r=>r.join(',')).join('\n');
-  const a = document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='eaim_korean_students.csv'; a.click();
-}
-function resetAll(){ if(confirm('모든 데이터를 초기화하겠습니까?')){ Object.keys(localStorage).filter(k=>k.startsWith(LS)).forEach(k=>localStorage.removeItem(k)); location.reload(); } }
 
 function goStep(n){
   currentStep = n;
@@ -1276,9 +1287,8 @@ function setEmotion(e){
   });
 }
 
-// ══ Gemini 호출 (버그 수정: 차단/빈 응답 원인을 구분해서 알려줌) ══
 async function callGemini(prompt, maxTokens=1000){
-  const key = geminiKey || localStorage.getItem('eaim_gemini_key') || '';
+  const key = settings.apiKey || '';
   if(!key) throw new Error('API_KEY_MISSING');
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
@@ -1301,7 +1311,6 @@ async function callGemini(prompt, maxTokens=1000){
     throw new Error('NO_CANDIDATE');
   }
 
-  // 저작권(원문 암송) 차단 / 안전 차단 / 길이 초과를 명확히 구분
   if(candidate.finishReason === 'RECITATION'){
     throw new Error('RECITATION_BLOCKED');
   }
@@ -1319,15 +1328,14 @@ async function callGemini(prompt, maxTokens=1000){
   return text;
 }
 
-// 에러 코드를 학생/교사가 이해할 수 있는 한국어 메시지로 변환
 function friendlyErrorMsg(e){
   const msg = e.message || '';
-  if(msg === 'API_KEY_MISSING') return '먼저 교사 패널에서 Gemini API 키를 저장해주세요.';
+  if(msg === 'API_KEY_MISSING') return '선생님이 아직 Gemini API 키를 설정하지 않았어요.';
   if(msg === 'RECITATION_BLOCKED') return 'Gemini가 저작권 보호 시(원문 그대로 재현)를 요청받아 응답을 차단했어요. 실제 시 전문을 매번 실시간 생성 요청하는 구조라 생기는 문제예요.';
   if(msg === 'SAFETY_BLOCKED') return 'Gemini의 안전 필터에 걸려 응답이 차단됐어요. 감정/주제 단어를 바꿔서 다시 시도해보세요.';
   if(msg === 'MAX_TOKENS_TRUNCATED') return '응답이 길이 제한에 걸려 중간에 잘렸어요. 다시 시도해주세요.';
   if(msg === 'NO_CANDIDATE' || msg === 'EMPTY_RESPONSE') return 'Gemini가 빈 응답을 반환했어요. 잠시 후 다시 시도해주세요.';
-  if(msg.includes('API key not valid') || msg.includes('API_KEY_INVALID')) return 'API 키가 올바르지 않아요. 교사 패널에서 키를 다시 확인해주세요.';
+  if(msg.includes('API key not valid') || msg.includes('API_KEY_INVALID')) return 'API 키가 올바르지 않아요. 교사 대시보드에서 키를 다시 확인해주세요.';
   return 'AI 연결 중 오류가 발생했어요: ' + msg;
 }
 
@@ -1478,11 +1486,10 @@ function switchStep4Tab(tab){
   document.getElementById('step4TabImage').classList.toggle('active', tab==='image');
 }
 
-// ══ AI 이미지 영감받기 (Gemini 2.5 Flash Image) ══
 let inspirationImageUrl = null;
 
 async function generateGeminiImage(prompt){
-  const key = geminiKey || localStorage.getItem('eaim_gemini_key') || '';
+  const key = settings.apiKey || '';
   if(!key) throw new Error('API_KEY_MISSING');
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
   const res = await fetch(url, {
@@ -1519,7 +1526,7 @@ async function generateInspirationImage(){
     inspirationImageUrl = dataUrl;
     img.src = dataUrl; img.style.display = 'block';
   }catch(e){
-    alert('이미지 생성에 실패했어요.\n' + (e.message==='API_KEY_MISSING' ? '교사 패널에서 API 키를 설정해주세요.' : e.message));
+    alert('이미지 생성에 실패했어요.\n' + (e.message==='API_KEY_MISSING' ? '교사 대시보드에서 API 키를 설정해주세요.' : e.message));
   }
   btn.disabled = false; loading.style.display = 'none';
 }
@@ -1527,7 +1534,6 @@ async function generateInspirationImage(){
 async function aiReviewCheck(){
   const text = document.getElementById('reviewText').value.trim();
   if(!text){ alert('감상문을 먼저 써주세요!'); return; }
-  reviewText = text;
   const btn = event.target; btn.disabled=true; btn.textContent='🤖 분석 중...';
   try {
     const result = await callGemini(
@@ -1621,7 +1627,6 @@ function downloadFinal(){
   const a = document.createElement('a');
   a.href = 'data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(content);
   a.download = `${name}_시감상일지.txt`; a.click();
-  logToSheet('완성', document.getElementById('myPoemTitle').value || selectedPoem?.title || '', (document.getElementById('myPoemText').value||'').length+'자');
 }
 
 function switchMusicTab(tab){
@@ -1778,14 +1783,6 @@ function stopRecite(){
   ttsUtterance = null;
 }
 
-window.addEventListener('load', ()=>{
-  if(geminiKey) document.getElementById('apiKeyInput').value = geminiKey;
-  populateClassSelect();
-  getSheetUrlRemote().then(u=>{ if(u) sheetUrl=u; });
-  if(window.speechSynthesis.onvoiceschanged !== undefined)
-    window.speechSynthesis.onvoiceschanged = ()=>{};
-});
-
 let selectedGenres = [];
 
 function toggleGenre(el, genre) {
@@ -1821,7 +1818,7 @@ async function genSunoPrompt() {
   const emotion = selectedEmotion || '감성적';
   const poem = (poemTitle ? poemTitle + '\n\n' : '') + poemText;
 
-  const key = geminiKey || localStorage.getItem('eaim_gemini_key') || '';
+  const key = settings.apiKey || '';
   if (!key) {
     const style = genres + ', Korean indie, soft vocal, emotional';
     document.getElementById('sunoStyle').textContent = 'Style: ' + style;
@@ -1883,6 +1880,41 @@ function copySunoPrompt() {
   });
 }
 
+// ══════════════════════════
+// 진입점
+// ══════════════════════════
+(function(){
+  const params=new URLSearchParams(window.location.search);
+  const role=params.get('role');
+  const teacherParam=params.get('teacher');
+
+  if(!firebaseReady){
+    document.getElementById('loadingOverlay').textContent='⚠️ Firebase 설정이 필요해요';
+    return;
+  }
+
+  if(role==='student'){
+    isStudentMode=true;
+    if(!teacherParam){ renderNoTeacherLink(); return; }
+    teacherUid=teacherParam;
+    subscribeSettings(teacherUid, ()=>{ renderStudentLoginGate(); });
+    subscribeGroups(teacherUid);
+    return;
+  }
+
+  auth.onAuthStateChanged(user=>{
+    currentUser=user;
+    if(user){
+      teacherUid=user.uid;
+      subscribeSettings(teacherUid, ()=>{ enterTeacherDashboard(); });
+    } else {
+      renderTeacherGoogleGate();
+    }
+  });
+
+  if(window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined)
+    window.speechSynthesis.onvoiceschanged = ()=>{};
+})();
 </script>
 <script>
 if ("serviceWorker" in navigator) {
