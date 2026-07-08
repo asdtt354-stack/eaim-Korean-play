@@ -15,6 +15,8 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{
   --ink:#1A1008;--ink2:#4A3010;--ink3:#9A8060;
@@ -38,6 +40,7 @@ header{background:linear-gradient(135deg,#1A1A2E,#16213E,#0F3460);
 .nb{background:rgba(96,165,250,.18);border:1.5px solid rgba(96,165,250,.35);border-radius:99px;padding:4px 12px;font-size:.75rem;color:#60A5FA;font-weight:700;display:none}
 .rb{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:4px 10px;font-size:.7rem;color:rgba(255,255,255,.65);cursor:pointer;font-family:inherit}
 .tb{background:rgba(200,148,10,.2);border:1px solid rgba(200,148,10,.4);border-radius:9px;padding:4px 10px;font-size:.7rem;color:#F0C040;cursor:pointer;font-family:inherit;font-weight:700}
+.hub-link{font-size:.68rem;color:rgba(255,255,255,.35);text-decoration:none;padding:3px 9px;border:1px solid rgba(255,255,255,.15);border-radius:7px}
 
 .sn{background:rgba(253,248,240,.96);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);
   padding:8px 14px;display:none;gap:5px;overflow-x:auto;
@@ -157,41 +160,93 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 .group-del{background:none;border:none;color:#C03020;cursor:pointer;font-size:.75rem}
 .sync-status{font-size:.68rem;color:var(--ink3);margin-top:6px}
 
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#3c4043;border:1.5px solid var(--border);border-radius:12px;font-weight:700;font-size:.95rem;padding:14px;width:100%;cursor:pointer;transition:all .2s;font-family:inherit;}
+.google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translateY(-1px);}
+.google-icon{width:20px;height:20px;flex-shrink:0;}
+.teacher-chip{display:flex;align-items:center;gap:8px;background:var(--paper2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:16px;text-align:left}
+.teacher-avatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--paper2);border-radius:10px;border:1px solid var(--border);text-align:left}
+.toggle-track{width:50px;height:26px;border-radius:13px;background:rgba(0,0,0,.12);position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;}
+.toggle-track.on{background:rgba(0,191,138,.4);border:1px solid var(--mint);}
+.toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:all .3s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.toggle-track.on .toggle-thumb{left:26px;}
+.invite-box{background:var(--paper2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.72rem;color:var(--ink3);word-break:break-all;font-family:monospace;margin-top:8px;text-align:left}
+.invite-qr-box{background:#fff;border-radius:10px;padding:14px;display:inline-block;margin-top:12px;text-align:center;border:1px solid var(--border)}
+.invite-qr-caption{font-size:.62rem;color:var(--ink3);margin-top:6px;letter-spacing:.05em;}
+.locked-notice{background:rgba(255,107,91,.08);border:1.5px solid rgba(255,107,91,.25);border-radius:10px;padding:14px;text-align:center;margin-bottom:14px;font-size:.82rem;color:#C03020}
+.no-teacher-wrap,.loading-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--ink3)}
+
 @media print{header,.sn,.no-print{display:none!important}body{background:white}.newspaper{box-shadow:none}}
 </style>
 </head>
 <body>
 
-<div id="nm" class="ov">
+<!-- 로딩 -->
+<div class="loading-wrap" id="loadingOverlay">✦ 불러오는 중...</div>
+
+<!-- 학생: 초대링크 없음 -->
+<div class="no-teacher-wrap" id="noTeacherOverlay" style="display:none">
+  <div>
+    <div style="font-size:1.6rem;margin-bottom:10px">🔗</div>
+    <div style="font-size:.95rem;color:var(--ink);margin-bottom:8px">선생님께 받은 초대 링크로 접속해주세요</div>
+    <div style="font-size:.75rem;color:var(--ink3)">이 링크에는 우리 반 정보가 담겨 있어요</div>
+  </div>
+</div>
+
+<!-- 교사: 구글 로그인 -->
+<div id="teacherGoogleOverlay" class="ov" style="display:none">
+  <div class="mb">
+    <div style="font-size:2.8rem;margin-bottom:11px">📰</div>
+    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.4rem;color:var(--accent);margin-bottom:6px">국어 신문 만들기</h2>
+    <p style="font-size:.84rem;color:var(--ink3);margin-bottom:18px">교사 로그인</p>
+    <div id="googleLoginErr" style="font-size:.72rem;color:#C03020;margin-bottom:8px"></div>
+    <button class="google-btn" onclick="googleLogin()">
+      <svg class="google-icon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.6 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 7.1 29.5 5 24 5 16.3 5 9.7 9.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.8-5.4l-6.4-5.4C29.3 34.9 26.8 35.8 24 35.8c-5.3 0-9.8-3.4-11.4-8.1l-6.6 5.1C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.8l6.4 5.4C40.6 36.4 44 30.8 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+      구글 계정으로 로그인
+    </button>
+    <a href="index.html" style="display:block;margin-top:16px;font-size:.7rem;color:var(--ink3);text-decoration:none">← 허브로 돌아가기</a>
+  </div>
+</div>
+
+<!-- 학생: 이름+반/모둠 -->
+<div id="nm" class="ov" style="display:none">
   <div class="mb">
     <div style="font-size:2.8rem;margin-bottom:11px">📰</div>
     <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.4rem;color:var(--accent);margin-bottom:6px">국어 신문 만들기</h2>
     <p style="font-size:.84rem;color:var(--ink3);margin-bottom:18px">나만의 국어 신문을 만들어봐요!</p>
+    <div class="locked-notice" id="lockedNotice" style="display:none">🔒 선생님이 아직 수업을 열지 않았어요</div>
     <input type="text" id="sni" placeholder="이름을 입력하세요"
       style="width:100%;text-align:center;font-size:1.05rem;font-family:inherit;font-weight:700;border:2px solid var(--border);border-radius:.9rem;padding:10px;outline:none;margin-bottom:10px;background:white;transition:border-color .2s"
       onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
       onkeydown="if(event.key==='Enter')sN()">
     <select id="sclass" style="width:100%;padding:9px;border:2px solid var(--border);border-radius:.9rem;font-family:inherit;font-weight:700;background:white;outline:none;margin-bottom:14px">
       <option value="">반/모둠 선택</option>
-      <option value="교사">교사</option>
     </select>
-    <button onclick="sN()" class="btn bbl bfl" style="font-size:.95rem;padding:12px">📰 신문 만들기 시작!</button>
-    <button onclick="showTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.76rem;color:var(--ink3);cursor:pointer;width:100%">선생님이신가요?</button>
+    <button onclick="sN()" id="sNBtn" class="btn bbl bfl" style="font-size:.95rem;padding:12px">📰 신문 만들기 시작!</button>
   </div>
 </div>
 
-<div id="tlOv" class="ov" style="display:none">
-  <div class="mb">
-    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.3rem;color:var(--accent);margin-bottom:14px">교사 로그인</h2>
-    <input type="password" id="teacherPwInput" class="ni" placeholder="비밀번호 (기본: 1234)" style="margin-bottom:12px;text-align:center">
-    <button onclick="doTeacherLogin()" class="btn bbl bfl">로그인</button>
-    <button onclick="hideTeacherLogin()" style="margin-top:10px;background:none;border:none;font-size:.76rem;color:var(--ink3);cursor:pointer;width:100%">← 돌아가기</button>
-  </div>
-</div>
-
+<!-- 교사 대시보드 -->
 <div id="teacherPanel" class="ov" style="display:none">
   <div class="mb" style="text-align:left">
-    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:var(--accent);margin-bottom:18px;text-align:center">📋 교사 컨트롤</h2>
+    <h2 style="font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:var(--accent);margin-bottom:18px;text-align:center">📰 교사 대시보드</h2>
+    <div class="teacher-chip">
+      <img class="teacher-avatar" src="" id="dashAvatar" onerror="this.style.display='none'">
+      <div style="font-size:.8rem" id="dashProfile"></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div class="toggle-row"><div><div style="font-weight:700;font-size:.92rem" id="classStatusLabel">수업 종료</div>
+        <div style="font-size:.7rem;color:var(--ink3);margin-top:2px" id="classStatusSub">학생 접속이 차단됩니다</div></div>
+        <div class="toggle-track" id="classToggle" onclick="toggleClass()"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">학생 초대 링크</label>
+      <div class="invite-box" id="inviteUrlBox"></div>
+      <button class="btn bg2 bsm" style="margin-top:8px" onclick="copyInvite()">🔗 링크 복사</button>
+      <div style="text-align:center"><div class="invite-qr-box" id="inviteQr"></div>
+        <div class="invite-qr-caption">📱 학생들이 이 QR을 스캔하면 바로 접속돼요</div></div>
+    </div>
     <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🏷️ 반/모둠 이름 관리</label>
       <div style="display:flex;gap:6px;margin-bottom:8px">
@@ -199,34 +254,32 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
         <button class="btn bbl bsm" onclick="addGroupUI()">추가</button>
       </div>
       <div id="groupList"></div>
-      <p id="groupSyncStatus" class="sync-status"></p>
     </div>
     <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
-      <input type="text" id="apiKeyInput" class="ni" placeholder="AIzaSy..." style="font-size:.85rem">
-      <button class="btn bbl bsm bfl" style="margin-top:8px" onclick="saveApiKey()">저장</button>
-      <p id="apiStatus" style="font-size:.73rem;color:var(--mint);margin-top:4px;text-align:center"></p>
+      <input type="text" id="apiKeyInput" class="ni" placeholder="AIzaSy..." style="font-size:.85rem" oninput="saveApiKeyDash(this.value)">
     </div>
     <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px">📊 구글시트 연동 (선택)</label>
-      <input type="text" id="sheetUrlInput" class="ni" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.8rem">
-      <button class="btn bbl bsm bfl" style="margin-top:8px" onclick="saveSheetUrl()">저장</button>
-      <p id="sheetUrlStatus" style="font-size:.73rem;color:var(--mint);margin-top:4px;text-align:center"></p>
+      <input type="text" id="sheetUrlInput" class="ni" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.8rem" oninput="saveSheetUrlDash(this.value)">
     </div>
-    <button class="btn bg2 bfl" onclick="closeTeacherPanel()">닫기</button>
+    <button class="btn bg2 bfl" onclick="teacherLogout()">로그아웃</button>
   </div>
 </div>
 
+<div id="mainApp" style="display:none">
 <header>
   <div class="hi">
-    <div>
-      <div class="logo">📰 EAIM <span class="la">국어 신문</span></div>
-      <div class="ls">Korean Newspaper Creator</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="index.html" class="hub-link">🏠 허브</a>
+      <div>
+        <div class="logo">📰 EAIM <span class="la">국어 신문</span></div>
+        <div class="ls">Korean Newspaper Creator</div>
+      </div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
       <span id="wn" class="nb"></span>
-      <button onclick="openTeacherPanel()" class="tb">교사</button>
-      <button onclick="location.reload()" class="rb">↺</button>
+      <button onclick="studentLogout()" class="rb">나가기</button>
     </div>
   </div>
 </header>
@@ -509,13 +562,15 @@ main{max-width:800px;margin:0 auto;padding:20px 14px}
 
 </main>
 <div style="text-align:center;padding:12px;color:var(--ink3);font-size:.68rem" class="no-print">Designed by Park Seong-ae · EAIM 국어 신문 v2</div>
+</div><!-- /mainApp -->
 
 <script>
-let stuName='', stuClass='', apiKey=localStorage.getItem('eaim_gemini_key')||'';
-let sheetUrl = localStorage.getItem('eaim_sheet_url') || '';
-let teacherPw = localStorage.getItem('eaim_teacher_pw') || '1234';
+let stuName='', stuClass='';
 let selFmtNum=1, articles=[], sunoGenreList=['발라드'];
 
+// ══════════════════════════
+// 🔥 Firebase — teachers/{uid}/... 구조
+// ══════════════════════════
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBalg0f5x0ydfHxn_nzgZ1pAELvJw6PzoY",
   authDomain: "eaim-classroom.firebaseapp.com",
@@ -524,153 +579,171 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "294479576192",
   appId: "1:294479576192:web:c60e994e319dbd2f11ba65"
 };
-let db = null, firebaseReady = false;
-try {
-  if (FIREBASE_CONFIG.apiKey) { firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); firebaseReady = true; }
-} catch(e) { firebaseReady = false; }
+let db=null, auth=null, firebaseReady=false;
+try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.firestore(); auth=firebase.auth(); firebaseReady=true;
+}catch(e){ console.error('Firebase 초기화 실패', e); firebaseReady=false; }
 
-async function getGroups(){
-  if(firebaseReady){
-    try{ const snap = await db.collection('classGroups').orderBy('createdAt','asc').get();
-      return snap.docs.map(d=>({id:d.id,name:d.data().name})); }catch(e){}
-  }
-  return JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
+const teacherDocRef   = (uid) => db.collection('teachers').doc(uid);
+const settingsDocRef  = (uid) => teacherDocRef(uid).collection('meta').doc('settings');
+const groupsColRef    = (uid) => teacherDocRef(uid).collection('groups');
+const sharedPiecesCol = (uid) => teacherDocRef(uid).collection('sharedPieces');
+
+let authLoaded=false, currentUser=null, teacherUid=null, isStudentMode=false;
+let settings = { apiKey:'', classOn:false, sheetUrl:'' };
+let groups=[];
+let unsubSettings=null, unsubGroups=null;
+
+function subscribeSettings(uid, cb){
+  if(unsubSettings) unsubSettings();
+  unsubSettings = settingsDocRef(uid).onSnapshot(snap=>{
+    settings = snap.exists ? snap.data() : {apiKey:'', classOn:false, sheetUrl:''};
+    cb && cb();
+  }, err=>{ console.warn('설정 동기화 오류', err); cb && cb(); });
+}
+function setSettings(uid, fields){
+  settings = {...settings, ...fields};
+  settingsDocRef(uid).set(fields,{merge:true}).catch(e=>alert('저장 실패: '+e.message));
 }
 async function addGroup(name){
-  if(firebaseReady){
-    try{ await db.collection('classGroups').add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); return; }catch(e){}
-  }
-  const groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
-  groups.push({id:'local_'+Date.now(), name});
-  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+  try{ await groupsColRef(teacherUid).add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
+  catch(e){ alert('저장 실패: '+e.message); }
 }
 async function deleteGroupFn(id){
-  if(firebaseReady){
-    try{ await db.collection('classGroups').doc(id).delete(); return; }catch(e){}
-  }
-  let groups = JSON.parse(localStorage.getItem('eaim_classGroups')||'[]');
-  groups = groups.filter(g=>g.id!==id);
-  localStorage.setItem('eaim_classGroups', JSON.stringify(groups));
+  try{ await groupsColRef(teacherUid).doc(id).delete(); }
+  catch(e){ alert('삭제 실패: '+e.message); }
 }
-async function populateClassSelect(){
-  const sel = document.getElementById('sclass'); if(!sel) return;
-  const groups = await getGroups();
-  sel.innerHTML = '<option value="">반/모둠 선택</option>';
+function subscribeGroups(uid){
+  if(unsubGroups) unsubGroups();
+  unsubGroups = groupsColRef(uid).orderBy('createdAt','asc').onSnapshot(snap=>{
+    groups = snap.docs.map(d=>({id:d.id, name:d.data().name}));
+    if(isStudentMode) populateClassSelect();
+    else renderGroupListDash();
+  }, err=>console.warn('그룹 동기화 오류', err));
+}
+function populateClassSelect(){
+  const sel=document.getElementById('sclass'); if(!sel) return;
+  sel.innerHTML='<option value="">반/모둠 선택</option>';
   if(!groups.length){
     const opt=document.createElement('option'); opt.disabled=true; opt.textContent='(선생님이 아직 반/모둠을 만들지 않았어요)';
     sel.appendChild(opt);
   } else {
     groups.forEach(g=>{ const opt=document.createElement('option'); opt.value=g.name; opt.textContent=g.name; sel.appendChild(opt); });
   }
-  const t=document.createElement('option'); t.value='교사'; t.textContent='교사'; sel.appendChild(t);
 }
-async function refreshGroupList(){
-  const groups = await getGroups();
-  const el = document.getElementById('groupList'); if(!el) return;
+function renderGroupListDash(){
+  const el=document.getElementById('groupList'); if(!el) return;
   el.innerHTML = groups.length ? groups.map(g=>`
     <div class="group-item"><span>${g.name}</span><button class="group-del" onclick="deleteGroupUI('${g.id}')">삭제</button></div>
   `).join('') : '<p style="font-size:.8rem;color:var(--ink3)">아직 만든 반/모둠이 없어요</p>';
-  const s = document.getElementById('groupSyncStatus');
-  if(s) s.textContent = firebaseReady ? '✅ 여러 기기에서 공유돼요' : '⚠️ Firebase 미설정 — 이 기기에서만 보여요';
 }
 async function addGroupUI(){
-  const input = document.getElementById('newGroupName');
-  const name = input.value.trim();
+  const input=document.getElementById('newGroupName');
+  const name=input.value.trim();
   if(!name){ alert('반/모둠 이름을 입력하세요!'); return; }
   await addGroup(name); input.value='';
-  await refreshGroupList(); await populateClassSelect();
 }
 async function deleteGroupUI(id){
   if(!confirm('이 반/모둠을 삭제할까요?')) return;
-  await deleteGroupFn(id); await refreshGroupList(); await populateClassSelect();
+  await deleteGroupFn(id);
 }
 
-window.onload=function(){
-  document.getElementById('np-date').value=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+// ══ 시/글쓰기 앱에서 보낸 글 가져오기 (같은 teacherUid 스코프) ══
+async function getSharedPieces(){
+  try{
+    const snap = await sharedPiecesCol(teacherUid).orderBy('createdAt','desc').limit(200).get();
+    return snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  }catch(e){ console.warn('sharedPieces 조회 실패', e); return []; }
+}
+
+function hideAllOverlays(){
+  ['loadingOverlay','noTeacherOverlay','teacherGoogleOverlay','nm'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  document.getElementById('teacherPanel').style.display='none';
+  document.getElementById('mainApp').style.display='none';
+}
+function renderNoTeacherLink(){ hideAllOverlays(); document.getElementById('noTeacherOverlay').style.display='flex'; }
+function renderTeacherGoogleGate(err){
+  hideAllOverlays();
+  document.getElementById('teacherGoogleOverlay').style.display='flex';
+  document.getElementById('googleLoginErr').textContent = err||'';
+}
+function renderStudentLoginGate(){
+  hideAllOverlays();
+  document.getElementById('nm').style.display='flex';
+  document.getElementById('lockedNotice').style.display = settings.classOn? 'none':'block';
+  document.getElementById('sNBtn').disabled = !settings.classOn;
   populateClassSelect();
-  getSheetUrlRemote().then(u=>{ if(u) sheetUrl=u; });
-};
+}
+function enterMainApp(){
+  hideAllOverlays();
+  document.getElementById('mainApp').style.display='block';
+}
+function enterTeacherDashboard(){
+  hideAllOverlays();
+  document.getElementById('teacherPanel').style.display='flex';
+  document.getElementById('dashAvatar').src = currentUser?.photoURL||'';
+  document.getElementById('dashProfile').textContent = (currentUser?.displayName||'')+' · '+(currentUser?.email||'');
+  document.getElementById('apiKeyInput').value = settings.apiKey||'';
+  document.getElementById('sheetUrlInput').value = settings.sheetUrl||'';
+  renderClassToggle();
+  const inviteUrl = `${location.origin}${location.pathname}?role=student&teacher=${teacherUid}`;
+  document.getElementById('inviteUrlBox').textContent = inviteUrl;
+  generateInviteQR(inviteUrl);
+  subscribeGroups(teacherUid);
+}
+function renderClassToggle(){
+  const lbl=document.getElementById('classStatusLabel'), sub=document.getElementById('classStatusSub'), tg=document.getElementById('classToggle');
+  if(!lbl) return;
+  lbl.textContent = settings.classOn?'수업 진행 중':'수업 종료';
+  sub.textContent = settings.classOn?'학생들이 접속할 수 있어요':'학생 접속이 차단됩니다';
+  tg.classList.toggle('on', !!settings.classOn);
+}
+function toggleClass(){ setSettings(teacherUid, {classOn: !settings.classOn}); renderClassToggle(); }
+function saveApiKeyDash(v){ setSettings(teacherUid, {apiKey:v}); }
+function saveSheetUrlDash(v){ setSettings(teacherUid, {sheetUrl:v}); }
+function copyInvite(){
+  const url = `${location.origin}${location.pathname}?role=student&teacher=${teacherUid}`;
+  navigator.clipboard.writeText(url).then(()=>alert('✅ 초대 링크 복사됨!'));
+}
+function generateInviteQR(url){
+  const el=document.getElementById('inviteQr'); if(!el) return;
+  el.innerHTML='';
+  if(typeof QRCode==='undefined'){ el.textContent='QR 로딩 실패'; return; }
+  new QRCode(el, { text:url, width:140, height:140, colorDark:'#1A1008', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
+}
+function googleLogin(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e=>{ document.getElementById('googleLoginErr').textContent='로그인 실패: '+e.message; });
+}
+function teacherLogout(){
+  if(unsubSettings){unsubSettings();unsubSettings=null;}
+  if(unsubGroups){unsubGroups();unsubGroups=null;}
+  auth.signOut(); teacherUid=null;
+  renderTeacherGoogleGate();
+}
+function studentLogout(){
+  if(unsubSettings){unsubSettings();unsubSettings=null;}
+  stuName=''; stuClass='';
+  renderStudentLoginGate();
+}
 
 function sN(){
   const n=document.getElementById('sni').value.trim();
   const c=document.getElementById('sclass').value;
+  if(!settings.classOn){alert('선생님이 아직 수업을 열지 않았어요');return;}
   if(!n){alert('이름을 입력해주세요!');return;}
   if(!c){alert('반/모둠을 선택해주세요!');return;}
-  if(c==='교사'){ showTeacherLogin(); return; }
-  stuName=n;
-  stuClass=c;
+  stuName=n; stuClass=c;
   const nb=document.getElementById('wn');nb.textContent=n+' 님 📰';nb.style.display='';
-  document.getElementById('nm').style.display='none';
+  enterMainApp();
   document.getElementById('sNav').style.display='flex';
-}
-
-function showTeacherLogin(){
-  document.getElementById('nm').style.display='none';
-  document.getElementById('tlOv').style.display='flex';
-}
-function hideTeacherLogin(){
-  document.getElementById('tlOv').style.display='none';
-  document.getElementById('nm').style.display='flex';
-}
-function doTeacherLogin(){
-  const pw = document.getElementById('teacherPwInput').value;
-  if(pw !== teacherPw){ alert('비밀번호가 틀렸어요!'); return; }
-  document.getElementById('tlOv').style.display='none';
-  document.getElementById('nm').style.display='none';
-  const nb=document.getElementById('wn'); nb.textContent='👩‍🏫 선생님'; nb.style.display='';
-  document.getElementById('sNav').style.display='flex';
-  openTeacherPanel();
-}
-function openTeacherPanel(){
-  if(apiKey) document.getElementById('apiKeyInput').value = apiKey;
-  if(sheetUrl) document.getElementById('sheetUrlInput').value = sheetUrl;
-  refreshGroupList();
-  document.getElementById('teacherPanel').style.display='flex';
-}
-function closeTeacherPanel(){ document.getElementById('teacherPanel').style.display='none'; }
-function saveApiKey(){
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if(!key) return;
-  apiKey = key; localStorage.setItem('eaim_gemini_key', key);
-  document.getElementById('apiStatus').textContent = '✅ 저장됐어요!';
-  setTimeout(()=>document.getElementById('apiStatus').textContent='', 2000);
-}
-async function getSheetUrlRemote(){
-  if(firebaseReady){
-    try{
-      const doc = await db.collection('settings').doc('sheetUrl').get();
-      if(doc.exists) return doc.data().url || '';
-    }catch(e){}
-  }
-  return localStorage.getItem('eaim_sheet_url') || '';
-}
-async function setSheetUrlRemote(url){
-  if(firebaseReady){
-    try{ await db.collection('settings').doc('sheetUrl').set({url}); }catch(e){}
-  }
-  localStorage.setItem('eaim_sheet_url', url);
-}
-async function saveSheetUrl(){
-  const url = document.getElementById('sheetUrlInput').value.trim();
-  sheetUrl = url; await setSheetUrlRemote(url);
-  document.getElementById('sheetUrlStatus').textContent = url ? '✅ 저장됐어요! (다른 기기에도 곧 적용돼요)' : '연동 해제됨';
-  setTimeout(()=>document.getElementById('sheetUrlStatus').textContent='', 2000);
-}
-function logToSheet(activity, title, detail, image){
-  const url = sheetUrl || localStorage.getItem('eaim_sheet_url') || '';
-  if(!url) return;
-  try{
-    const payload = { name: stuName||'', group: stuClass||'', app: '신문', activity, title: title||'', detail: detail||'' };
-    if(image) payload.image = image;
-    fetch(url, {
-      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-  }catch(e){ console.warn('시트 기록 실패', e); }
 }
 
 async function callGemini(prompt,maxTokens=800){
-  const key=apiKey||localStorage.getItem('eaim_gemini_key')||'';
+  const key=settings.apiKey||'';
   if(!key)throw new Error('NO_KEY');
   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{
     method:'POST',headers:{'Content-Type':'application/json'},
@@ -699,16 +772,6 @@ function switchTab(tab,btn){
   if(tab==='import') loadImportList();
 }
 
-// ══ 시/글쓰기 앱에서 보낸 글 가져오기 ══
-async function getSharedPieces(){
-  if(firebaseReady){
-    try{
-      const snap = await db.collection('sharedPieces').orderBy('createdAt','desc').limit(200).get();
-      return snap.docs.map(d=>({ id:d.id, ...d.data() }));
-    }catch(e){}
-  }
-  return JSON.parse(localStorage.getItem('eaim_sharedPieces')||'[]');
-}
 async function loadImportList(){
   const el = document.getElementById('import-list');
   el.innerHTML = '<p style="color:var(--ink3);font-size:.82rem;text-align:center;padding:16px">불러오는 중...</p>';
@@ -754,7 +817,7 @@ async function genAiArticle(){
   document.getElementById('ai-gen-result').style.display='none';
 
   const lenMap={short:'3-4문장',medium:'5-6문장',long:'7-8문장'};
-  const key=apiKey||localStorage.getItem('eaim_gemini_key')||'';
+  const key=settings.apiKey||'';
   if(!key){
     document.getElementById('ai-headline').value=topic+' - 특별 기사';
     document.getElementById('ai-body').value=topic+'에 관한 기사입니다. API 키를 설정하면 AI가 기사를 자동으로 써드려요!';
@@ -787,7 +850,6 @@ function addAiArticle(){
   const h=document.getElementById('ai-headline').value.trim();
   const b=document.getElementById('ai-body').value.trim();
   if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
-  const imgToLog = aiGenImage;
   articles.push({headline:h,body:b,section:document.getElementById('ai-section').value,reporter:'기자 '+stuName,image:aiGenImage});
   renderList();
   document.getElementById('ai-topic').value='';document.getElementById('ai-headline').value='';
@@ -795,7 +857,6 @@ function addAiArticle(){
   aiGenImage=null;
   const aiImgPrev=document.getElementById('ai-img-preview'); aiImgPrev.style.display='none'; aiImgPrev.src='';
   alert(`"${h}" 추가됐어요! 총 ${articles.length}개`);
-  logToSheet('기사추가', h, b.length+'자', imgToLog);
 }
 
 function addManArticle(){
@@ -803,21 +864,19 @@ function addManArticle(){
   const b=document.getElementById('man-body').value.trim();
   if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
   const reporter=document.getElementById('man-reporter').value.trim()||'기자 '+stuName;
-  const imgToLog = manGenImage;
   articles.push({headline:h,body:b,section:document.getElementById('man-section').value,reporter,image:manGenImage});
   renderList();
   ['man-headline','man-body','man-reporter'].forEach(id=>document.getElementById(id).value='');
   manGenImage=null;
   const manImgPrev=document.getElementById('man-img-preview'); manImgPrev.style.display='none'; manImgPrev.src='';
   alert(`"${h}" 추가됐어요!`);
-  logToSheet('기사추가', h, b.length+'자', imgToLog);
 }
 
 // ══ AI 삽화 생성 (Gemini 2.5 Flash Image) ══
 let aiGenImage = null, manGenImage = null;
 
 async function generateGeminiImage(prompt){
-  const key = apiKey || localStorage.getItem('eaim_gemini_key') || '';
+  const key = settings.apiKey || '';
   if(!key) throw new Error('NO_KEY');
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
   const res = await fetch(url, {
@@ -851,9 +910,9 @@ async function genArticleImage(which){
   const preview = document.getElementById(which+'-img-preview');
   btn.disabled = true; loading.style.display = 'flex'; preview.style.display = 'none';
 
-  const key = apiKey || localStorage.getItem('eaim_gemini_key') || '';
+  const key = settings.apiKey || '';
   if(!key){
-    alert('API 키를 교사 패널에서 먼저 설정해주세요.');
+    alert('API 키를 교사 대시보드에서 먼저 설정해주세요.');
     btn.disabled = false; loading.style.display = 'none';
     return;
   }
@@ -976,7 +1035,6 @@ function downloadAll(){
   const a=document.createElement('a');
   a.href='data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(text);
   a.download=`${stuName}_국어신문_전체.txt`;a.click();
-  logToSheet('완성', name, articles.length+'개 기사');
 }
 
 function toggleGenre(el,genre){
@@ -989,7 +1047,7 @@ async function genSuno(){
   const btn=document.getElementById('suno-btn');btn.disabled=true;btn.textContent='🤖 생성 중...';
   const genres=sunoGenreList.length?sunoGenreList.join(', '):'발라드';
   const headlines=articles.map(a=>a.headline).join(' / ');
-  const key=apiKey||localStorage.getItem('eaim_gemini_key')||'';
+  const key=settings.apiKey||'';
   if(!key){
     const lyrics=`[Verse]\n${articles[0]?.headline||'우리 이야기'}\n말로 담은 세상 속에\n글로 피어난 꿈들\n\n[Chorus]\n우리가 쓴 신문 속에\n세상이 담겨있어\n하나하나 소중한 이야기`;
     document.getElementById('suno-style').textContent=`Style: ${genres}, Korean, emotional\nMood: warm, hopeful\nTempo: slow to mid`;
@@ -1029,6 +1087,41 @@ function sT(n){
   }
   window.scrollTo(0,0);
 }
+
+// ══════════════════════════
+// 진입점
+// ══════════════════════════
+(function(){
+  const params=new URLSearchParams(window.location.search);
+  const role=params.get('role');
+  const teacherParam=params.get('teacher');
+
+  document.getElementById('np-date').value=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+
+  if(!firebaseReady){
+    document.getElementById('loadingOverlay').textContent='⚠️ Firebase 설정이 필요해요';
+    return;
+  }
+
+  if(role==='student'){
+    isStudentMode=true;
+    if(!teacherParam){ renderNoTeacherLink(); return; }
+    teacherUid=teacherParam;
+    subscribeSettings(teacherUid, ()=>{ renderStudentLoginGate(); });
+    subscribeGroups(teacherUid);
+    return;
+  }
+
+  auth.onAuthStateChanged(user=>{
+    currentUser=user;
+    if(user){
+      teacherUid=user.uid;
+      subscribeSettings(teacherUid, ()=>{ enterTeacherDashboard(); });
+    } else {
+      renderTeacherGoogleGate();
+    }
+  });
+})();
 </script>
 <script>
 if ("serviceWorker" in navigator) {
