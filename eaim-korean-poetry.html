@@ -1052,6 +1052,7 @@ async function sendToNewspaper(){
       theme: selectedEmotion || ''
     });
     alert('📰 신문 앱으로 보냈어요! 신문 앱 Step 2의 "📥 가져오기" 탭에서 확인하세요.');
+    logToSheet('신문전송', title || '(제목 없음)', body.length+'자');
   }catch(e){}
 }
 
@@ -1254,6 +1255,20 @@ function showToast(msg){
     document.body.appendChild(el); }
   el.textContent=msg; el.style.display='block';
   clearTimeout(toastT); toastT=setTimeout(()=>{el.style.display='none';},2000);
+}
+
+function logToSheet(activity, title, detail){
+  const url = settings.sheetUrl || '';
+  if(!url) return;
+  try{
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        name: student?.name || '', group: student?.class || '',
+        app: '시 감상', activity, title: title || '', detail: detail || ''
+      })
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
 }
 
 function goStep(n){
@@ -1627,6 +1642,7 @@ function downloadFinal(){
   const a = document.createElement('a');
   a.href = 'data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(content);
   a.download = `${name}_시감상일지.txt`; a.click();
+  logToSheet('완성', document.getElementById('myPoemTitle').value || selectedPoem?.title || '', (document.getElementById('myPoemText').value||'').length+'자');
 }
 
 function switchMusicTab(tab){
