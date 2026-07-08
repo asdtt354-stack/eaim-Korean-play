@@ -892,6 +892,7 @@ async function sendToNewspaper(){
       type: selectedGenre.label || '글쓰기'
     });
     alert('📰 신문 앱으로 보냈어요! 신문 앱 Step 2의 "📥 가져오기" 탭에서 확인하세요.');
+    logToSheet('신문전송', title || '(제목 없음)', body.length+'자');
   }catch(e){}
 }
 
@@ -1515,6 +1516,20 @@ function showToast(msg){
     document.body.appendChild(el); }
   el.textContent=msg; el.style.display='block';
   clearTimeout(toastT); toastT=setTimeout(()=>{el.style.display='none';},2000);
+}
+
+function logToSheet(activity, title, detail){
+  const url = settings.sheetUrl || '';
+  if(!url) return;
+  try{
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        name: student?.name || '', group: student?.class || '',
+        app: '글쓰기', activity, title: title||'', detail: detail||''
+      })
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
 }
 
 // ══════════════════════════
