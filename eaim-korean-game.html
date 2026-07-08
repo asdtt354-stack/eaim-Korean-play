@@ -684,6 +684,17 @@ function sN(){
   initTerms();loadRankings();
 }
 
+function logToSheet(activity, title, detail){
+  const url = settings.sheetUrl || '';
+  if(!url) return;
+  try{
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ name: stuName||'', group: stuClass||'', app: '게임', activity, title: title||'', detail: detail||'' })
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
+}
+
 function initTerms(){
   selectedTerms=Object.values(TERMS).flat();
   showCat('전체',document.querySelector('.ctab'));
@@ -1033,6 +1044,7 @@ function endGame(){
   rankings.push({name:stuName,score:sc,game:currentGame,date:new Date().toLocaleTimeString('ko-KR')});
   rankings.sort((a,b)=>b.score-a.score);rankings=rankings.slice(0,10);
   localStorage.setItem('eaim_korean_rankings',JSON.stringify(rankings));
+  logToSheet('게임완료', currentGame||'', `${sc}점 · 정답률 ${pct}%`);
   document.getElementById('result-content').innerHTML=`
     <div class="result-emoji">${emoji}</div>
     <div class="result-score">${sc}점</div>
