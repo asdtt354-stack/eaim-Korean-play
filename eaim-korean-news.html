@@ -742,6 +742,19 @@ function sN(){
   document.getElementById('sNav').style.display='flex';
 }
 
+function logToSheet(activity, title, detail, image){
+  const url = settings.sheetUrl || '';
+  if(!url) return;
+  try{
+    const payload = { name: stuName||'', group: stuClass||'', app: '신문', activity, title: title||'', detail: detail||'' };
+    if(image) payload.image = image;
+    fetch(url, {
+      method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+  }catch(e){ console.warn('시트 기록 실패', e); }
+}
+
 async function callGemini(prompt,maxTokens=800){
   const key=settings.apiKey||'';
   if(!key)throw new Error('NO_KEY');
@@ -850,6 +863,7 @@ function addAiArticle(){
   const h=document.getElementById('ai-headline').value.trim();
   const b=document.getElementById('ai-body').value.trim();
   if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
+  const imgToLog = aiGenImage;
   articles.push({headline:h,body:b,section:document.getElementById('ai-section').value,reporter:'기자 '+stuName,image:aiGenImage});
   renderList();
   document.getElementById('ai-topic').value='';document.getElementById('ai-headline').value='';
@@ -857,6 +871,7 @@ function addAiArticle(){
   aiGenImage=null;
   const aiImgPrev=document.getElementById('ai-img-preview'); aiImgPrev.style.display='none'; aiImgPrev.src='';
   alert(`"${h}" 추가됐어요! 총 ${articles.length}개`);
+  logToSheet('기사추가', h, b.length+'자', imgToLog);
 }
 
 function addManArticle(){
@@ -864,12 +879,14 @@ function addManArticle(){
   const b=document.getElementById('man-body').value.trim();
   if(!h||!b){alert('제목과 본문을 입력해주세요!');return;}
   const reporter=document.getElementById('man-reporter').value.trim()||'기자 '+stuName;
+  const imgToLog = manGenImage;
   articles.push({headline:h,body:b,section:document.getElementById('man-section').value,reporter,image:manGenImage});
   renderList();
   ['man-headline','man-body','man-reporter'].forEach(id=>document.getElementById(id).value='');
   manGenImage=null;
   const manImgPrev=document.getElementById('man-img-preview'); manImgPrev.style.display='none'; manImgPrev.src='';
   alert(`"${h}" 추가됐어요!`);
+  logToSheet('기사추가', h, b.length+'자', imgToLog);
 }
 
 // ══ AI 삽화 생성 (Gemini 2.5 Flash Image) ══
@@ -1035,6 +1052,7 @@ function downloadAll(){
   const a=document.createElement('a');
   a.href='data:text/plain;charset=utf-8,\uFEFF'+encodeURIComponent(text);
   a.download=`${stuName}_국어신문_전체.txt`;a.click();
+  logToSheet('완성', name, articles.length+'개 기사');
 }
 
 function toggleGenre(el,genre){
