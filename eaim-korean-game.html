@@ -516,6 +516,7 @@ try{
 const teacherDocRef  = (uid) => db.collection('teachers').doc(uid);
 const settingsDocRef = (uid) => teacherDocRef(uid).collection('meta').doc('settings');
 const groupsColRef   = (uid) => teacherDocRef(uid).collection('groups');
+const studentsColRef = (uid) => teacherDocRef(uid).collection('students'); // 🔥 추가: 랭킹 점수 기록용
 
 let authLoaded=false, currentUser=null, teacherUid=null, isStudentMode=false;
 let settings = { apiKey:'', classOn:false, sheetUrl:'' };
@@ -1044,6 +1045,17 @@ function endGame(){
   rankings.push({name:stuName,score:sc,game:currentGame,date:new Date().toLocaleTimeString('ko-KR')});
   rankings.sort((a,b)=>b.score-a.score);rankings=rankings.slice(0,10);
   localStorage.setItem('eaim_korean_rankings',JSON.stringify(rankings));
+
+  // 🔥 추가: Firebase에 게임 점수 기록 (교사 대시보드 학생현황에서 확인 가능)
+  if(teacherUid && stuName){
+    const key = stuName.trim();
+    studentsColRef(teacherUid).doc(key).set({
+      name: stuName, group: stuClass||'',
+      lastGame: currentGame||'', lastScore: sc, lastAccuracy: pct,
+      updatedAt: new Date().toLocaleString('ko-KR')
+    }, {merge:true}).catch(e=>console.warn('점수 기록 실패', e));
+  }
+
   logToSheet('게임완료', currentGame||'', `${sc}점 · 정답률 ${pct}%`);
   document.getElementById('result-content').innerHTML=`
     <div class="result-emoji">${emoji}</div>
