@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAIM 국어 — 속담 상황 카드</title>
+<link rel="icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- 속담 상황 카드 v1.0 (2026-09-25) — 누구나 로그인 없이 쓰는 공개 앱. AI·기록 없음. 문제 자료는 proverb-cards.js (국어 부록 5-1번) -->
+<script src="proverb-cards.js"></script>
+<style>
+/* 공통규칙 3번: 한글 줄바꿈 — 단어 중간에서 끊기지 않게 */
+html,body{word-break:keep-all;overflow-wrap:break-word;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#F4EEDF; --paper2:#EAE1CB; --card:#FBF7EC;
+  --ink:#1E1A14; --ink2:#4B4234; --ink3:#8A7D66;
+  --seal:#B3261E; --pine:#2F5D50; --line:#D8CCB0;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;
+  background-image:radial-gradient(rgba(120,90,40,.06) 1px,transparent 1px);background-size:5px 5px}
+.wrap{max-width:680px;margin:0 auto;padding:0 18px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0 10px;border-bottom:1.5px solid var(--line);margin-bottom:22px}
+.hub{font-size:.8rem;color:var(--ink2);text-decoration:none;border:1px solid var(--line);padding:6px 11px;border-radius:8px;background:var(--card)}
+.brand{font-family:'Gowun Batang',serif;font-weight:700;font-size:1.05rem;color:var(--ink)}
+.hbtn{font-family:inherit;font-size:.8rem;color:var(--ink2);border:1px solid var(--line);padding:6px 11px;border-radius:8px;background:var(--card);cursor:pointer}
+.screen{display:none}.screen.on{display:block}
+
+/* 첫 화면 */
+.hero{padding:26px 0 8px}
+.hero h1{font-family:'Gowun Batang',serif;font-size:clamp(1.9rem,7vw,2.6rem);line-height:1.35;font-weight:700}
+.hero p{color:var(--ink2);line-height:1.9;margin-top:14px;font-size:.95rem;max-width:34em}
+.sample{margin:26px 0;background:var(--card);border:1.5px solid var(--line);border-radius:4px;padding:22px 22px 18px;position:relative;box-shadow:6px 6px 0 var(--paper2)}
+.sample .q{font-family:'Gowun Batang',serif;font-size:1.02rem;line-height:1.95;color:var(--ink2)}
+.sample .a{margin-top:12px;font-size:.85rem;color:var(--ink3)}
+.pick{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+.pick button{flex:1 1 90px;font-family:inherit;font-weight:700;font-size:.92rem;padding:12px 8px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);cursor:pointer}
+.pick button.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.go{width:100%;font-family:inherit;font-weight:900;font-size:1.05rem;padding:16px;border:none;border-radius:12px;background:var(--pine);color:#F4EEDF;cursor:pointer}
+.go:active{transform:scale(.99)}
+.sub-link{display:block;text-align:center;margin-top:14px;color:var(--ink2);font-size:.88rem;background:none;border:none;width:100%;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.best{text-align:center;color:var(--ink3);font-size:.8rem;margin-top:10px}
+
+/* 카드 */
+.meter{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--ink3);margin-bottom:10px}
+.bar{height:4px;background:var(--paper2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pine);width:0;transition:width .3s}
+.story{background:var(--card);border:1.5px solid var(--line);border-radius:4px;padding:24px 22px 20px;box-shadow:6px 6px 0 var(--paper2);position:relative;min-height:150px}
+.story .label{font-size:.78rem;color:var(--ink3);margin-bottom:10px}
+.story .txt{font-family:'Gowun Batang',serif;font-size:1.12rem;line-height:2}
+.speak{margin-top:12px;font-family:inherit;font-size:.78rem;color:var(--ink2);background:none;border:1px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer}
+.ask{font-weight:700;margin:22px 0 10px;font-size:.95rem}
+.choices{display:grid;gap:9px}
+.choice{text-align:left;font-family:'Gowun Batang',serif;font-size:1.02rem;font-weight:700;padding:14px 16px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;line-height:1.5}
+.choice:hover:not(:disabled){border-color:var(--ink2)}
+.choice:disabled{cursor:default}
+.choice.right{border-color:var(--pine);background:#E4EEE8}
+.choice.wrongpick{border-color:var(--seal);background:#F7E4E1;text-decoration:line-through;text-decoration-color:rgba(179,38,30,.5)}
+.reveal{display:none;margin-top:16px;background:#fff;border-left:4px solid var(--pine);border-radius:0 10px 10px 0;padding:16px 16px 14px 18px;position:relative}
+.reveal.bad{border-left-color:var(--seal)}
+.reveal .pv{font-family:'Gowun Batang',serif;font-size:1.15rem;font-weight:700;padding-right:70px}
+.reveal .mean{margin-top:6px;color:var(--ink2);font-size:.9rem;line-height:1.7}
+.reveal .why{margin-top:10px;font-size:.88rem;line-height:1.8;color:var(--ink)}
+.seal{position:absolute;right:14px;top:12px;width:56px;height:56px;border:3px solid var(--seal);color:var(--seal);border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-family:'Gowun Batang',serif;font-weight:700;font-size:.95rem;transform:rotate(-8deg);opacity:.9;line-height:1.1;text-align:center}
+.next{margin-top:14px}
+
+/* 결과 */
+.score{font-family:'Gowun Batang',serif;font-size:3.2rem;font-weight:700;text-align:center;margin-top:10px}
+.score small{font-size:1.2rem;color:var(--ink3)}
+.verdict{text-align:center;color:var(--ink2);margin:6px 0 22px}
+h3{font-family:'Gowun Batang',serif;font-size:1.1rem;margin:22px 0 10px}
+.review{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:9px}
+.review b{font-family:'Gowun Batang',serif;font-size:1.02rem}
+.review p{font-size:.86rem;color:var(--ink2);line-height:1.7;margin-top:4px}
+.row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.row button{flex:1 1 140px}
+.ghost{font-family:inherit;font-weight:700;font-size:.95rem;padding:14px;border-radius:12px;border:1.5px solid var(--ink2);background:transparent;color:var(--ink);cursor:pointer}
+
+/* 모아 보기 */
+.search{width:100%;font-family:inherit;font-size:.95rem;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;margin-bottom:12px}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:8px}
+summary{list-style:none;cursor:pointer;padding:13px 15px}
+summary::-webkit-details-marker{display:none}
+summary b{font-family:'Gowun Batang',serif;font-size:1.02rem;display:block}
+summary span{font-size:.84rem;color:var(--ink2)}
+details .in{padding:0 15px 14px;font-size:.86rem;line-height:1.8;color:var(--ink2);border-top:1px dashed var(--line);padding-top:10px}
+.count{color:var(--ink3);font-size:.8rem;margin-bottom:10px}
+@media (max-width:480px){ .story .txt{font-size:1.04rem} .hero h1{font-size:1.8rem} .seal{width:48px;height:48px;font-size:.85rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="hub" href="index.html">🏠 허브</a>
+    <div class="brand">속담 상황 카드</div>
+    <button class="hbtn" id="homeBtn" onclick="show('start')" style="visibility:hidden">처음으로</button>
+  </header>
+
+  <!-- 첫 화면 -->
+  <section class="screen on" id="s-start">
+    <div class="hero">
+      <h1>이럴 때,<br>어떤 속담이 떠오르나요?</h1>
+      <p>짧은 이야기를 읽고 딱 맞는 속담을 골라요. 뜻만 외우는 대신, 속담이 실제로 쓰이는 순간을 만나 보는 게임이에요.</p>
+    </div>
+    <div class="sample">
+      <div class="q">민재는 자전거 자물쇠를 채우지 않고 다니다가 자전거를 잃어버렸어요. 그제야 가장 튼튼한 자물쇠를 샀어요.</div>
+      <div class="a">→ 이 이야기에 맞는 속담은? 카드를 뒤집어 확인해요.</div>
+    </div>
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:4px">몇 장 풀까요?</div>
+    <div class="pick" id="countPick">
+      <button data-n="10" class="on">10장</button>
+      <button data-n="20">20장</button>
+      <button data-n="0">전부 (<span id="allN"></span>장)</button>
+    </div>
+    <button class="go" onclick="startRound()">카드 펼치기</button>
+    <button class="sub-link" onclick="openBook()">📖 속담 모아 보기</button>
+    <div class="best" id="bestLine"></div>
+  </section>
+
+  <!-- 카드 -->
+  <section class="screen" id="s-play">
+    <div class="meter"><span id="qNo"></span><span id="qScore"></span></div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="story">
+      <div class="label">이야기 카드</div>
+      <div class="txt" id="storyTxt"></div>
+      <button class="speak" onclick="speakStory()">🔊 읽어 주기</button>
+    </div>
+    <div class="ask">이 이야기에 가장 알맞은 속담은?</div>
+    <div class="choices" id="choices"></div>
+    <div class="reveal" id="reveal">
+      <div class="seal" id="seal"></div>
+      <div class="pv" id="rvP"></div>
+      <div class="mean" id="rvM"></div>
+      <div class="why" id="rvW"></div>
+    </div>
+    <button class="go next" id="nextBtn" style="display:none" onclick="nextCard()">다음 카드 →</button>
+  </section>
+
+  <!-- 결과 -->
+  <section class="screen" id="s-end">
+    <div class="score" id="endScore"></div>
+    <div class="verdict" id="endVerdict"></div>
+    <div id="endReview"></div>
+    <div class="row">
+      <button class="go" onclick="startRound()">한 번 더</button>
+      <button class="ghost" onclick="openBook()">📖 속담 모아 보기</button>
+    </div>
+  </section>
+
+  <!-- 모아 보기 -->
+  <section class="screen" id="s-book">
+    <h3 style="margin-top:0">📖 속담 모아 보기</h3>
+    <input class="search" id="bookSearch" placeholder="속담이나 뜻으로 찾기 (예: 말, 노력)" oninput="renderBook()">
+    <div class="count" id="bookCount"></div>
+    <div id="bookList"></div>
+    <button class="go" style="margin-top:14px" onclick="startRound()">카드 게임 하러 가기</button>
+  </section>
+</div>
+
+<script>
+const CARDS = window.PROVERB_CARDS || [];
+const BEST_KEY = 'eaim_korean_proverb_best';   // 공통규칙 10-1: 기기 저장 이름 앞머리
+let want = 10, deck = [], idx = 0, right = 0, missed = [];
+
+const esc = t => String(t||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function byP(p){ return CARDS.find(c => c.p === p); }
+
+function show(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById('s-' + name).classList.add('on');
+  document.getElementById('homeBtn').style.visibility = name === 'start' ? 'hidden' : 'visible';
+  stopSpeak(); window.scrollTo(0, 0);
+  if (name === 'start') renderBest();
+}
+function renderBest(){
+  let b = null; try { b = JSON.parse(localStorage.getItem(BEST_KEY) || 'null'); } catch (e) {}
+  document.getElementById('bestLine').textContent = b ? `이 기기 최고 기록: ${b.right}/${b.total}장` : '';
+}
+
+document.getElementById('allN').textContent = CARDS.length;
+document.querySelectorAll('#countPick button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#countPick button').forEach(x => x.classList.toggle('on', x === b));
+  want = Number(b.dataset.n);
+});
+
+function startRound(){
+  const n = want && want < CARDS.length ? want : CARDS.length;
+  deck = shuffle(CARDS).slice(0, n); idx = 0; right = 0; missed = [];
+  show('play'); drawCard();
+}
+function drawCard(){
+  const c = deck[idx];
+  document.getElementById('qNo').textContent = `${idx + 1} / ${deck.length}장`;
+  document.getElementById('qScore').textContent = `맞힌 카드 ${right}장`;
+  document.getElementById('barFill').style.width = (idx / deck.length * 100) + '%';
+  document.getElementById('storyTxt').textContent = c.s;
+  const opts = shuffle([c.p, ...c.wrong]);
+  const box = document.getElementById('choices'); box.innerHTML = '';
+  opts.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'choice'; b.textContent = p;
+    b.onclick = () => answer(p, b);
+    box.appendChild(b);
+  });
+  document.getElementById('reveal').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+function answer(p, btn){
+  const c = deck[idx], ok = p === c.p;
+  document.querySelectorAll('.choice').forEach(b => { b.disabled = true; if (b.textContent === c.p) b.classList.add('right'); });
+  if (!ok) { btn.classList.add('wrongpick'); missed.push(c); } else right++;
+  const rv = document.getElementById('reveal');
+  rv.classList.toggle('bad', !ok);
+  document.getElementById('seal').innerHTML = ok ? '정답' : '다시<br>보기';
+  document.getElementById('rvP').textContent = c.p;
+  document.getElementById('rvM').textContent = '뜻: ' + c.m;
+  const pickedCard = !ok ? byP(p) : null;
+  document.getElementById('rvW').innerHTML = esc(c.why) + (pickedCard ? `<br><span style="color:var(--ink3)">고른 "${esc(p)}"는 '${esc(pickedCard.m)}'라는 뜻이라 이 이야기와는 달라요.</span>` : '');
+  rv.style.display = 'block';
+  const nb = document.getElementById('nextBtn');
+  nb.textContent = idx + 1 < deck.length ? '다음 카드 →' : '결과 보기 →';
+  nb.style.display = 'block';
+  document.getElementById('qScore').textContent = `맞힌 카드 ${right}장`;
+  rv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function nextCard(){
+  stopSpeak();
+  idx++;
+  if (idx < deck.length) { drawCard(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  else endRound();
+}
+function endRound(){
+  const total = deck.length, pct = right / total;
+  document.getElementById('endScore').innerHTML = `${right}<small> / ${total}장</small>`;
+  document.getElementById('endVerdict').textContent =
+    pct === 1 ? '모든 이야기에 딱 맞는 속담을 찾았어요!' :
+    pct >= .7 ? '속담이 쓰이는 순간을 잘 알아보네요.' :
+    pct >= .4 ? '반쯤 왔어요. 틀린 카드를 다시 읽어 봐요.' : '아래 카드를 천천히 다시 읽어 보면 금방 늘어요.';
+  document.getElementById('endReview').innerHTML = missed.length
+    ? '<h3>다시 볼 속담</h3>' + missed.map(c => `<div class="review"><b>${esc(c.p)}</b><p>뜻: ${esc(c.m)}</p><p>${esc(c.s)}</p></div>`).join('')
+    : '';
+  try {
+    const b = JSON.parse(localStorage.getItem(BEST_KEY) || 'null');
+    if (!b || right / total > b.right / b.total || (right / total === b.right / b.total && total > b.total))
+      localStorage.setItem(BEST_KEY, JSON.stringify({ right, total }));
+  } catch (e) {}
+  document.getElementById('barFill').style.width = '100%';
+  show('end');
+}
+
+/* 모아 보기 */
+function openBook(){ document.getElementById('bookSearch').value = ''; renderBook(); show('book'); }
+function renderBook(){
+  const q = document.getElementById('bookSearch').value.trim();
+  const list = CARDS.slice().sort((a, b) => a.p.localeCompare(b.p, 'ko'))
+    .filter(c => !q || c.p.includes(q) || c.m.includes(q));
+  document.getElementById('bookCount').textContent = `${list.length}개`;
+  document.getElementById('bookList').innerHTML = list.map(c =>
+    `<details><summary><b>${esc(c.p)}</b><span>${esc(c.m)}</span></summary><div class="in">이런 때: ${esc(c.s)}</div></details>`).join('')
+    || '<p style="color:var(--ink3);font-size:.9rem">찾는 속담이 없어요.</p>';
+}
+
+/* 이야기 읽어 주기 (브라우저 목소리) */
+function stopSpeak(){ try { speechSynthesis.cancel(); } catch (e) {} }
+function speakStory(){
+  if (!window.speechSynthesis) { alert('이 브라우저는 읽어 주기를 지원하지 않아요.'); return; }
+  stopSpeak();
+  const u = new SpeechSynthesisUtterance(document.getElementById('storyTxt').textContent);
+  u.lang = 'ko-KR'; u.rate = 0.9;
+  const v = speechSynthesis.getVoices().find(v => /ko/i.test(v.lang)); if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+if (!CARDS.length) document.getElementById('s-start').insertAdjacentHTML('afterbegin', '<p style="color:var(--seal)">속담 카드 자료(proverb-cards.js)를 불러오지 못했어요.</p>');
+renderBest();
+</script>
+</body>
+</html>

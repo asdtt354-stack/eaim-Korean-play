@@ -1,5 +1,6 @@
 // ══════════════════════════════════════════════════════════
-// EAIM 활동 기록 시트 — Apps Script (v3: 이미지 드라이브 저장 포함)
+// EAIM 활동 기록 시트 — Apps Script (v3.1, 2026-09-25: 학생 구분을 반·번호로, AI에 이름을 보내지 않음, 모델 최신 Flash)
+// ※ 앱이 보내는 name 칸에는 실명이 아니라 '1-3 7번 구**' 같은 이름표가 들어온다(공통규칙 4-3·6-4).
 // 1) doPost: 앱에서 보내는 활동 기록(+선택적 이미지)을 받아 저장
 // 2) onOpen: 스프레드시트 메뉴에 "EAIM 도구" 추가
 // 3) setGeminiKey: Gemini API 키를 안전하게 저장 (시트에 노출 안 됨)
@@ -124,12 +125,12 @@ function generateAIComments() {
   });
 
   const students = Object.values(byStudent);
-  if (students.length === 0) { ui.alert('학생 이름이 있는 활동이 없어요.'); return; }
+  if (students.length === 0) { ui.alert('반·번호가 있는 활동이 없어요.'); return; }
 
   let summarySheet = ss.getSheetByName('학생별 요약');
   if (!summarySheet) summarySheet = ss.insertSheet('학생별 요약');
   else summarySheet.clear();
-  summarySheet.getRange(1,1,1,5).setValues([['이름','반/모둠','활동 건수','AI 생기부 참고 문구','활동 상세 (원본)']]);
+  summarySheet.getRange(1,1,1,5).setValues([['반·번호','반/모둠','활동 건수','AI 생기부 참고 문구','활동 상세 (원본)']]);
   summarySheet.getRange(1,1,1,5).setFontWeight('bold');
 
   ui.alert(`학생 ${students.length}명의 활동을 분석해서 문구를 생성해요...`);
@@ -137,7 +138,7 @@ function generateAIComments() {
   const outputRows = [];
   students.forEach(s => {
     let comment = '';
-    try { comment = callGeminiForComment(apiKey, s.name, s.items); }
+    try { comment = callGeminiForComment(apiKey, s.items); }
     catch (e) { comment = '(생성 실패: ' + e.toString() + ')'; }
     outputRows.push([s.name, s.group, s.items.length, comment, s.items.join('\n')]);
     Utilities.sleep(1200);
@@ -150,11 +151,11 @@ function generateAIComments() {
   ui.alert(`✅ 완료! "학생별 요약" 탭에서 확인하세요. (총 ${students.length}명)`);
 }
 
-function callGeminiForComment(apiKey, name, items) {
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
+function callGeminiForComment(apiKey, items) {
+  // 학생 이름·반·번호는 AI로 보내지 않는다(공통규칙 6-4). 모델은 최신 Flash 별칭(공통규칙 6-2)
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + apiKey;
   const prompt = `다음은 한 중학생이 국어 창작 플랫폼(시 감상·글쓰기·신문 만들기·어휘 게임)에서 수행한 활동 기록입니다.
 
-학생 이름: ${name}
 활동 내역:
 ${items.map(i => '- ' + i).join('\n')}
 
@@ -162,6 +163,7 @@ ${items.map(i => '- ' + i).join('\n')}
 - 구체적인 활동명(시 감상, 글쓰기, 신문 제작 등)을 자연스럽게 포함하세요
 - 과장하지 말고 사실 기반으로 담백하게 서술하세요
 - "~함", "~보임" 같은 생기부 특유의 종결 어미를 사용하세요
+- 학생 이름은 쓰지 말고, 마크다운(별표·#·목록 기호)도 쓰지 마세요
 - 문구만 출력하고 다른 설명은 붙이지 마세요`;
 
   const res = UrlFetchApp.fetch(url, {

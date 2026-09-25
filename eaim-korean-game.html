@@ -15,8 +15,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="lib/qrcode.min.js"></script>  <!-- 공통규칙 3번: QR은 저장소 안 라이브러리로 그린다 -->
+<script src="korean-ai.js"></script>  <!-- AI는 api/ai 중계 함수로 (공통규칙 6-1) -->
+<script src="vocab-data.js"></script>  <!-- 어휘 자료 (공통규칙 9번) -->
 <style>
+/* 공통규칙 3번: 한글 줄바꿈 — 단어 중간에서 끊기지 않게 (2026-09-25) */
+html,body{word-break:keep-all;overflow-wrap:break-word;}
 :root{
   --bg:#0F0A1A;--card:#1A1030;--card2:#221540;
   --violet:#7B6CF6;--violet-l:#F0EEFF;
@@ -39,6 +43,8 @@ header{background:linear-gradient(135deg,#0F0A1A,#1A1030);padding:14px 18px;
 .logo{font-family:'Nunito',sans-serif;font-size:1.2rem;font-weight:900}
 .logo span{color:var(--violet)}
 .score-board{display:flex;gap:9px;align-items:center}
+/* 휴대폰: 머리 줄이 세 줄로 길어져 게임 화면을 가리던 것 (2026-09-25) */
+@media (max-width:480px){header{padding:10px 12px}.logo{font-size:1rem;white-space:nowrap}.logo span{display:none}.score-board{gap:5px}.hub-link{display:none}}
 .score-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:5px 11px;text-align:center}
 .score-val{font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;color:var(--amber)}
 .score-lbl{font-size:.6rem;color:rgba(255,255,255,.4)}
@@ -216,6 +222,7 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
       <svg class="google-icon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.6 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 7.1 29.5 5 24 5 16.3 5 9.7 9.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.8-5.4l-6.4-5.4C29.3 34.9 26.8 35.8 24 35.8c-5.3 0-9.8-3.4-11.4-8.1l-6.6 5.1C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.8l6.4 5.4C40.6 36.4 44 30.8 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
       구글 계정으로 로그인
     </button>
+    <button class="btn bg2 bfl" style="margin-top:12px" onclick="enterPublicView()">🎮 로그인 없이 게임하기</button>
     <a href="index.html" style="display:block;margin-top:16px;font-size:.7rem;color:rgba(255,255,255,.3);text-decoration:none">← 허브로 돌아가기</a>
   </div>
 </div>
@@ -227,7 +234,8 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
     <div style="font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:5px">국어 어휘 게임방</div>
     <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:18px">재미있게 어휘를 마스터해봐요!</div>
     <div class="locked-notice" id="lockedNotice" style="display:none">🔒 선생님이 아직 수업을 열지 않았어요</div>
-    <input type="text" id="sni" placeholder="이름 입력" class="mi"
+    <div style="display:flex;gap:6px"><input type="text" id="sclassno" placeholder="반 (예: 1-3)" class="mi" style="flex:1.3;min-width:0" autocomplete="off"><input type="number" id="sno" placeholder="번호" min="1" max="99" inputmode="numeric" class="mi" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')sN()"></div>
+    <input type="text" id="sni" placeholder="이름 (선택 · 첫 글자만 보여요)" class="mi" autocomplete="off"
       onkeydown="if(event.key==='Enter')sN()">
     <select id="sclass" class="mi" style="text-align:left">
       <option value="">반/모둠 선택</option>
@@ -239,7 +247,8 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 <!-- 교사 대시보드 -->
 <div id="teacherPanel" class="ov" style="display:none">
   <div class="mb" style="text-align:left">
-    <div style="font-family:'Nunito',sans-serif;font-size:1.15rem;font-weight:900;margin-bottom:18px;text-align:center">🎮 교사 대시보드</div>
+    <div style="font-family:'Nunito',sans-serif;font-size:1.15rem;font-weight:900;margin-bottom:12px;text-align:center">🎮 교사 대시보드</div>
+    <button class="btn bvio bfl" style="margin-bottom:14px" onclick="goGameAsTeacher()">🎮 게임 화면으로</button>
     <div class="teacher-chip">
       <img class="teacher-avatar" src="" id="dashAvatar" onerror="this.style.display='none'">
       <div style="font-size:.8rem" id="dashProfile"></div>
@@ -267,7 +276,7 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
     </div>
     <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">🔑 Gemini API 키</label>
-      <input type="text" id="apiKeyInput" class="mi" placeholder="AIzaSy..." style="font-size:.85rem" oninput="saveApiKeyDash(this.value)">
+      <input type="password" id="apiKeyInput" class="mi" placeholder="AIzaSy... (본인 키 · 선택)" style="font-size:.85rem" oninput="saveApiKeyDash(this.value)"><div style="font-size:.7rem;line-height:1.7;margin-top:8px;opacity:.8">AI는 이제 서버(중계 함수)를 거쳐 불러요. 운영자 명단에 있는 선생님은 키를 넣지 않아도 돼요. 본인 키를 넣을 때는 <b>API 제한(Generative Language API)과 하루 한도만</b> 걸고, 웹사이트 제한은 걸지 마세요(서버에서 막혀요).</div><div id="aiStatus" style="font-size:.74rem;margin-top:6px">🤖 AI 연결 상태: 확인 중...</div>
     </div>
     <div style="margin-bottom:16px">
       <label style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">📊 구글시트 연동 (선택)</label>
@@ -288,10 +297,11 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
       <div class="score-item"><div class="score-val" id="total-score">0</div><div class="score-lbl">총점</div></div>
       <div class="score-item"><div class="score-val" id="streak-count">0</div><div class="score-lbl">연속</div></div>
       <button onclick="goLobby()" class="btn bg2 bsm">🏠 로비</button>
-      <button onclick="studentLogout()" class="btn bg2 bsm">나가기</button>
+      <button onclick="exitOrTeacher()" id="exitBtn" class="btn bg2 bsm">나가기</button>
     </div>
   </div>
 </header>
+<div id="publicNote" style="display:none;text-align:center;font-size:.72rem;color:rgba(255,255,255,.55);background:rgba(123,108,246,.12);padding:7px 12px;position:relative;z-index:1">누구나 로그인 없이 하는 게임이에요 · 점수는 이 기기에만 남아요 · AI 문제는 수업 링크로 들어왔을 때만 새로 만들어져요</div>
 
 <main>
 <div id="lobby">
@@ -301,22 +311,10 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
   </div>
 
   <div class="term-setup">
-    <div style="font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;color:var(--violet);margin-bottom:12px">📚 게임할 어휘 선택</div>
-    <div class="cat-tabs" id="cat-tabs">
-      <button onclick="showCat('전체',this)" class="ctab on">🌟 전체</button>
-      <button onclick="showCat('속담',this)" class="ctab">📜 속담</button>
-      <button onclick="showCat('관용어',this)" class="ctab">💬 관용어</button>
-      <button onclick="showCat('한자',this)" class="ctab">🀄 한자성어</button>
-      <button onclick="showCat('순우리말',this)" class="ctab">🌸 순우리말</button>
-      <button onclick="showCat('문학',this)" class="ctab">📖 문학어휘</button>
-      <button onclick="showCat('맞춤법',this)" class="ctab">✏️ 맞춤법</button>
-    </div>
-    <div id="term-chip-wrap" class="term-chips"></div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button onclick="selectAll()" class="btn bg2 bsm">✅ 전체</button>
-      <button onclick="clearAll()" class="btn bg2 bsm">❌ 해제</button>
-      <span id="sel-count" style="font-size:.78rem;color:rgba(255,255,255,.4);align-self:center">0개</span>
-    </div>
+    <div style="font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;color:var(--violet);margin-bottom:4px">📚 어떤 어휘로 할까요?</div>
+    <div style="font-size:.74rem;color:rgba(255,255,255,.45);margin-bottom:12px">여러 개 골라도 돼요. 어휘는 게임할 때 나와요.</div>
+    <div class="cat-tabs" id="cat-tabs"></div>
+    <div id="sel-count" style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:10px"></div>
   </div>
 
   <div class="game-grid">
@@ -333,10 +331,9 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
       <div class="game-desc">30초 안에<br>최대한 많이!</div>
     </div>
     <div class="game-card" onclick="startGame('blank')" style="border-color:rgba(56,189,248,.15)">
-      <span class="gbadge badge-ai">AI</span>
       <span class="game-icon">🔤</span>
       <div class="game-name">빈칸 채우기</div>
-      <div class="game-desc">문장 빈칸에<br>어휘를 넣어요</div>
+      <div class="game-desc">뜻을 보고<br>어휘를 써 넣어요</div>
     </div>
     <div class="game-card" onclick="startGame('match')" style="border-color:rgba(0,191,138,.15)">
       <span class="game-icon">🃏</span>
@@ -344,7 +341,6 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
       <div class="game-desc">어휘와 뜻을<br>짝지어봐요</div>
     </div>
     <div class="game-card" onclick="startGame('guess')" style="border-color:rgba(123,108,246,.2)">
-      <span class="gbadge badge-ai">AI</span>
       <span class="game-icon">🎯</span>
       <div class="game-name">어휘 맞추기</div>
       <div class="game-desc">뜻을 보고<br>어휘를 골라요</div>
@@ -404,97 +400,14 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 </div><!-- /mainApp -->
 
 <script>
-let stuName='', stuClass='';
+let stuName='', stuClass='', stuClassNo='', stuNo=0, stuDisplay='';   // 학생 구분은 반 + 번호 (공통규칙 4-3) — stuName 은 표시용 이름표(예: 1-3 7번 구**)
 let totalScore=0, streak=0, currentGame=null, gameState={};
 let selectedTerms=[];
-let rankings=JSON.parse(localStorage.getItem('eaim_korean_rankings')||'[]');
+// 기기 랭킹에는 반·번호·가린 이름만 남긴다(공통규칙 4-3). 예전 랭킹(실명이 있을 수 있음)은 이름을 바꿔 한 번 비운다 (2026-09-25)
+try{ localStorage.removeItem('eaim_korean_rankings'); }catch(e){}
+let rankings=JSON.parse(localStorage.getItem('eaim_korean_game_rankings')||'[]');
 
-const TERMS = {
-  '속담': [
-    {w:'가는 말이 고와야 오는 말이 곱다',m:'자기가 남에게 잘 대해야 남도 잘 대해준다'},
-    {w:'공든 탑이 무너지랴',m:'정성껏 이룬 일은 쉽게 무너지지 않는다'},
-    {w:'낙숫물이 댓돌을 뚫는다',m:'작은 노력도 오래 계속하면 큰일을 이룰 수 있다'},
-    {w:'塵도 쌓이면 산',m:'아무리 작은 것도 모이면 크게 된다'},
-    {w:'하늘이 무너져도 솟아날 구멍이 있다',m:'아무리 어려운 상황에도 살 방법이 있다'},
-    {w:'세 살 버릇 여든까지 간다',m:'어릴 때 든 버릇은 늙어서도 변하지 않는다'},
-    {w:'가랑비에 옷 젖는다',m:'조금씩 해도 나중에 큰 영향을 미친다'},
-    {w:'원숭이도 나무에서 떨어진다',m:'아무리 잘하는 사람도 실수할 때가 있다'},
-    {w:'빈 수레가 요란하다',m:'실력 없는 사람이 더 떠들썩하다'},
-    {w:'시작이 반이다',m:'무슨 일이든 시작하는 것이 가장 중요하다'},
-    {w:'배보다 배꼽이 크다',m:'주된 것보다 부수적인 것이 더 크다'},
-    {w:'등잔 밑이 어둡다',m:'가까이 있는 것을 오히려 모를 수 있다'},
-  ],
-  '관용어': [
-    {w:'발이 넓다',m:'아는 사람이 많고 사교적이다'},
-    {w:'손이 크다',m:'씀씀이가 크고 인심이 후하다'},
-    {w:'귀가 얇다',m:'남의 말을 쉽게 믿고 잘 따른다'},
-    {w:'눈이 높다',m:'기준이 높아 잘 만족하지 않는다'},
-    {w:'입이 무겁다',m:'비밀을 잘 지키고 말이 적다'},
-    {w:'발을 끊다',m:'어떤 곳에 가지 않거나 관계를 끊다'},
-    {w:'배가 아프다',m:'남이 잘되는 것을 시기하고 부러워하다'},
-    {w:'코가 납작해지다',m:'몹시 창피를 당하거나 기가 꺾이다'},
-    {w:'손을 씻다',m:'나쁜 일이나 관계에서 벗어나다'},
-    {w:'마음이 넓다',m:'너그럽고 포용력이 있다'},
-    {w:'목이 빠지게 기다리다',m:'몹시 애타게 기다리다'},
-    {w:'입이 짧다',m:'먹는 것에 까다롭고 식성이 작다'},
-  ],
-  '한자': [
-    {w:'일석이조(一石二鳥)',m:'돌 한 개로 새 두 마리를 잡는다, 한 가지 일로 두 가지 이익'},
-    {w:'청출어람(靑出於藍)',m:'쪽에서 나온 파랑이 쪽보다 더 파랗다, 제자가 스승을 능가'},
-    {w:'사면초가(四面楚歌)',m:'사방이 적으로 둘러싸여 매우 곤란한 처지'},
-    {w:'과유불급(過猶不及)',m:'지나친 것은 미치지 못한 것과 같다'},
-    {w:'온고지신(溫故知新)',m:'옛것을 익히고 그것으로 새것을 안다'},
-    {w:'유비무환(有備無患)',m:'준비가 있으면 걱정이 없다'},
-    {w:'자업자득(自業自得)',m:'자기가 저지른 일의 결과를 자기가 받음'},
-    {w:'동병상련(同病相憐)',m:'같은 처지에 있는 사람끼리 서로 동정함'},
-    {w:'새옹지마(塞翁之馬)',m:'인생의 길흉화복은 변화가 많아 예측하기 어려움'},
-    {w:'역지사지(易地思之)',m:'처지를 바꾸어서 생각해 봄'},
-    {w:'와신상담(臥薪嘗膽)',m:'원수를 갚고자 어려움을 참고 견딤'},
-    {w:'군계일학(群鷄一鶴)',m:'많은 사람들 중에서 뛰어난 한 사람'},
-  ],
-  '순우리말': [
-    {w:'가람',m:'강을 예스럽게 이르는 말'},
-    {w:'나래',m:'날개를 이르는 말'},
-    {w:'누리',m:'세상을 이르는 말'},
-    {w:'미리내',m:'은하수를 이르는 말'},
-    {w:'바라미',m:'바람을 이르는 말'},
-    {w:'아라',m:'바다를 이르는 말'},
-    {w:'해',m:'태양을 이르는 말'},
-    {w:'달',m:'위성을 이르는 말'},
-    {w:'봄',m:'계절 중 첫 번째'},
-    {w:'슬기',m:'사리를 올바르게 판단하는 능력'},
-    {w:'토리',m:'실을 공 모양으로 감은 것'},
-    {w:'온',m:'모든, 전부라는 뜻의 우리말'},
-  ],
-  '문학': [
-    {w:'의인법',m:'사람이 아닌 것을 사람처럼 표현하는 방법'},
-    {w:'직유법',m:'"~같이", "~처럼"을 써서 비교하는 방법'},
-    {w:'은유법',m:'A는 B다 형식으로 직접 비유하는 방법'},
-    {w:'반어법',m:'실제와 반대로 표현하는 방법'},
-    {w:'역설법',m:'겉보기에 모순이지만 깊은 뜻이 담긴 표현'},
-    {w:'과장법',m:'실제보다 훨씬 크게 또는 작게 표현하는 방법'},
-    {w:'설의법',m:'물음으로 표현하여 강조하는 방법'},
-    {w:'대구법',m:'비슷한 구조의 문장을 짝지어 표현하는 방법'},
-    {w:'점층법',m:'내용을 점점 강하게 표현하는 방법'},
-    {w:'열거법',m:'여러 가지를 나열하여 표현하는 방법'},
-    {w:'생략법',m:'일부를 생략하여 여운을 주는 방법'},
-    {w:'도치법',m:'문장의 순서를 바꾸어 표현하는 방법'},
-  ],
-  '맞춤법': [
-    {w:'맞히다',m:'"문제를 맞히다"처럼 정답을 내다'},
-    {w:'맞추다',m:'"퍼즐을 맞추다"처럼 서로 일치시키다'},
-    {w:'안',m:'"안 간다"처럼 부정의 뜻'},
-    {w:'않',m:'"가지 않다"처럼 "아니하다"의 줄임'},
-    {w:'되',m:'"잘 되어"처럼 이어줄 때'},
-    {w:'돼',m:'"잘 됐어"처럼 "되어"가 줄어든 것'},
-    {w:'왠지',m:'"왠지 모르게"처럼 이유 없이'},
-    {w:'웬',m:'"웬 일이야"처럼 어떠한'},
-    {w:'이따가',m:'조금 지난 뒤에'},
-    {w:'있다가',m:'있는 상태로 있다가'},
-    {w:'로서',m:'자격·신분을 나타낼 때'},
-    {w:'로써',m:'도구·수단을 나타낼 때'},
-  ],
-};
+const TERMS = window.EAIM_VOCAB || {};   // 어휘 자료는 vocab-data.js 로 분리 (공통규칙 9번, 2026-09-25)
 
 // ══════════════════════════
 // 🔥 Firebase — teachers/{uid}/... 구조
@@ -511,12 +424,39 @@ let db=null, auth=null, firebaseReady=false;
 try{
   firebase.initializeApp(FIREBASE_CONFIG);
   db=firebase.firestore(); auth=firebase.auth(); firebaseReady=true;
+  // 공통규칙 4-2: 브라우저를 닫으면 로그아웃(공용 PC 보호), 리디렉션 로그인에서 돌아온 경우 오류 표시 (2026-09-25)
+  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(()=>{});
+  auth.getRedirectResult().catch(e=>{ const el=document.getElementById('googleLoginErr'); if(el) el.textContent='로그인 실패: '+e.message; });
 }catch(e){ console.error('Firebase 초기화 실패', e); firebaseReady=false; }
 
 const teacherDocRef  = (uid) => db.collection('teachers').doc(uid);
 const settingsDocRef = (uid) => teacherDocRef(uid).collection('meta').doc('settings');
 const groupsColRef   = (uid) => teacherDocRef(uid).collection('groups');
-const studentsColRef = (uid) => teacherDocRef(uid).collection('students'); // 🔥 추가: 랭킹 점수 기록용
+const studentsColRef = (uid) => teacherDocRef(uid).collection('students'); // 게임 점수 기록용
+
+// ══════════════════════════
+// 학생 구분: 반 + 번호 (공통규칙 4-3, 2026-09-25)
+//  - 이름은 적지 않아도 되고, 적으면 첫 글자만 남긴다(예: 구**). 이름 원문은 저장·전송하지 않는다.
+//  - students 문서 이름: korean-<앱>_<반>-<번호 두 자리> (예: korean-game_1-3-07).
+//    과학 등 다른 교과와 같은 teachers/{uid}/students 를 함께 쓰므로 앞머리로 구분한다(국어 부록 3번).
+// ══════════════════════════
+const KOREAN_APP = 'game';
+function normalizeClassNo(v){ const s=String(v||'').replace(/\s/g,''); const m=s.match(/^(\d{1,2})(?:학년|-|\.|\/)?(\d{1,2})반?$/); return m ? `${parseInt(m[1],10)}-${parseInt(m[2],10)}` : s; }
+function maskName(n){ n=String(n||'').trim(); return n ? n.charAt(0)+'*'.repeat(Math.max(1,Math.min(n.length-1,3))) : ''; }
+function studentKey(cn,no){ return `korean-${KOREAN_APP}_${cn}-${String(no).padStart(2,'0')}`; }
+function isMyAppDoc(d){ return d && d.platform==='korean' && d.app===KOREAN_APP; }   // 과학·다른 국어 앱 기록은 보지도 지우지도 않는다
+function safeFileName(t){ return String(t||'').replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,'_') || 'eaim'; }
+
+// 교사 대시보드: AI 중계 함수가 이 선생님 UID로 동작하는지 표시 (30초마다 한 번만 확인)
+let _aiStat={t:0,html:''};
+function refreshAiStatus(){
+  const el=document.getElementById('aiStatus'); if(!el||!teacherUid) return;
+  if(Date.now()-_aiStat.t<30000 && _aiStat.html){ el.innerHTML=_aiStat.html; return; }
+  KoreanAI.ping(teacherUid).then(r=>{
+    _aiStat={t:Date.now(), html: r&&r.ok ? '🤖 AI 연결 상태: ✅ 사용 가능' : '🤖 AI 연결 상태: ⚠️ '+((r&&r.reason)||'확인 필요')};
+    const e2=document.getElementById('aiStatus'); if(e2) e2.innerHTML=_aiStat.html;
+  });
+}
 
 let authLoaded=false, currentUser=null, teacherUid=null, isStudentMode=false;
 let settings = { apiKey:'', classOn:false, sheetUrl:'' };
@@ -600,6 +540,9 @@ function renderStudentLoginGate(){
 function enterMainApp(){
   hideAllOverlays();
   document.getElementById('mainApp').style.display='block';
+  const b=document.getElementById('exitBtn');
+  if(b) b.textContent = isStudentMode ? '나가기' : (currentUser ? '👩‍🏫 대시보드' : '👩‍🏫 선생님');
+  const pb=document.getElementById('publicNote'); if(pb) pb.style.display = (!isStudentMode && !currentUser) ? 'block' : 'none';
 }
 function enterTeacherDashboard(){
   hideAllOverlays();
@@ -613,6 +556,7 @@ function enterTeacherDashboard(){
   document.getElementById('inviteUrlBox').textContent = inviteUrl;
   generateInviteQR(inviteUrl);
   subscribeGroups(teacherUid);
+  refreshAiStatus();
 }
 function renderClassToggle(){
   const lbl=document.getElementById('classStatusLabel'), sub=document.getElementById('classStatusSub'), tg=document.getElementById('classToggle');
@@ -635,31 +579,45 @@ function generateInviteQR(url){
   new QRCode(el, { text:url, width:140, height:140, colorDark:'#1A1030', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
 }
 function googleLogin(){
+  // 공통규칙 4-2: 항상 계정 선택 창, 팝업이 막히면 리디렉션 로그인 (2026-09-25)
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(e=>{ document.getElementById('googleLoginErr').textContent='로그인 실패: '+e.message; });
+  provider.setCustomParameters({ prompt: 'select_account' });
+  auth.signInWithPopup(provider).catch(e=>{
+    if(e && (e.code==='auth/popup-blocked' || e.code==='auth/operation-not-supported-in-this-environment')){ auth.signInWithRedirect(provider); return; }
+    if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')) return;
+    document.getElementById('googleLoginErr').textContent='로그인 실패: '+e.message;
+  });
 }
 function teacherLogout(){
   if(unsubSettings){unsubSettings();unsubSettings=null;}
   if(unsubGroups){unsubGroups();unsubGroups=null;}
-  auth.signOut(); teacherUid=null;
+  auth.signOut(); teacherUid=null; teacherInGame=false;
+  enterPublicView();   // 로그아웃하면 공개 게임 화면으로
+}
+// ── 공개 게임 / 교사 오가기 (2026-09-25) ──
+let teacherInGame=false;
+function enterPublicView(){
+  teacherInGame=false; stuName=''; stuClass=''; stuClassNo=''; stuNo=0; stuDisplay='';
+  enterMainApp(); initTerms(); loadRankings();
+}
+function goGameAsTeacher(){ teacherInGame=true; enterMainApp(); initTerms(); loadRankings(); }
+function exitOrTeacher(){
+  if(isStudentMode) return studentLogout();
+  if(currentUser){ teacherInGame=false; return enterTeacherDashboard(); }
   renderTeacherGoogleGate();
 }
 function studentLogout(){
   if(unsubSettings){unsubSettings();unsubSettings=null;}
-  stuName=''; stuClass='';
+  stuName=''; stuClass=''; stuClassNo=''; stuNo=0; stuDisplay='';
   renderStudentLoginGate();
 }
 
+// AI: 브라우저에서 Gemini를 직접 부르지 않고 api/ai 중계 함수로 (공통규칙 6-1, 2026-09-25)
+//  모델은 별칭 'text'(최신 Flash). 실패하면 각 게임이 기본 문제로 이어간다.
 async function callGemini(prompt,maxTokens=500){
-  const key=settings.apiKey||'';
-  if(!key)throw new Error('NO_KEY');
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens,temperature:0.8,thinkingConfig:{thinkingBudget:0}}})
-  });
-  const d=await r.json();
-  if(d.error)throw new Error(d.error.message);
-  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  if(!KoreanAI.ready()) throw new Error(KoreanAI.NO_AI);
+  const { text } = await KoreanAI.text(prompt, maxTokens);
+  return text;
 }
 
 function initParticles(){
@@ -675,12 +633,16 @@ function initParticles(){
 initParticles();
 
 function sN(){
-  const n=document.getElementById('sni').value.trim();
+  const cn=normalizeClassNo(document.getElementById('sclassno').value);
+  const no=parseInt(document.getElementById('sno').value,10);
   const c=document.getElementById('sclass').value;
   if(!settings.classOn){alert('선생님이 아직 수업을 열지 않았어요');return;}
-  if(!n){alert('이름을 입력해주세요!');return;}
+  if(!cn){alert('반을 적어 주세요! (예: 1학년 3반 → 1-3)');return;}
+  if(!(no>=1&&no<=99)){alert('번호를 숫자로 적어 주세요!');return;}
   if(!c){alert('반/모둠을 선택해주세요!');return;}
-  stuName=n; stuClass=c;
+  stuClassNo=cn; stuNo=no; stuDisplay=maskName(document.getElementById('sni').value);
+  document.getElementById('sni').value='';   // 이름 원문은 남기지 않음
+  stuName=`${cn} ${no}번${stuDisplay?' '+stuDisplay:''}`; stuClass=c;
   enterMainApp();
   initTerms();loadRankings();
 }
@@ -696,44 +658,32 @@ function logToSheet(activity, title, detail){
   }catch(e){ console.warn('시트 기록 실패', e); }
 }
 
+// ── 어휘 분류 고르기 (2026-09-25: 어휘 목록을 로비에 늘어놓지 않고 분류만 고른다) ──
+const CAT_LABEL = { '관용어':'💬 관용어', '한자':'🀄 한자성어', '순우리말':'🌸 순우리말', '문학':'📖 문학어휘', '맞춤법':'✏️ 맞춤법' };
+let selectedCats = new Set();
 function initTerms(){
-  selectedTerms=Object.values(TERMS).flat();
-  showCat('전체',document.querySelector('.ctab'));
+  if(!selectedCats.size) selectedCats = new Set(Object.keys(TERMS));
+  applyCats();
+}
+function applyCats(){
+  selectedTerms = [...selectedCats].flatMap(c => TERMS[c] || []);
+  const all = Object.keys(TERMS), allOn = all.every(c => selectedCats.has(c));
+  const el = document.getElementById('cat-tabs'); if(!el) return;
+  el.innerHTML = `<button class="ctab${allOn?' on':''}" onclick="toggleCat('전체')">🌟 전체</button>` +
+    all.map(c => `<button class="ctab${!allOn&&selectedCats.has(c)?' on':''}" onclick="toggleCat('${c}')">${CAT_LABEL[c]||c} <span style="opacity:.6">${(TERMS[c]||[]).length}</span></button>`).join('');
   updateCount();
 }
-
-function showCat(cat,btn){
-  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  const terms=cat==='전체'?Object.values(TERMS).flat():TERMS[cat]||[];
-  const el=document.getElementById('term-chip-wrap');el.innerHTML='';
-  terms.forEach(t=>{
-    const chip=document.createElement('span');
-    chip.className='term-chip'+(selectedTerms.some(s=>s.w===t.w)?' on':'');
-    chip.textContent=t.w;
-    chip.onclick=()=>{
-      chip.classList.toggle('on');
-      if(chip.classList.contains('on')){if(!selectedTerms.some(s=>s.w===t.w))selectedTerms.push(t);}
-      else selectedTerms=selectedTerms.filter(s=>s.w!==t.w);
-      updateCount();
-    };
-    el.appendChild(chip);
-  });
+function toggleCat(c){
+  const all = Object.keys(TERMS), allOn = all.every(x => selectedCats.has(x));
+  if(c === '전체') selectedCats = new Set(all);
+  else if(allOn) selectedCats = new Set([c]);              // '전체' 상태에서 하나를 누르면 그 분류만
+  else { selectedCats.has(c) ? selectedCats.delete(c) : selectedCats.add(c); if(!selectedCats.size) selectedCats = new Set(all); }
+  applyCats();
 }
-
-function selectAll(){
-  const cat=document.querySelector('.ctab.on').textContent.replace(/[🌟📜💬🀄🌸📖✏️]/g,'').trim();
-  const terms=cat==='전체'?Object.values(TERMS).flat():TERMS[cat]||[];
-  terms.forEach(t=>{if(!selectedTerms.some(s=>s.w===t.w))selectedTerms.push(t);});
-  showCat(cat,document.querySelector('.ctab.on'));updateCount();
+function updateCount(){
+  const el=document.getElementById('sel-count'); if(!el) return;
+  el.textContent = `고른 분류의 어휘 ${selectedTerms.length}개 중에서 문제가 나와요`;
 }
-function clearAll(){
-  const cat=document.querySelector('.ctab.on').textContent.replace(/[🌟📜💬🀄🌸📖✏️]/g,'').trim();
-  const terms=cat==='전체'?Object.values(TERMS).flat():TERMS[cat]||[];
-  selectedTerms=selectedTerms.filter(s=>!terms.some(t=>t.w===s.w));
-  showCat(cat,document.querySelector('.ctab.on'));updateCount();
-}
-function updateCount(){document.getElementById('sel-count').textContent=selectedTerms.length+'개';}
 
 function getRandTerms(n){
   const pool=selectedTerms.length>1?selectedTerms:Object.values(TERMS).flat();
@@ -800,7 +750,7 @@ async function showBlank(){
   document.getElementById('game-content').innerHTML=`
     <div class="q-card"><div class="q-label">🔤 빈칸에 알맞은 어휘는?</div>
     <div class="q-text">${term.m}</div>
-    <div class="q-hint">힌트: "${term.w[0]}"(으)로 시작, ${term.w.length}글자</div></div>
+    <div class="q-hint">힌트: "${term.w[0]}"(으)로 시작, ${blankKey(term.w).length}글자 · 띄어쓰기와 한자는 안 써도 돼요</div></div>
     <input type="text" id="blank-input" class="ans-input" placeholder="어휘를 입력하세요..."
       onkeydown="if(event.key==='Enter')checkBlank()">`;
   document.getElementById('game-actions').innerHTML=`
@@ -809,10 +759,11 @@ async function showBlank(){
   document.getElementById('blank-input').focus();
   startTimer(20);
 }
+function blankKey(t){ return String(t||'').replace(/\(.*?\)/g,'').replace(/\s+/g,''); }
 function checkBlank(){
   clearTimer();
   const input=document.getElementById('blank-input')?.value.trim()||'';
-  const ok=input===gameState.blankAns;
+  const ok=blankKey(input)===blankKey(gameState.blankAns);   // 띄어쓰기·괄호 속 한자는 보지 않고 채점 (2026-09-25)
   showFB(ok,{w:gameState.blankAns,m:selectedTerms.find(t=>t.w===gameState.blankAns)?.m||''});
   setTimeout(()=>nextQ(),1800);
 }
@@ -846,9 +797,8 @@ async function showRandom(){
   const choices=[term,...others].sort(()=>Math.random()-.5);
   gameState.guessAns=term.w;
 
-  const key=settings.apiKey||'';
   let qText=term.m;
-  if(key){
+  if(KoreanAI.ready()){
     try{
       const types=['예문','반의어','비슷한표현','특징'];
       const qtype=types[Math.floor(Math.random()*types.length)];
@@ -875,8 +825,7 @@ async function showStory(){
   gameState.guessAns=term.w;
 
   let story=`오늘 선생님이 "${term.m}"라는 어휘에 대해 설명해주셨어요. 이 어휘는 무엇일까요?`;
-  const key=settings.apiKey||'';
-  if(key){
+  if(KoreanAI.ready()){
     try{
       const raw=await callGemini(`국어 어휘 "${term.w}" (뜻: ${term.m})이 자연스럽게 포함된 중학생의 일상 이야기를 3문장으로 써주세요.
 "이것을 무엇이라고 할까요?"로 끝내세요. 이야기만:`,200);
@@ -1042,15 +991,15 @@ function endGame(){
   const pct=Math.round(correct/Math.max(total,1)*100);
   const emoji=pct>=90?'🏆':pct>=70?'🎉':pct>=50?'👍':'💪';
   const msg=pct>=90?'완벽해요! 어휘 마스터!':pct>=70?'잘했어요!':pct>=50?'좋아요! 계속 연습!':'다시 도전해봐요!';
-  rankings.push({name:stuName,score:sc,game:currentGame,date:new Date().toLocaleTimeString('ko-KR')});
+  rankings.push({name:stuName||'손님',score:sc,game:currentGame,date:new Date().toLocaleTimeString('ko-KR')});
   rankings.sort((a,b)=>b.score-a.score);rankings=rankings.slice(0,10);
-  localStorage.setItem('eaim_korean_rankings',JSON.stringify(rankings));
+  localStorage.setItem('eaim_korean_game_rankings',JSON.stringify(rankings));
 
   // 🔥 추가: Firebase에 게임 점수 기록 (교사 대시보드 학생현황에서 확인 가능)
-  if(teacherUid && stuName){
-    const key = stuName.trim();
-    studentsColRef(teacherUid).doc(key).set({
-      name: stuName, group: stuClass||'',
+  if(teacherUid && stuClassNo){
+    studentsColRef(teacherUid).doc(studentKey(stuClassNo,stuNo))   /* 반-번호 (이름으로 문서 이름을 만들지 않음) */.set({
+      platform: 'korean', app: KOREAN_APP,
+      name: stuName, classNo: stuClassNo, studentNo: stuNo, displayName: stuDisplay, group: stuClass||'',
       lastGame: currentGame||'', lastScore: sc, lastAccuracy: pct,
       updatedAt: new Date().toLocaleString('ko-KR')
     }, {merge:true}).catch(e=>console.warn('점수 기록 실패', e));
@@ -1108,30 +1057,26 @@ function loadRankings(){
 
   if(role==='student'){
     isStudentMode=true;
-    if(!teacherParam){ renderNoTeacherLink(); return; }
+    if(!teacherParam){ isStudentMode=false; enterPublicView(); return; }   // 선생님 정보가 없는 링크면 공개 게임으로
     teacherUid=teacherParam;
-    subscribeSettings(teacherUid, ()=>{ renderStudentLoginGate(); });
+    KoreanAI.setTeacher(()=>teacherUid);
+    subscribeSettings(teacherUid, ()=>{ if(!stuName) renderStudentLoginGate(); });   // 수업 중 설정이 바뀌어도 학생을 로그인 화면으로 돌려보내지 않음
     subscribeGroups(teacherUid);
     return;
   }
 
+  // 공개(2026-09-25 선생님 결정): 링크 없이 열면 로그인 없이 바로 게임. 기록은 남지 않고 AI 문제는 기본 문제로 대신한다.
+  //  선생님은 위쪽 "👩‍🏫 선생님" 버튼으로 로그인 → 대시보드(수업 QR·학생 기록).
   auth.onAuthStateChanged(user=>{
     currentUser=user;
     if(user){
       teacherUid=user.uid;
-      subscribeSettings(teacherUid, ()=>{ enterTeacherDashboard(); });
+      subscribeSettings(teacherUid, ()=>{ if(!teacherInGame) enterTeacherDashboard(); });
     } else {
-      renderTeacherGoogleGate();
+      teacherUid=null; enterPublicView();
     }
   });
 })();
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(()=>{});
-  });
-}
 </script>
 </body>
 </html>

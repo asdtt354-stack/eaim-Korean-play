@@ -6,6 +6,8 @@
 <title>EAIM 국어 창작 플랫폼</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
+/* 공통규칙 3번: 한글 줄바꿈 — 단어 중간에서 끊기지 않게 (2026-09-25) */
+html,body{word-break:keep-all;overflow-wrap:break-word;}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -259,6 +261,7 @@ body::before {
 .card-poetry .step-dot:nth-child(5){background:#F0F0FF;color:#202080}
 .card-poetry .step-dot:nth-child(6){background:#FFF8E0;color:#806000}
 .card-poetry .step-dot:nth-child(7){background:#E0F8E0;color:#006000}
+.card-poetry .step-dot:nth-child(8){background:#FFF3D0;color:#8A5A00}
 
 .card-writing .step-dot:nth-child(1){background:#F0FDF4;color:#15803D}
 .card-writing .step-dot:nth-child(2){background:#ECFDF5;color:#059669}
@@ -275,6 +278,18 @@ body::before {
 .card-news .step-dot:nth-child(5){background:#FFFBEB;color:#B07000}
 
 .card-game .step-dot { background:rgba(123,108,246,.18); color:#A89CF8; }
+.card-proverb .card-head {
+  background: linear-gradient(135deg, #2F5D50 0%, #24483E 55%, #1B3830 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-proverb .card-head::before {
+  content: '諺'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif; font-size: 6rem; color: rgba(244,238,223,.12); pointer-events: none;
+}
+.card-proverb .live-dot { background: #F4EEDF; box-shadow: 0 0 6px #F4EEDF; }
+.card-proverb .step-dot { background:#E4EEE8; color:#2F5D50; }
+.card-proverb .enter-btn { background: linear-gradient(135deg, #2F5D50, #24483E); color: #F4EEDF; box-shadow: 0 4px 14px rgba(47,93,80,.3); }
+.app-card:nth-child(5){ animation: cardIn .6s .52s ease both; }
 
 .enter-btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -392,7 +407,7 @@ footer strong { color: var(--accent); }
     <div class="info-div"></div>
     <div class="info-item">
       <div class="info-icon">✍️</div>
-      <div class="info-val">4가지 앱</div>
+      <div class="info-val">5가지 앱</div>
       <div class="info-lbl">활동</div>
     </div>
   </div>
@@ -411,13 +426,13 @@ footer strong { color: var(--accent); }
         <span class="feat-pill">🎨 감정 탭 15개</span>
         <span class="feat-pill">✏️ AI 첨삭</span>
         <span class="feat-pill">🌸 시 창작</span>
-        <span class="feat-pill">🎵 음악+낭독</span>
+        <span class="feat-pill">🎼 AI 음악+낭송</span>
       </div>
     </div>
     <div class="card-body">
       <div class="step-dots">
         <div class="step-dot">S1</div><div class="step-dot">S2</div><div class="step-dot">S3</div>
-        <div class="step-dot">S4</div><div class="step-dot">S5</div><div class="step-dot">S6</div><div class="step-dot">S7</div>
+        <div class="step-dot">S4</div><div class="step-dot">S5</div><div class="step-dot">S6</div><div class="step-dot">S7</div><div class="step-dot">S8</div>
       </div>
       <span class="enter-btn">입장하기 →</span>
     </div>
@@ -458,7 +473,7 @@ footer strong { color: var(--accent); }
         <span class="feat-pill">🤖 AI 기사 생성</span>
         <span class="feat-pill">✏️ 모둠 직접 입력</span>
         <span class="feat-pill">🗞️ 신문 스타일 4종</span>
-        <span class="feat-pill">🎸 수노 프롬프트</span>
+        <span class="feat-pill">🎼 AI 음악+낭독</span>
       </div>
     </div>
     <div class="card-body">
@@ -472,11 +487,11 @@ footer strong { color: var(--accent); }
 
   <a href="eaim-korean-game.html" class="app-card card-game">
     <div class="card-head">
-      <div class="card-tag"><div class="live-dot"></div> 어휘 게임방</div>
+      <div class="card-tag"><div class="live-dot"></div> 어휘 게임방 · 로그인 없이 바로</div>
       <h2>🎮 국어 어휘 게임방
         <small>Vocabulary Game Room</small>
       </h2>
-      <p>속담·관용어·한자성어·순우리말·문학어휘·맞춤법을 8가지 게임으로 재미있게 익혀요.</p>
+      <p>관용어·한자성어·순우리말·문학어휘·맞춤법을 8가지 게임으로 재미있게 익혀요.</p>
       <div class="feature-row">
         <span class="feat-pill">⭕❌ OX 퀴즈</span>
         <span class="feat-pill">⏱️ 스피드 퀴즈</span>
@@ -494,16 +509,37 @@ footer strong { color: var(--accent); }
     </div>
   </a>
 
+  <a href="eaim-korean-proverb.html" class="app-card card-proverb">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 속담 상황 카드 · 로그인 없이 바로</div>
+      <h2>🗂️ 속담 상황 카드
+        <small>Proverbs in Real Moments</small>
+      </h2>
+      <p>짧은 이야기를 읽고 딱 맞는 속담을 골라요. 속담이 실제로 쓰이는 순간을 만나 보는 게임이에요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">📜 속담 31개</span>
+        <span class="feat-pill">🗂️ 상황 이야기 카드</span>
+        <span class="feat-pill">🔊 읽어 주기</span>
+        <span class="feat-pill">📖 속담 모아 보기</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots"><div class="step-dot">10</div><div class="step-dot">20</div><div class="step-dot">31</div></div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
   <div class="teacher-strip">
     <div class="teacher-strip-text">
       <h3>👩‍🏫 교사 전용 컨트롤</h3>
-      <p>각 앱 로그인 화면에서 "선생님이신가요?" → 비밀번호 입력 (기본: 1234)</p>
+      <p>시·글쓰기·신문은 수업 전용이에요: 앱을 열면 구글 로그인 → 교사 패널에서 수업 QR을 학생에게 보여 주세요. 어휘 게임방은 누구나 바로 할 수 있고, 선생님은 게임 화면 위 "👩‍🏫 선생님" 버튼으로 로그인해요.</p>
     </div>
     <div class="teacher-btns">
       <a href="eaim-korean-poetry.html" class="t-btn t-btn-poetry">📜 시</a>
       <a href="eaim-korean-writing.html" class="t-btn t-btn-writing">✍️ 글쓰기</a>
       <a href="eaim-korean-news.html" class="t-btn t-btn-news">📰 신문</a>
       <a href="eaim-korean-game.html" class="t-btn t-btn-game">🎮 게임</a>
+      <a href="eaim-korean-proverb.html" class="t-btn t-btn-writing">🗂️ 속담</a>
       <a href="korean-guide.html" class="t-btn t-btn-guide">📖 가이드</a>
     </div>
   </div>
@@ -511,7 +547,7 @@ footer strong { color: var(--accent); }
   <footer>
     <strong>EAIM 국어 창작 플랫폼</strong> · 박성애 선생님 제작<br>
     Emotion · Artscape · Interactive · Musicalization<br>
-    <span style="opacity:.6;font-size:.72rem">Powered by Gemini AI · GitHub Pages</span>
+    <span style="opacity:.6;font-size:.72rem">Powered by Gemini AI · Vercel</span>
   </footer>
 
 </div>

@@ -1,0 +1,185 @@
+[
+  {
+    "id": "korean/poetry",
+    "title": "시 감상 & 창작",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [
+      "음악",
+      "미술"
+    ],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "writing",
+    "minutes": 90,
+    "standards": [
+      "[9국05-01]",
+      "[9국05-04]",
+      "[9국05-06]"
+    ],
+    "tags": [
+      "시 감상",
+      "감상문",
+      "시 창작",
+      "낭송",
+      "비유",
+      "운율",
+      "화자"
+    ],
+    "url": "eaim-korean-poetry.html",
+    "classroom": true,
+    "ai": true,
+    "summary": "감정에 어울리는 시를 골라 읽고 감상문을 쓴 뒤, 나만의 시를 짓고 AI가 만든 음악 위에서 낭송하는 활동",
+    "makerNote": ""
+  },
+  {
+    "id": "korean/writing",
+    "title": "글쓰기 창작",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [
+      "음악"
+    ],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "writing",
+    "minutes": 90,
+    "standards": [
+      "[9국03-01]",
+      "[9국03-03]",
+      "[9국03-05]",
+      "[9국03-06]",
+      "[9국03-08]"
+    ],
+    "tags": [
+      "일기",
+      "생활문",
+      "편지",
+      "주장하는 글",
+      "설명하는 글",
+      "이야기",
+      "개요",
+      "고쳐쓰기"
+    ],
+    "url": "eaim-korean-writing.html",
+    "classroom": true,
+    "ai": true,
+    "summary": "여섯 갈래(일기·생활문·편지·주장·설명·이야기) 중 하나를 골라 글감·개요·본문·고쳐쓰기 순서로 글을 완성하는 활동",
+    "makerNote": ""
+  },
+  {
+    "id": "korean/newspaper",
+    "title": "국어 신문 만들기",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [
+      "미술",
+      "음악"
+    ],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "creation",
+    "minutes": 90,
+    "standards": [
+      "[9국03-02]",
+      "[9국03-07]",
+      "[9국06-04]"
+    ],
+    "tags": [
+      "신문",
+      "기사문",
+      "매체 자료 제작",
+      "모둠 활동",
+      "삽화",
+      "감상문"
+    ],
+    "url": "eaim-korean-news.html",
+    "classroom": true,
+    "ai": true,
+    "summary": "기사를 직접 쓰거나 시·글쓰기 앱에서 보낸 글을 모아 네 가지 모양의 신문으로 엮고, 만든 과정을 돌아보는 활동",
+    "makerNote": ""
+  },
+  {
+    "id": "korean/vocab-game",
+    "title": "국어 어휘 게임방",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "game",
+    "minutes": 20,
+    "standards": [
+      "[9국04-06]",
+      "[9국05-01]"
+    ],
+    "tags": [
+      "관용어",
+      "한자성어",
+      "순우리말",
+      "표현 방법",
+      "맞춤법",
+      "퀴즈"
+    ],
+    "url": "eaim-korean-game.html",
+    "classroom": true,
+    "ai": true,
+    "summary": "관용어·한자성어·순우리말·문학 표현·맞춤법을 여덟 가지 게임으로 익히는 활동",
+    "makerNote": ""
+  },
+  {
+    "id": "korean/proverb-cards",
+    "title": "속담 상황 카드",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "game",
+    "minutes": 20,
+    "standards": [
+      "[6국04-03]"
+    ],
+    "tags": [
+      "속담",
+      "관용 표현",
+      "상황 판단",
+      "초등 연계"
+    ],
+    "url": "eaim-korean-proverb.html",
+    "classroom": false,
+    "ai": false,
+    "summary": "짧은 상황 이야기를 읽고 알맞은 속담을 고르며 속담의 뜻과 쓰임을 익히는 활동",
+    "makerNote": ""
+  }
+]
