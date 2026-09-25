@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAIM 국어 — 문법 탐구실</title>
+<link rel="icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- 문법 탐구실 v1.0 (2026-09-25) — 누구나 로그인 없이 쓰는 공개 앱. AI·기록 없음. 자료는 grammar-data.js (국어 부록 5-2번) -->
+<script src="grammar-data.js"></script>
+<style>
+/* 공통규칙 3번: 한글 줄바꿈 */
+html,body{word-break:keep-all;overflow-wrap:break-word;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F3F5F4;--card:#fff;--ink:#16211F;--ink2:#46524F;--ink3:#86918E;--line:#DCE2E0;--teal:#0E7C6B;--teal2:#E2F2EE;--amber:#C27A12;--amber2:#FBF0DD;--red:#B3261E;--red2:#F8E3E1}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 56px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0 12px}
+.hub{font-size:.8rem;color:var(--ink2);text-decoration:none;border:1px solid var(--line);padding:6px 11px;border-radius:8px;background:var(--card)}
+.brand{font-weight:900;font-size:1rem}
+.units{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.unit{flex:0 0 auto;font-family:inherit;font-size:.8rem;font-weight:700;padding:8px 12px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);color:var(--ink3)}
+.unit.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.unit[disabled]{opacity:.55}
+.hero h1{font-family:'Noto Serif KR',serif;font-weight:900;font-size:clamp(1.6rem,5.5vw,2.2rem);line-height:1.35}
+.hero p{color:var(--ink2);line-height:1.85;margin:10px 0 16px;font-size:.93rem;max-width:40em}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tab{flex:0 0 auto;font-family:inherit;font-weight:700;font-size:.88rem;padding:10px 14px;border:none;background:none;color:var(--ink3);border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer}
+.tab.on{color:var(--teal);border-bottom-color:var(--teal)}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h3{font-size:1rem;margin-bottom:6px}
+.sub{font-size:.8rem;color:var(--ink3);line-height:1.7;margin-bottom:12px}
+.scroll{overflow-x:auto}
+table.grid{border-collapse:separate;border-spacing:4px;width:100%;min-width:560px;table-layout:fixed}
+.grid th{font-size:.72rem;color:var(--ink2);font-weight:700;padding:6px 4px;text-align:center;background:var(--bg);border-radius:8px}
+.grid th.rowh{text-align:left;padding-left:8px;white-space:nowrap}
+.grid td{text-align:center;height:52px}
+.jamo{font-family:'Noto Serif KR',serif;font-weight:900;font-size:1.5rem;width:100%;height:100%;min-height:48px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.jamo:hover{border-color:var(--teal)}
+.jamo.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.jamo.dim{opacity:.35}
+.info{margin-top:12px;background:var(--teal2);border-radius:12px;padding:12px 14px;min-height:54px;display:flex;gap:12px;align-items:center}
+.info .big{font-family:'Noto Serif KR',serif;font-weight:900;font-size:2.2rem;color:var(--teal);min-width:48px;text-align:center}
+.info .txt{font-size:.9rem;line-height:1.7}
+.info .big.word{white-space:nowrap;font-size:1.6rem}
+.speak{font-family:inherit;font-size:.78rem;border:1px solid var(--teal);color:var(--teal);background:#fff;border-radius:99px;padding:4px 11px;cursor:pointer;margin-left:6px}
+.mouth{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px}
+.mouth div{font-size:.72rem;text-align:center;padding:8px 2px;border-radius:8px;background:var(--bg);color:var(--ink3);font-weight:700}
+.mouth div.on{background:var(--amber2);color:var(--amber);box-shadow:inset 0 0 0 2px var(--amber)}
+.mouth-cap{display:flex;justify-content:space-between;font-size:.7rem;color:var(--ink3);margin-top:4px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-family:inherit;font-size:.78rem;font-weight:700;padding:6px 11px;border-radius:99px;border:1.5px solid var(--line);background:#fff;color:var(--ink2);cursor:pointer}
+.chip.on{background:var(--amber2);border-color:var(--amber);color:var(--amber)}
+.dip{display:flex;gap:6px;flex-wrap:wrap}
+.dip .jamo{width:52px;height:52px}
+/* 낱말 쪼개기 */
+.split-in{display:flex;gap:8px}
+.split-in input{flex:1;font-family:inherit;font-size:1.1rem;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px}
+.btn{font-family:inherit;font-weight:900;font-size:.92rem;padding:12px 16px;border:none;border-radius:12px;background:var(--teal);color:#fff;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.syls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.syl{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px;min-width:120px}
+.syl .ch{font-family:'Noto Serif KR',serif;font-weight:900;font-size:2rem;text-align:center;margin-bottom:6px}
+.seg{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;padding:4px 0;border-top:1px dashed var(--line)}
+.seg b{font-family:'Noto Serif KR',serif;font-size:1rem}
+.seg .mute{color:var(--ink3)}
+.count{margin-top:14px;font-size:.95rem;line-height:1.8}
+.count b{font-size:1.4rem;color:var(--teal)}
+.warn{background:var(--amber2);color:#7A4B00;border-radius:10px;padding:10px 12px;font-size:.84rem;line-height:1.7;margin-top:10px}
+/* 훈민정음 */
+.chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chain .j{font-family:'Noto Serif KR',serif;font-weight:900;font-size:1.6rem;width:48px;height:48px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center}
+.chain .j.base{background:var(--teal);color:#fff}
+.chain .arr{color:var(--ink3);font-size:.8rem}
+.hm-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.hm-row:first-of-type{border-top:none}
+.hm-row .meta{font-size:.82rem;color:var(--ink2);line-height:1.7}
+/* 퀴즈 */
+.qhead{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink3);margin-bottom:8px}
+.qtext{font-size:1.08rem;font-weight:700;line-height:1.7;margin-bottom:12px}
+.qtext .jm{font-family:'Noto Serif KR',serif;font-size:1.5rem;color:var(--teal)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{font-family:inherit;font-size:.95rem;font-weight:700;padding:14px 10px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.opt.jm{font-family:'Noto Serif KR',serif;font-size:1.4rem}
+.opt.right{border-color:var(--teal);background:var(--teal2)}
+.opt.wrong{border-color:var(--red);background:var(--red2)}
+.expl{margin-top:12px;font-size:.88rem;line-height:1.75;background:var(--bg);border-radius:10px;padding:10px 12px;display:none}
+.score{font-family:'Noto Serif KR',serif;font-weight:900;font-size:3rem;text-align:center}
+.s{display:none}
+.ubox{display:none}.ubox.on{display:block}
+.spbox{display:flex;flex-wrap:wrap;align-items:center;padding:14px 8px;background:var(--bg);border-radius:12px;font-size:1.35rem;font-weight:700;row-gap:10px}
+.spbox .ch{padding:0 1px}
+.spbox .gap{width:16px;height:34px;border:none;background:transparent;cursor:pointer;position:relative;border-radius:4px;color:var(--teal);font-weight:900;font-size:.9rem}
+.spbox .gap:hover{background:rgba(14,124,107,.12)}
+.spbox .gap::before{content:'';position:absolute;left:7px;bottom:4px;width:2px;height:7px;border-radius:1px;background:var(--line)}
+.spbox .gap.on::after{content:'∨';position:absolute;left:2px;top:6px}
+.spbox .gap.miss{background:rgba(179,38,30,.15)}.spbox .gap.extra{background:rgba(179,38,30,.15);color:var(--red)}
+.pgroup{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.pgroup .gh{font-size:.8rem;font-weight:900;margin-bottom:6px}.pgroup .gh span{font-weight:400;color:var(--ink3)}
+.posb{font-family:inherit;font-weight:900;font-size:.9rem;padding:8px 12px;border-radius:9px;border:2px solid;background:#fff;margin:2px;cursor:pointer}
+.palette{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.palette .posb.on{color:#fff!important}
+.sent{display:flex;flex-wrap:wrap;gap:12px;padding:14px;background:var(--bg);border-radius:12px;font-size:1.15rem}
+.ej{display:flex;gap:2px}
+.tok{font-family:inherit;font-size:1.1rem;font-weight:700;padding:8px 8px 4px;border-radius:8px;border:2px solid var(--line);background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:34px}
+.tok small{font-size:.62rem;font-weight:700;min-height:1em;margin-top:2px}
+.tok.ok{outline:3px solid var(--teal)}.tok.no{outline:3px solid var(--red)}
+.labt{width:100%;border-collapse:collapse;margin-top:12px;font-size:.95rem}
+.labt td,.labt th{border-bottom:1px solid var(--line);padding:8px;text-align:center}
+.labt .o{color:var(--teal);font-weight:900}.labt .x{color:var(--red);font-weight:900;text-decoration:line-through;text-decoration-thickness:1px}
+.tip{font-size:.86rem;line-height:1.75;padding:8px 0;border-top:1px dashed var(--line)}.tip:first-child{border-top:none}
+.tree{text-align:center;margin:8px 0 12px}
+.tnode{display:inline-block;font-weight:900;padding:8px 16px;border-radius:10px;background:var(--bg);margin:4px}
+.tnode.top{background:var(--ink);color:#fff}.tnode.amber{background:var(--amber2);color:var(--amber)}.tnode.teal{background:var(--teal2);color:var(--teal)}
+.tkids{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.tkids>div{flex:1;min-width:130px}
+.tdesc{font-size:.76rem;color:var(--ink2);line-height:1.6}
+.legend{font-size:.76rem;color:var(--ink2);line-height:2.2}
+.pt{display:inline-block;font-weight:900;padding:4px 10px;border-radius:8px;margin:0 2px;font-size:.95rem}
+.pt.root{background:var(--teal2);color:var(--teal)}.pt.pre,.pt.suf{background:var(--amber2);color:var(--amber)}.pt.end{background:var(--bg);color:var(--ink3)}
+.wchips{display:flex;gap:6px;flex-wrap:wrap}
+.wchip{font-family:inherit;font-size:.95rem;font-weight:700;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;cursor:pointer}
+.wchip.on{border-color:var(--teal);background:var(--teal2)}
+.wchip.done{opacity:.35;cursor:default}
+.slots{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.slot{min-width:90px;text-align:center;padding:10px 12px;border-radius:10px;border:2px dashed var(--line);color:var(--ink3);font-weight:900}
+.slot.full{border-style:solid;border-color:var(--teal);color:var(--ink)}
+.brow{margin-bottom:8px}.brow .lab{font-size:.74rem;color:var(--ink3);margin-bottom:4px}
+.blk{font-family:inherit;font-weight:900;font-size:.9rem;padding:7px 11px;border-radius:9px;border:none;margin:2px;cursor:pointer}
+.blk.접두사,.blk.접미사{background:var(--amber2);color:var(--amber)}.blk.어근{background:var(--teal2);color:var(--teal)}
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.bin{border:2px dashed var(--line);border-radius:12px;padding:10px;min-height:110px;cursor:pointer;background:#fff}
+.bin h4{font-size:.88rem;margin-bottom:6px}
+.bin .in{display:flex;gap:4px;flex-wrap:wrap;font-size:.82rem}
+.bin .in span{background:var(--bg);border-radius:6px;padding:2px 6px}
+.nw-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nw-form input,.nw-form select{font-family:inherit;font-size:.92rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.nwcard{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+.nwcard b{font-size:1.2rem}
+@media (max-width:480px){ .bins{grid-template-columns:1fr} .nw-form{grid-template-columns:1fr} }
+@media (max-width:600px){
+  /* 휴대폰: 표가 옆으로 밀려 뒤쪽 칸(여린입천장·목청)이 안 보이던 것 — 짧은 이름과 작은 칸으로 한 화면에 */
+  table.grid{min-width:0;border-spacing:3px} .grid th{font-size:.6rem;padding:4px 1px} .grid th.rowh{padding-left:3px;white-space:normal}
+  .grid td{height:42px} .jamo{font-size:1.15rem;min-height:40px;border-radius:8px}
+  .l{display:none} .s{display:inline}
+  .hm-row{flex-direction:column;gap:4px}
+}
+@media (max-width:480px){ .opts{grid-template-columns:1fr} .split-in{flex-direction:column} .info .big{font-size:1.8rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="hub" href="index.html">🏠 허브</a>
+    <div class="brand">🔎 문법 탐구실</div>
+    <a class="hub" href="eaim-korean-dictionary.html">📖 낱말 창고</a>
+  </header>
+
+  <div class="units">
+    <button class="unit on" data-u="1">① 음운 체계</button>
+    <button class="unit" data-u="2">② 단어의 짜임</button>
+    <button class="unit" data-u="3">③ 품사</button>
+    <button class="unit" data-u="4">④ 문장의 짜임</button>
+    <button class="unit" data-u="5">⑤ 피동·인용 표현</button>
+    <button class="unit" data-u="6">⑥ 맞춤법의 원리</button>
+  </div>
+
+  <div class="ubox on" id="u1">
+  <div class="hero">
+    <h1>말소리는 어떻게 나뉠까?</h1>
+    <p>뜻을 구별해 주는 가장 작은 소리 단위를 <b>음운</b>이라고 해요. '불'과 '뿔'은 ㅂ과 ㅃ 하나 때문에 뜻이 달라지지요. 자음과 모음을 눌러 들어 보고, 소리가 나는 자리와 방법을 탐구해 봐요.</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-p="cons">자음</button>
+    <button class="tab" data-p="vow">모음</button>
+    <button class="tab" data-p="split">낱말 쪼개기</button>
+    <button class="tab" data-p="hunmin">훈민정음 원리</button>
+    <button class="tab" data-p="quiz">퀴즈</button>
+  </div>
+
+  <!-- 자음 -->
+  <section class="panel on" id="p-cons">
+    <div class="card">
+      <h3>자음 19개 — 소리 나는 자리 × 소리 내는 방법</h3>
+      <div class="sub">칸을 누르면 소리를 들을 수 있어요(모음 'ㅏ'를 붙여 읽어요). 아래 줄은 소리 나는 자리를 입 앞쪽부터 뒤쪽 순서로 보여 줘요.</div>
+      <div class="filters" id="consFilters"></div>
+      <div class="scroll"><table class="grid" id="consTable"></table></div>
+      <div class="mouth" id="mouth"></div>
+      <div class="mouth-cap"><span>← 입 앞쪽</span><span>입 뒤쪽 →</span></div>
+      <div class="info" id="consInfo"><div class="txt">자음을 눌러 보세요.</div></div>
+    </div>
+  </section>
+
+  <!-- 모음 -->
+  <section class="panel" id="p-vow">
+    <div class="card">
+      <h3>단모음 10개 — 혀의 앞뒤 · 혀의 높이 · 입술 모양</h3>
+      <div class="sub">단모음은 소리 내는 동안 입술이나 혀가 움직이지 않는 모음이에요. ㅚ·ㅟ는 이중 모음으로 발음해도 돼요(표준 발음법).</div>
+      <div class="scroll"><table class="grid" id="vowTable"></table></div>
+      <div class="info" id="vowInfo"><div class="txt">모음을 눌러 보세요.</div></div>
+    </div>
+    <div class="card">
+      <h3>이중 모음 11개</h3>
+      <div class="sub">소리 내는 동안 입술 모양이나 혀의 위치가 바뀌는 모음이에요. 이중 모음도 음운 하나로 세요.</div>
+      <div class="dip" id="dipList"></div>
+    </div>
+  </section>
+
+  <!-- 낱말 쪼개기 -->
+  <section class="panel" id="p-split">
+    <div class="card">
+      <h3>낱말을 음운으로 쪼개 보기</h3>
+      <div class="sub">낱말을 적으면 글자마다 첫소리·가운뎃소리·끝소리로 나누고, 각 소리가 어떤 자음·모음인지 알려 줘요.</div>
+      <div class="split-in"><input id="splitIn" placeholder="예: 하늘, 사랑, 반달" maxlength="12" onkeydown="if(event.key==='Enter')runSplit()"><button class="btn" onclick="runSplit()">쪼개기</button></div>
+      <div id="splitOut"></div>
+    </div>
+  </section>
+
+  <!-- 훈민정음 -->
+  <section class="panel" id="p-hunmin">
+    <div class="card">
+      <h3>자음 — 발음 기관을 본떠 만들고, 획을 더했어요</h3>
+      <div class="sub">기본 글자 다섯 개는 소리 낼 때 발음 기관의 모양을 본떴어요. 소리가 세지면 획을 하나씩 더했어요(가획).</div>
+      <div id="hmCons"></div>
+    </div>
+    <div class="card">
+      <h3>모음 — 하늘·땅·사람을 본떴어요</h3>
+      <div class="sub">기본 글자 세 개(ㆍ ㅡ ㅣ)를 서로 합쳐서 나머지 모음을 만들었어요.</div>
+      <div id="hmVow"></div>
+    </div>
+  </section>
+
+  <!-- 퀴즈 -->
+  <section class="panel" id="p-quiz">
+    <div class="card" id="quizBox"></div>
+  </section>
+  </div><!-- /u1 -->
+
+  <!-- ══ 2단원 단어의 짜임 ══ -->
+  <div class="ubox" id="u2">
+  <div class="hero">
+    <h1>단어는 무엇으로 짜여 있을까?</h1>
+    <p>'맨손'은 <b>맨-</b>과 <b>손</b>으로, '손발'은 <b>손</b>과 <b>발</b>로 짜여 있어요. 단어의 중심이 되는 부분을 <b>어근</b>, 어근에 붙어 뜻을 더해 주는 부분을 <b>접사</b>라고 해요. 단어를 쪼개고 조립하며 새말이 만들어지는 원리를 탐구해 봐요.</p>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-p="wc">개념</button>
+    <button class="tab" data-p="wb">단어 조립실</button>
+    <button class="tab" data-p="ws">분류하기</button>
+    <button class="tab" data-p="wn">새말 탐구</button>
+    <button class="tab" data-p="wq">퀴즈</button>
+  </div>
+  <section class="panel on" id="p-wc">
+    <div class="card">
+      <h3>단어의 갈래</h3>
+      <div class="tree">
+        <div class="tnode top">단어</div>
+        <div class="tkids">
+          <div><div class="tnode">단일어</div><div class="tdesc">어근 하나로 된 단어<br><i>하늘, 꽃, 먹다</i></div></div>
+          <div><div class="tnode">복합어</div><div class="tdesc">둘 이상의 부분으로 된 단어</div>
+            <div class="tkids">
+              <div><div class="tnode amber">파생어</div><div class="tdesc">어근 + 접사<br><i>맨손, 지우개</i></div></div>
+              <div><div class="tnode teal">합성어</div><div class="tdesc">어근 + 어근<br><i>손발, 눈물</i></div></div>
+            </div></div>
+        </div>
+      </div>
+      <div class="legend"><span class="pt root">어근</span> 뜻의 중심 <span class="pt pre">접두사</span> 어근 앞에 붙는 접사 <span class="pt suf">접미사</span> 어근 뒤에 붙는 접사 <span class="pt end">어미</span> 끝에 붙는 -다 따위(짜임을 볼 때는 빼요)</div>
+    </div>
+    <div class="card">
+      <h3>낱말 살펴보기</h3>
+      <div class="sub">낱말을 누르면 짜임을 보여 줘요.</div>
+      <div class="filters" id="wFilter"></div>
+      <div class="wchips" id="wChips"></div>
+      <div class="info" id="wInfo"><div class="txt">낱말을 눌러 보세요.</div></div>
+    </div>
+  </section>
+  <section class="panel" id="p-wb">
+    <div class="card">
+      <h3>단어 조립실</h3>
+      <div class="sub">블록 두 개를 차례로 골라 붙여 보세요. 접두사는 앞에, 접미사는 뒤에만 붙어요.</div>
+      <div class="slots"><div class="slot" id="slotA">첫째 블록</div><span>+</span><div class="slot" id="slotB">둘째 블록</div><button class="btn" onclick="buildWord()">붙이기</button><button class="btn ghost" onclick="resetBuild()">비우기</button></div>
+      <div id="blockRows"></div>
+      <div id="buildOut"></div>
+    </div>
+  </section>
+  <section class="panel" id="p-ws">
+    <div class="card">
+      <h3>세 갈래로 나누기</h3>
+      <div class="sub">낱말 카드를 누른 다음, 알맞은 상자를 누르세요.</div>
+      <div class="wchips" id="sortCards"></div>
+      <div class="bins" id="bins"></div>
+      <div id="sortMsg" class="sub" style="margin-top:10px"></div>
+      <button class="btn ghost" onclick="newSort()">새 카드로</button>
+    </div>
+  </section>
+  <section class="panel" id="p-wn">
+    <div class="card">
+      <h3>새말은 이렇게 생겨요</h3>
+      <div class="sub">새로운 물건이나 생각이 생기면, 이미 있는 말을 <b>합치거나(합성)</b>, <b>접사를 붙이거나(파생)</b>, <b>줄여서 합쳐</b> 새말을 만들어요.</div>
+      <div id="newList"></div>
+    </div>
+    <div class="card">
+      <h3>나도 새말 만들기</h3>
+      <div class="sub">요즘 필요한데 알맞은 우리말이 없는 것에 새 이름을 지어 보세요. (이 기기에만 보여요)</div>
+      <div class="nw-form">
+        <input id="nwA" placeholder="재료 1 (예: 누리)"><input id="nwB" placeholder="재료 2 (예: 집)">
+        <select id="nwHow"><option>합성</option><option>파생</option><option>줄여서 합침</option></select>
+        <input id="nwWord" placeholder="만든 새말 (예: 누리집)"><input id="nwMean" placeholder="뜻 (예: 홈페이지)">
+        <button class="btn" onclick="makeNew()">새말 카드 만들기</button>
+      </div>
+      <div id="nwOut"></div>
+    </div>
+  </section>
+  <section class="panel" id="p-wq">
+    <div class="card" id="wQuizBox"></div>
+  </section>
+  </div><!-- /u2 -->
+  <!-- ══ 3단원 품사 ══ -->
+  <div class="ubox" id="u3">
+  <div class="hero">
+    <h1>단어는 어떤 일을 할까?</h1>
+    <p>단어를 성질이 같은 것끼리 묶은 갈래를 <b>품사</b>라고 해요. 우리말 품사는 아홉 가지예요. 문장 속 단어에 품사 색을 칠하고, 동사와 형용사를 가르는 실험을 해 봐요.</p>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-p="pc">개념</button>
+    <button class="tab" data-p="pp">품사 색칠</button>
+    <button class="tab" data-p="pl">동사·형용사 실험</button>
+    <button class="tab" data-p="pq">퀴즈</button>
+  </div>
+  <section class="panel on" id="p-pc">
+    <div class="card">
+      <h3>9품사 — 하는 일(기능)에 따라 다섯 갈래</h3>
+      <div class="sub">품사를 누르면 뜻과 예를 보여 줘요. 동사·형용사(와 서술격 조사 '이다')는 모양이 바뀌는 <b>가변어</b>, 나머지는 <b>불변어</b>예요.</div>
+      <div id="posGroups"></div>
+      <div class="info" id="posInfo"><div class="txt">품사를 눌러 보세요.</div></div>
+    </div>
+    <div class="card"><h3>헷갈릴 때 쓰는 기준</h3><div id="posTips"></div></div>
+  </section>
+  <section class="panel" id="p-pp">
+    <div class="card">
+      <h3>품사 색칠하기</h3>
+      <div class="sub">아래에서 품사 색을 고른 뒤 문장 속 단어를 누르세요. 조사는 따로 한 단어예요(예: 우리 + 는). 다 칠했으면 <b>확인</b>을 눌러요.</div>
+      <div class="palette" id="palette"></div>
+      <div class="sent" id="sentBox"></div>
+      <div id="paintMsg" class="sub" style="margin-top:10px"></div>
+      <div class="slots"><button class="btn" onclick="checkPaint()">확인</button><button class="btn ghost" onclick="nextSentence()">다음 문장 →</button></div>
+    </div>
+  </section>
+  <section class="panel" id="p-pl">
+    <div class="card">
+      <h3>동사일까, 형용사일까?</h3>
+      <div class="sub">단어를 고르면 세 가지 꼴로 바꿔 봐요. <b>-는다/-ㄴ다</b>(지금 하는 일), <b>-아라/-어라</b>(시키는 말), <b>-자</b>(함께하자는 말)로 쓸 수 있으면 동사예요.</div>
+      <div class="wchips" id="labWords"></div>
+      <div id="labOut"></div>
+      <div class="sub" style="margin-top:10px">※ 형용사도 '예뻐라!', '추워라!'처럼 <b>감탄</b>하는 말로는 쓸 수 있어요. 여기서 ×는 <b>시키는 말</b>로는 쓸 수 없다는 뜻이에요.</div>
+    </div>
+  </section>
+  <section class="panel" id="p-pq">
+    <div class="card" id="pQuizBox"></div>
+  </section>
+  </div><!-- /u3 -->
+  <!-- ══ 4단원 문장의 짜임 ══ -->
+  <div class="ubox" id="u4">
+  <div class="hero">
+    <h1>문장은 어떻게 짜여 있을까?</h1>
+    <p>문장을 이루는 부분을 <b>문장 성분</b>이라고 해요. 주어와 서술어가 한 번 나오면 <b>홑문장</b>, 두 번 이상 나오면 <b>겹문장</b>이에요. 문장을 쪼개 보고, 짧은 문장을 뜻에 맞게 이어 봐요.</p>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-p="sc">개념</button>
+    <button class="tab" data-p="sp">성분 색칠</button>
+    <button class="tab" data-p="ss">홑문장·겹문장</button>
+    <button class="tab" data-p="sj">문장 잇기</button>
+    <button class="tab" data-p="sq">퀴즈</button>
+  </div>
+  <section class="panel on" id="p-sc">
+    <div class="card"><h3>문장 성분 7가지</h3><div class="sub">성분을 누르면 뜻을 보여 줘요. 문장 성분은 띄어 쓴 덩어리(어절)마다 나눠요.</div><div id="compGroups"></div><div class="info" id="compInfo"><div class="txt">성분을 눌러 보세요.</div></div></div>
+    <div class="card"><h3>문장의 짜임</h3>
+      <div class="tree"><div class="tnode top">문장</div><div class="tkids">
+        <div><div class="tnode">홑문장</div><div class="tdesc">주어–서술어가 한 번<br><i>하늘이 파랗다.</i></div></div>
+        <div><div class="tnode">겹문장</div><div class="tdesc">주어–서술어가 두 번 이상</div><div class="tkids">
+          <div><div class="tnode amber">이어진문장</div><div class="tdesc">대등하게(-고, -지만) · 종속적으로(-아서, -면)<br><i>봄이 오면 꽃이 핀다.</i></div></div>
+          <div><div class="tnode teal">안은문장</div><div class="tdesc">한 문장이 다른 문장의 성분처럼 안김(명사절·관형절·부사절·서술절·인용절)<br><i>코끼리는 코가 길다.</i></div></div>
+        </div></div></div></div>
+    </div>
+  </section>
+  <section class="panel" id="p-sp">
+    <div class="card"><h3>성분 색칠하기</h3><div class="sub">성분 색을 고른 뒤 어절을 누르세요. 다 칠했으면 <b>확인</b>.</div>
+      <div class="palette" id="cPalette"></div><div class="sent" id="cSentBox"></div><div id="cPaintMsg" class="sub" style="margin-top:10px"></div>
+      <div class="slots"><button class="btn" onclick="checkCPaint()">확인</button><button class="btn ghost" onclick="nextCSentence()">다음 문장 →</button></div></div>
+  </section>
+  <section class="panel" id="p-ss">
+    <div class="card"><h3>홑문장일까, 겹문장일까?</h3><div class="sub">주어–서술어 짝이 몇 번인지 세어 보세요. 겹문장이면 어떻게 짜였는지도 골라요.</div><div id="structBox"></div></div>
+  </section>
+  <section class="panel" id="p-sj">
+    <div class="card"><h3>두 문장을 한 문장으로</h3><div class="sub">두 문장의 관계(까닭·조건·대조·나열)를 생각해서, 뜻이 알맞게 이어진 문장을 고르세요.</div><div id="joinBox"></div></div>
+  </section>
+  <section class="panel" id="p-sq"><div class="card" id="sQuizBox"></div></section>
+  </div><!-- /u4 -->
+  <!-- ══ 5단원 피동·인용 표현 ══ -->
+  <div class="ubox" id="u5">
+  <div class="hero">
+    <h1>누가 했는지, 누가 말했는지</h1>
+    <p>'고양이가 쥐를 잡았다'와 '쥐가 고양이에게 잡혔다'는 같은 일인데 눈길이 가는 곳이 달라요. 남의 행동을 당하는 쪽을 주어로 삼는 <b>피동 표현</b>과, 남의 말을 옮기는 <b>인용 표현</b>의 쓰임과 효과를 탐구해 봐요.</p>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-p="vc">개념</button>
+    <button class="tab" data-p="va">능동 ↔ 피동</button>
+    <button class="tab" data-p="vd">이중 피동 고치기</button>
+    <button class="tab" data-p="vi">인용 바꾸기</button>
+    <button class="tab" data-p="vq">퀴즈</button>
+  </div>
+  <section class="panel on" id="p-vc">
+    <div class="card"><h3>피동 표현 만드는 세 가지 방법</h3>
+      <div class="tip"><b>① 피동 접미사 -이-·-히-·-리-·-기-</b> — 보다 → 보이다, 잡다 → 잡히다, 물다 → 물리다, 안다 → 안기다</div>
+      <div class="tip"><b>② -어지다</b> — 만들다 → 만들어지다, 주다 → 주어지다</div>
+      <div class="tip"><b>③ -되다</b> — 발견하다 → 발견되다, 청소하다 → 청소되다</div>
+      <div class="tip" style="color:var(--red)"><b>이중 피동은 잘못</b> — 잊혀지다(→ 잊히다), 쓰여지다(→ 쓰이다)처럼 피동을 두 번 겹치지 않아요.</div>
+    </div>
+    <div class="card"><h3>피동 표현의 효과 — 같은 일, 다른 느낌</h3><div id="pvEffect"></div></div>
+    <div class="card"><h3>직접 인용과 간접 인용</h3><div id="qtEffect"></div>
+      <div class="scroll" style="margin-top:10px"><table class="labt"><tr><th>원래 문장</th><th>간접 인용</th><th>예</th></tr>
+        <tr><td>평서문</td><td>-다고</td><td>간다 → 간다고</td></tr><tr><td>의문문</td><td>-(느)냐고</td><td>가니? → 가느냐고</td></tr>
+        <tr><td>명령문</td><td>-(으)라고</td><td>가라 → 가라고 / 먹어라 → 먹으라고</td></tr><tr><td>청유문</td><td>-자고</td><td>가자 → 가자고</td></tr></table></div>
+      <div class="sub" style="margin-top:8px">간접 인용에서는 '나'를 '자기'로 바꾸는 것처럼, 대명사·높임·시간 표현을 전하는 사람의 입장에 맞게 바꿔요.</div>
+    </div>
+  </section>
+  <section class="panel" id="p-va"><div class="card"><h3>어떤 방법으로 피동문이 되었을까?</h3><div class="sub">능동문과 피동문을 비교하고, 피동을 만든 방법을 고르세요. 주어가 어떻게 바뀌었는지도 살펴봐요.</div><div id="vaBox"></div></div></section>
+  <section class="panel" id="p-vd"><div class="card"><h3>피동이 겹쳤어요 — 바르게 고쳐 볼까?</h3><div class="sub">두 문장 중 바르게 쓴 것을 고르세요.</div><div id="vdBox"></div></div></section>
+  <section class="panel" id="p-vi"><div class="card"><h3>직접 인용을 간접 인용으로</h3><div class="sub">큰따옴표로 옮긴 말을 전하는 사람의 말로 바르게 바꾼 문장을 고르세요.</div><div id="viBox"></div></div></section>
+  <section class="panel" id="p-vq"><div class="card" id="vQuizBox"></div></section>
+  </div><!-- /u5 -->
+  <!-- ══ 6단원 한글 맞춤법의 원리 ══ -->
+  <div class="ubox" id="u6">
+  <div class="hero">
+    <h1>왜 소리 나는 대로 적지 않을까?</h1>
+    <p>'꽃이'는 [꼬치]로 소리 나지만 '꽃이'라고 적어요. 한글 맞춤법 제1항은 <b>"표준어를 소리대로 적되, 어법에 맞도록 함을 원칙으로 한다."</b>예요. 소리대로 적는 원리와 뜻을 밝혀 적는 원리, 그리고 띄어쓰기의 원칙을 탐구해 봐요.</p>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-p="mc">개념</button>
+    <button class="tab" data-p="ms">소리와 표기</button>
+    <button class="tab" data-p="mw">띄어쓰기</button>
+    <button class="tab" data-p="mq">퀴즈</button>
+  </div>
+  <section class="panel on" id="p-mc">
+    <div class="card"><h3>한글 맞춤법 총칙</h3>
+      <div class="tip"><b>제1항</b> 한글 맞춤법은 표준어를 소리대로 적되, 어법에 맞도록 함을 원칙으로 한다.</div>
+      <div class="tip"><b>① 소리대로 적는다</b> — 소리 나는 그대로 적어요. 나무, 하늘, 노래</div>
+      <div class="tip"><b>② 어법에 맞도록 적는다</b> — 뜻을 가진 부분의 모양을 밝혀 적어요. [꼬치]·[꼬츨]·[꼰만]을 소리대로 적으면 '꽃'이 보이지 않지만, <b>꽃이·꽃을·꽃만</b>으로 적으면 어느 것이나 '꽃'이 한눈에 보여 뜻을 빨리 알 수 있어요.</div>
+      <div class="tip"><b>제2항</b> 문장의 각 단어는 띄어 씀을 원칙으로 한다. — 다만 <b>조사</b>는 앞말에 붙여 써요. '수, 것, 줄, 지'처럼 홀로 못 쓰이는 <b>의존 명사</b>와 '개, 마리, 년' 같은 <b>단위</b>도 한 단어라 띄어 써요.</div>
+    </div>
+    <div class="card"><h3>꽃 하나, 소리 여러 개</h3><div class="sub">누르면 소리대로 적었을 때와 어법에 맞게 적었을 때를 견주어 보여 줘요.</div>
+      <div class="wchips" id="flowerBtns"></div><div class="info" id="flowerInfo"><div class="txt">위 단추를 눌러 보세요.</div></div></div>
+  </section>
+  <section class="panel" id="p-ms"><div class="card"><h3>소리를 듣고 바르게 적기</h3><div class="sub">[ ] 안은 소리 나는 대로 적은 거예요. 바른 표기를 고르세요.</div><div id="msBox"></div></div></section>
+  <section class="panel" id="p-mw"><div class="card"><h3>띄어쓰기 맞히기</h3><div class="sub">글자 사이를 누르면 띄어쓰기(∨)가 들어가고, 다시 누르면 빠져요. 다 했으면 <b>확인</b>.</div>
+    <div class="spbox" id="spBox"></div><div id="spMsg" class="sub" style="margin-top:10px"></div>
+    <div class="slots"><button class="btn" onclick="checkSpacing()">확인</button><button class="btn ghost" onclick="nextSpacing()">다음 문장 →</button></div></div></section>
+  <section class="panel" id="p-mq"><div class="card" id="mQuizBox"></div></section>
+  </div><!-- /u6 -->
+</div>
+
+<script>
+const G = window.EAIM_GRAMMAR;
+const BEST_KEY = 'eaim_korean_grammar_phoneme_best';   // 공통규칙 10-1
+const esc = t => String(t||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const place = id => G.places.find(p=>p.id===id);
+const manner = id => G.manners.find(m=>m.id===id);
+
+/* 탭 */
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  const box = t.closest('.ubox');
+  box.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x===t));
+  box.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id==='p-'+t.dataset.p));
+  if (t.dataset.p==='quiz' && !quiz) newQuiz();
+  if (t.dataset.p==='wq' && !wquiz) newWQuiz();
+  if (t.dataset.p==='ws' && !sortState) newSort();
+  if (t.dataset.p==='pq' && !pquiz) newPQuiz();
+  if (t.dataset.p==='sq' && !squiz) newSQuiz();
+  if (t.dataset.p==='vq' && !vquiz) newVQuiz();
+  if (t.dataset.p==='mq' && !mquiz) newMQuiz();
+});
+/* 단원 바꾸기 */
+document.querySelectorAll('.unit[data-u]').forEach(u => u.onclick = () => {
+  document.querySelectorAll('.unit[data-u]').forEach(x => x.classList.toggle('on', x===u));
+  document.querySelectorAll('.ubox').forEach(b => b.classList.toggle('on', b.id==='u'+u.dataset.u));
+  try{ history.replaceState(null,'','#u'+u.dataset.u); }catch(e){}
+  try{ u.scrollIntoView({ inline:'center', block:'nearest' }); }catch(e){}   // 휴대폰: 고른 단원 단추가 보이게
+});
+
+/* 소리 (브라우저 목소리) */
+function say(text){
+  if(!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=0.8;
+  const v = speechSynthesis.getVoices().find(v=>/ko/i.test(v.lang)); if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+
+/* ── 자음표 ── */
+const ROWS = [
+  ['stop','예사소리'],['stop','된소리'],['stop','거센소리'],
+  ['affr','예사소리'],['affr','된소리'],['affr','거센소리'],
+  ['fric','예사소리'],['fric','된소리'],
+  ['nasal',''],['liq','']
+];
+function consDesc(c){ return [place(c.place).name, manner(c.manner).name, c.force || ((c.manner==='nasal'||c.manner==='liq') ? '울림소리' : '')].filter(Boolean); }   // ㅎ은 세기 구분 없음
+function buildConsTable(){
+  const sh = t => `<span class="l">${t}</span><span class="s">${t.replace('소리','').replace('입천장','입천장')}</span>`;
+  let h = '<tr><th></th><th></th>' + G.places.map(p=>`<th>${sh(p.name)}</th>`).join('') + '</tr>';
+  ROWS.forEach(([m,f],ri) => {
+    const first = ri===0 || ROWS[ri-1][0]!==m;
+    const span = ROWS.filter(r=>r[0]===m).length;
+    h += '<tr>' + (first ? `<th class="rowh" rowspan="${span}">${manner(m).name}</th>` : '') + `<th class="rowh">${f?`<span class="l">${f}</span><span class="s">${f.replace('소리','')}</span>`:'—'}</th>`;
+    G.places.forEach(p => {
+      // ㅎ: 목청소리 마찰음 — 세기 구분 없이 마찰음 두 줄을 합쳐 한 칸에
+      if (m==='fric' && p.id==='glot') {
+        if (f==='예사소리') { const c=G.consonants.find(x=>x.c==='ㅎ'); h += `<td rowspan="2">${cell(c)}</td>`; }
+        return;
+      }
+      const c = G.consonants.find(x => x.place===p.id && x.manner===m && (x.force||'')===f);
+      h += `<td>${c ? cell(c) : ''}</td>`;
+    });
+    h += '</tr>';
+  });
+  document.getElementById('consTable').innerHTML = h;
+  document.getElementById('mouth').innerHTML = G.places.map(p=>`<div data-p="${p.id}">${p.name.replace('소리','')}</div>`).join('');
+  const fl = [['all','전체'],['울림소리','울림소리'],['예사소리','예사소리'],['된소리','된소리'],['거센소리','거센소리']].concat(G.manners.map(m=>[m.id,m.name]));
+  document.getElementById('consFilters').innerHTML = fl.map(([id,n],i)=>`<button class="chip${i===0?' on':''}" data-f="${id}">${n}</button>`).join('');
+  document.querySelectorAll('#consFilters .chip').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#consFilters .chip').forEach(x=>x.classList.toggle('on',x===b));
+    const f=b.dataset.f;
+    document.querySelectorAll('#consTable .jamo').forEach(el => {
+      const c=G.consonants.find(x=>x.c===el.dataset.c);
+      const hit = f==='all' || c.manner===f || (f==='울림소리' ? !c.force && (c.manner==='nasal'||c.manner==='liq') : c.force===f);
+      el.classList.toggle('dim', !hit);
+    });
+  });
+}
+function cell(c){ return `<button class="jamo" data-c="${c.c}" onclick="pickCons('${c.c}')">${c.c}</button>`; }
+function pickCons(ch){
+  const c = G.consonants.find(x=>x.c===ch);
+  document.querySelectorAll('#consTable .jamo').forEach(el=>el.classList.toggle('on', el.dataset.c===ch));
+  document.querySelectorAll('#mouth div').forEach(el=>el.classList.toggle('on', el.dataset.p===c.place));
+  const d = consDesc(c);
+  document.getElementById('consInfo').innerHTML = `<div class="big">${c.c}</div><div class="txt"><b>${d.join(' · ')}</b><button class="speak" onclick="say('${c.say}')">🔊 ${c.say}</button><br>
+    <span style="color:var(--ink2)">${place(c.place).hint}. ${manner(c.manner).hint}.</span>${c.note?`<br><span style="color:var(--amber)">${c.note}</span>`:''}</div>`;
+  say(c.say);
+}
+
+/* ── 모음표 ── */
+function buildVowTable(){
+  const W=G.vowelWords;
+  let h = `<tr><th></th><th colspan="2">${W.front}</th><th colspan="2">${W.back}</th></tr><tr><th></th><th>${W.flat}</th><th>${W.round}</th><th>${W.flat}</th><th>${W.round}</th></tr>`;
+  ['high','mid','low'].forEach(hh => {
+    h += `<tr><th class="rowh">${W[hh]}</th>`;
+    [['front','flat'],['front','round'],['back','flat'],['back','round']].forEach(([fb,lp]) => {
+      const v = G.monophthongs.find(x=>x.fb===fb&&x.h===hh&&x.lip===lp);
+      h += `<td>${v?`<button class="jamo" data-v="${v.v}" onclick="pickVow('${v.v}')">${v.v}</button>`:''}</td>`;
+    });
+    h += '</tr>';
+  });
+  document.getElementById('vowTable').innerHTML = h;
+  document.getElementById('dipList').innerHTML = G.diphthongs.map(d=>`<button class="jamo" onclick="pickDip('${d.v}')">${d.v}</button>`).join('');
+}
+function pickVow(ch){
+  const v=G.monophthongs.find(x=>x.v===ch), W=G.vowelWords;
+  document.querySelectorAll('#vowTable .jamo').forEach(el=>el.classList.toggle('on', el.dataset.v===ch));
+  document.getElementById('vowInfo').innerHTML = `<div class="big">${v.v}</div><div class="txt"><b>단모음 · ${W[v.fb]} · ${W[v.h]} · ${W[v.lip]}</b><button class="speak" onclick="say('${v.say}')">🔊 ${v.say}</button>${v.note?`<br><span style="color:var(--amber)">${v.note}</span>`:''}</div>`;
+  say(v.say);
+}
+function pickDip(ch){ const d=G.diphthongs.find(x=>x.v===ch); say(d.say); }
+
+/* ── 한글 자모 분해 ── */
+const CHO=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const JUNG=['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const JONG=['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const DOUBLE={'ㄳ':['ㄱ','ㅅ'],'ㄵ':['ㄴ','ㅈ'],'ㄶ':['ㄴ','ㅎ'],'ㄺ':['ㄹ','ㄱ'],'ㄻ':['ㄹ','ㅁ'],'ㄼ':['ㄹ','ㅂ'],'ㄽ':['ㄹ','ㅅ'],'ㄾ':['ㄹ','ㅌ'],'ㄿ':['ㄹ','ㅍ'],'ㅀ':['ㄹ','ㅎ'],'ㅄ':['ㅂ','ㅅ']};
+function decompose(ch){
+  const code=ch.charCodeAt(0)-0xAC00;
+  if(code<0||code>11171) return null;
+  return { cho:CHO[Math.floor(code/588)], jung:JUNG[Math.floor((code%588)/28)], jong:JONG[code%28] };
+}
+function vowelKind(v){ return G.monophthongs.some(x=>x.v===v) ? '단모음' : '이중 모음'; }
+/* 쓴 글자대로 음운 세기: 첫소리 ㅇ은 세지 않고, 이중 모음은 하나. 발음이 바뀌어 수가 달라질 수 있는 경우를 찾아 알려 준다. */
+function analyze(word){
+  const syl=[...word].map(decompose);
+  if(!syl.length || syl.some(s=>!s)) return null;
+  let n=0; const flags=new Set();
+  syl.forEach((s,i)=>{
+    if(s.cho!=='ㅇ') n++;
+    n++;
+    if(s.jong){
+      const parts=DOUBLE[s.jong]||[s.jong]; n+=parts.length;
+      const next=syl[i+1];
+      if(DOUBLE[s.jong]) flags.add('겹받침('+s.jong+')은 발음할 때 하나만 소리 나기도 해요 (예: 닭 → [닥])');
+      if(parts[parts.length-1]==='ㅎ') flags.add('받침 ㅎ은 발음할 때 없어지거나 뒤 소리와 합쳐져요 (예: 좋아 → [조아], 좋고 → [조코])');
+      if(next && next.cho==='ㅎ' && /^[ㄱㄷㅂㅈ]$/.test(parts[parts.length-1])) flags.add('받침 ㄱ·ㄷ·ㅂ·ㅈ 뒤에 ㅎ이 오면 두 소리가 하나로 합쳐져요 (예: 국화 → [구콰])');
+    }
+  });
+  return { syl, n, flags:[...flags] };
+}
+function segRow(label, j, kind){ return `<div class="seg"><span>${label}</span><span><b>${j}</b> ${kind}</span></div>`; }
+function consKind(j){ const c=G.consonants.find(x=>x.c===j); return c?`<span>${consDesc(c).join('·')}</span>`:''; }
+function runSplit(){
+  const w=document.getElementById('splitIn').value.replace(/\s+/g,'');
+  const out=document.getElementById('splitOut');
+  const r=analyze(w);
+  if(!r){ out.innerHTML='<div class="warn">한글 낱말만 쪼갤 수 있어요. 받침까지 다 쓴 글자로 적어 주세요(예: 하늘).</div>'; return; }
+  out.innerHTML = '<div class="syls">' + r.syl.map((s,i)=>{
+    const ch=[...w][i];
+    let h=`<div class="syl"><div class="ch">${ch}</div>`;
+    h += s.cho==='ㅇ' ? `<div class="seg"><span>첫소리</span><span class="mute"><b>ㅇ</b> 소리 없음</span></div>` : segRow('첫소리', s.cho, consKind(s.cho));
+    h += segRow('가운뎃소리', s.jung, `<span>${vowelKind(s.jung)}</span>`);
+    if(s.jong) (DOUBLE[s.jong]||[s.jong]).forEach((j,k,arr)=> h += segRow(arr.length>1?`끝소리 ${k+1}`:'끝소리', j, consKind(j)));
+    return h+'</div>';
+  }).join('') + '</div>' +
+  `<div class="count">쓴 글자대로 센 음운: <b>${r.n}</b>개 <span style="font-size:.8rem;color:var(--ink3)">(첫소리 ㅇ은 소리가 없어 세지 않고, 이중 모음은 하나로 세요)</span></div>` +
+  (r.flags.length ? `<div class="warn">⚠️ 이 낱말은 발음할 때 소리가 바뀌어서, 실제로 소리 나는 음운의 수는 위와 다를 수 있어요.<br>${r.flags.map(esc).join('<br>')}</div>` : '');
+}
+
+/* ── 훈민정음 ── */
+function buildHunmin(){
+  const H=G.hunmin;
+  document.getElementById('hmCons').innerHTML = H.consonantBase.map(b=>`<div class="hm-row"><div class="chain">${b.chain.map((j,i)=>(i?'<span class="arr">획 더하기 →</span>':'')+`<div class="j${i===0?' base':''}">${j}</div>`).join('')}</div>
+    <div class="meta"><b>${b.c}</b> · ${b.group}<br>${b.shape}을 본떴어요.</div></div>`).join('') + `<div class="sub" style="margin:10px 0 0">${esc(H.other)}</div>`;
+  document.getElementById('hmVow').innerHTML =
+    `<div class="hm-row"><div class="chain">${H.vowelBase.map(b=>`<div class="j base">${b.v}</div>`).join('')}</div><div class="meta">${H.vowelBase.map(b=>`<b>${b.v}</b> ${b.meaning} — ${b.shape}`).join('<br>')}</div></div>` +
+    `<div class="hm-row"><div class="chain">${H.vowelFirst.map(b=>`<div class="j">${b.v}</div>`).join('')}</div><div class="meta"><b>처음 합친 글자(초출자)</b><br>${H.vowelFirst.map(b=>`${b.v} = ${b.from}`).join(' · ')}</div></div>` +
+    `<div class="hm-row"><div class="chain">${H.vowelSecond.map(b=>`<div class="j">${b.v}</div>`).join('')}</div><div class="meta"><b>다시 합친 글자(재출자)</b><br>${H.vowelSecond.map(b=>`${b.v} = ${b.from}`).join(' · ')}</div></div>`;
+}
+
+/* ── 퀴즈 (자료에서 만든다 — AI 없음) ── */
+let quiz=null;
+function makeQuestions(){
+  const Q=[], C=G.consonants, W=G.vowelWords;
+  // 1) 특징 → 자음 (3문제)
+  shuffle(C).slice(0,3).forEach(c=>{ Q.push({ text:`<b>${consDesc(c).join(' · ')}</b>인 자음은?`, ans:c.c, opts:[c.c,...shuffle(C.filter(x=>x.c!==c.c)).slice(0,3).map(x=>x.c)], jm:true,
+    expl:`${c.c}: ${place(c.place).hint}. ${manner(c.manner).hint}.` }); });
+  // 2) 자음 → 소리 나는 자리 (2문제)
+  shuffle(C).slice(0,2).forEach(c=>{ Q.push({ text:`<span class="jm">${c.c}</span> 은 어디에서 나는 소리일까?`, ans:place(c.place).name, opts:G.places.map(p=>p.name).sort(()=>Math.random()-.5).slice(0,5).filter((x,i,a)=>a.length<=4||x===place(c.place).name||i<4), expl:`${c.c}은 ${place(c.place).name} — ${place(c.place).hint}.` }); });
+  // 3) 특징 → 단모음 (2문제)
+  shuffle(G.monophthongs).slice(0,2).forEach(v=>{ Q.push({ text:`<b>${W[v.fb]} · ${W[v.h]} · ${W[v.lip]}</b>인 단모음은?`, ans:v.v, opts:[v.v,...shuffle(G.monophthongs.filter(x=>x.v!==v.v)).slice(0,3).map(x=>x.v)], jm:true, expl:`${v.v}: ${W[v.fb]}, ${W[v.h]}, ${W[v.lip]}.` }); });
+  // 4) 단모음인가 이중 모음인가 (1문제)
+  { const all=[...G.monophthongs.map(x=>x.v),...G.diphthongs.map(x=>x.v)]; const v=shuffle(all)[0], k=vowelKind(v);
+    Q.push({ text:`<span class="jm">${v}</span> 는 단모음일까, 이중 모음일까?`, ans:k, opts:['단모음','이중 모음'], expl: k==='단모음' ? `${v}는 소리 내는 동안 입술과 혀가 움직이지 않는 단모음이에요.` : `${v}는 소리 내는 동안 입술이나 혀가 움직이는 이중 모음이에요.` }); }
+  // 5) 음운 개수 (1문제)
+  { const cw=shuffle(G.countWords)[0], r=analyze(cw.w);
+    Q.push({ text:`'<b>${cw.w}</b>'의 음운은 모두 몇 개일까?`, ans:String(cw.n), opts:shuffle([cw.n-1,cw.n,cw.n+1,cw.n+2].filter(x=>x>0)).slice(0,4).map(String),
+      expl: `${r.syl.map(s=>[s.cho==='ㅇ'?'':s.cho, s.jung, ...(s.jong?(DOUBLE[s.jong]||[s.jong]):[])].filter(Boolean).join(' ')).join(' / ')} → ${cw.n}개 (첫소리 ㅇ은 세지 않아요).` }); }
+  // 6) 훈민정음 가획 (1문제)
+  { const b=shuffle(G.hunmin.consonantBase.filter(x=>x.chain.length>1))[0]; const j=b.chain[b.chain.length-1];
+    Q.push({ text:`<span class="jm">${j}</span> 은 어떤 기본 글자에 획을 더해 만들었을까?`, ans:b.c, opts:G.hunmin.consonantBase.map(x=>x.c).sort(()=>Math.random()-.5).slice(0,4).concat([]).filter((x,i,a)=>true), jm:true, expl:`${b.chain.join(' → ')}: ${b.c}(${b.shape})에 획을 더했어요.` }); }
+  // 보기 정리: 정답 포함 4개(또는 2개), 섞기
+  Q.forEach(q=>{ let o=[...new Set(q.opts)]; if(!o.includes(q.ans)) o[o.length-1]=q.ans; if(o.length>4) o=[q.ans,...shuffle(o.filter(x=>x!==q.ans)).slice(0,3)]; q.opts=shuffle(o); });
+  return shuffle(Q);
+}
+function newQuiz(){ quiz={ q:makeQuestions(), i:0, right:0 }; drawQ(); }
+function drawQ(){
+  const box=document.getElementById('quizBox'), q=quiz.q[quiz.i];
+  box.innerHTML = `<div class="qhead"><span>${quiz.i+1} / ${quiz.q.length}</span><span>맞힌 문제 ${quiz.right}</span></div>
+    <div class="qtext">${q.text}</div>
+    <div class="opts">${q.opts.map(o=>`<button class="opt${q.jm?' jm':''}" data-o="${esc(o)}" onclick="answerQ(this)">${esc(o)}</button>`).join('')}</div>
+    <div class="expl" id="qExpl"></div>
+    <button class="btn" id="qNext" style="display:none;margin-top:12px;width:100%" onclick="nextQ()">다음 →</button>`;
+}
+function answerQ(btn){
+  const q=quiz.q[quiz.i], ok=btn.dataset.o===q.ans;
+  document.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===q.ans) b.classList.add('right'); });
+  if(!ok) btn.classList.add('wrong'); else quiz.right++;
+  const ex=document.getElementById('qExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(q.ans)+'</b> ')+esc(q.expl); ex.style.display='block';
+  const nb=document.getElementById('qNext'); nb.style.display='block'; nb.textContent = quiz.i+1<quiz.q.length ? '다음 →' : '결과 보기 →';
+}
+function nextQ(){
+  quiz.i++;
+  if(quiz.i<quiz.q.length) return drawQ();
+  let best=null; try{ best=JSON.parse(localStorage.getItem(BEST_KEY)||'null'); }catch(e){}
+  if(!best || quiz.right>best.right){ try{ localStorage.setItem(BEST_KEY, JSON.stringify({right:quiz.right,total:quiz.q.length})); }catch(e){} best={right:quiz.right,total:quiz.q.length}; }
+  document.getElementById('quizBox').innerHTML = `<div class="score">${quiz.right} / ${quiz.q.length}</div>
+    <p style="text-align:center;color:var(--ink2);margin:6px 0 14px">이 기기 최고 기록: ${best.right} / ${best.total}</p>
+    <button class="btn" style="width:100%" onclick="newQuiz()">새 문제로 다시</button>`;
+}
+
+buildConsTable(); buildVowTable(); buildHunmin();
+
+/* ══════════ 2단원 단어의 짜임 ══════════ */
+const WORDS = G.words;
+function kindOf(w){
+  const ps = w.parts.filter(p=>p[1]!=='어미');
+  if (ps.some(p=>p[1]==='접두사'||p[1]==='접미사')) return '파생어';
+  return ps.filter(p=>p[1]==='어근').length>=2 ? '합성어' : '단일어';
+}
+const PT = { '어근':'root', '접두사':'pre', '접미사':'suf', '어미':'end' };
+function partsHtml(w){
+  return w.parts.map(([t,k]) => `<span class="pt ${PT[k]}" title="${k}">${k==='접두사'?t+'-':k==='접미사'||k==='어미'?'-'+t:t}</span>`).join('<span style="color:var(--ink3)">+</span>');
+}
+function explain(w){
+  const k=kindOf(w), roots=w.parts.filter(p=>p[1]==='어근').map(p=>p[0]), aff=w.parts.filter(p=>p[1]==='접두사'||p[1]==='접미사');
+  // 조사가 낱말 받침에 따라 달라지지 않게 괄호 뒤에 붙인다 (예: "어근(손)에 접두사(맨-)가")
+  let t = k==='단일어' ? `어근 하나(${roots[0]})로 된 단일어예요.` :
+          k==='파생어' ? `어근(${roots.join(', ')})에 ${aff.map(a=>a[1]==='접두사'?`접두사(${a[0]}-)`:`접미사(-${a[0]})`).join(', ')}가 붙은 파생어예요.` :
+                         `어근 두 개(${roots.join(' + ')})가 만난 합성어예요.`;
+  if (w.parts.some(p=>p[1]==='어미')) t += ' 끝의 -다는 어미라 짜임을 볼 때는 빼요.';
+  return t + (w.note ? ` <span style="color:var(--amber)">${esc(w.note)}</span>` : '');
+}
+let wFilterKind='전체';
+function renderWChips(){
+  const kinds=['전체','단일어','파생어','합성어'];
+  document.getElementById('wFilter').innerHTML = kinds.map(k=>`<button class="chip${k===wFilterKind?' on':''}" onclick="wFilterKind='${k}';renderWChips()">${k}</button>`).join('');
+  document.getElementById('wChips').innerHTML = WORDS.filter(w=>wFilterKind==='전체'||kindOf(w)===wFilterKind)
+    .map(w=>`<button class="wchip" onclick="showWord('${w.w}',this)">${w.w}</button>`).join('');
+}
+function showWord(word, el){
+  const w=WORDS.find(x=>x.w===word);
+  document.querySelectorAll('#wChips .wchip').forEach(b=>b.classList.toggle('on', b===el));
+  document.getElementById('wInfo').innerHTML = `<div class="txt"><div style="font-size:1.4rem;font-weight:900;margin-bottom:6px">${w.w} <span class="chip on" style="font-size:.75rem;vertical-align:middle">${kindOf(w)}</span></div>
+    <div style="margin-bottom:6px">${partsHtml(w)}</div>${explain(w)}</div>`;
+}
+
+/* 단어 조립실 */
+let slotA=null, slotB=null;
+function renderBlocks(){
+  const B=G.blocks;
+  document.getElementById('blockRows').innerHTML = Object.keys(B).map(k=>`<div class="brow"><div class="lab">${k}</div>${B[k].map(t=>`<button class="blk ${k}" onclick="pickBlock('${t}','${k}')">${k==='접두사'?t+'-':k==='접미사'?'-'+t:t}</button>`).join('')}</div>`).join('');
+}
+function slotText(b){ return b ? (b.k==='접두사'?b.t+'-':b.k==='접미사'?'-'+b.t:b.t) : ''; }
+function drawSlots(){
+  const a=document.getElementById('slotA'), b=document.getElementById('slotB');
+  a.textContent = slotA ? slotText(slotA) : '첫째 블록'; a.classList.toggle('full', !!slotA);
+  b.textContent = slotB ? slotText(slotB) : '둘째 블록'; b.classList.toggle('full', !!slotB);
+}
+function pickBlock(t,k){
+  if (!slotA) slotA={t,k}; else if (!slotB) slotB={t,k}; else { slotA={t,k}; slotB=null; }
+  drawSlots(); document.getElementById('buildOut').innerHTML='';
+}
+function resetBuild(){ slotA=slotB=null; drawSlots(); document.getElementById('buildOut').innerHTML=''; }
+function buildWord(){
+  const out=document.getElementById('buildOut');
+  if (!slotA||!slotB){ out.innerHTML='<div class="warn">블록 두 개를 골라 주세요.</div>'; return; }
+  if (slotA.k==='접미사'){ out.innerHTML='<div class="warn">접미사는 어근 <b>뒤에</b>만 붙어요. 순서를 바꿔 보세요.</div>'; return; }
+  if (slotB.k==='접두사'){ out.innerHTML='<div class="warn">접두사는 어근 <b>앞에</b>만 붙어요. 순서를 바꿔 보세요.</div>'; return; }
+  if (slotA.k!=='어근' && slotB.k!=='어근'){ out.innerHTML='<div class="warn">접사끼리는 단어가 되지 않아요. 어근이 꼭 하나는 있어야 해요.</div>'; return; }
+  const word=slotA.t+slotB.t, w=WORDS.find(x=>x.w===word);
+  if (w){ out.innerHTML=`<div class="info" style="flex-wrap:wrap"><div class="big word">${w.w}</div><div class="txt">🎉 <b>${kindOf(w)}</b>가 만들어졌어요!<br>${partsHtml(w)}<br>${explain(w)}</div></div>`; return; }
+  const kind = (slotA.k==='어근'&&slotB.k==='어근') ? '합성어' : '파생어';
+  out.innerHTML = `<div class="warn"><b>${esc(word)}</b> — 이 탐구실 목록에 없는 낱말이에요. 실제로 쓰는 말일 수도 있으니 <a href="eaim-korean-dictionary.html?q=${encodeURIComponent(word)}" style="color:var(--teal);font-weight:900">📖 낱말 창고·국어사전</a>에서 찾아보세요. 사전에 없다면 — 짜임으로 보면 <b>${kind}</b> 모양의 <b>새말</b>이에요. "새말 탐구" 탭에서 뜻을 지어 볼까요?</div>`;
+}
+
+/* 분류하기 */
+let sortState=null;
+function newSort(){
+  const pick=k=>shuffle(WORDS.filter(w=>kindOf(w)===k)).slice(0,3);
+  sortState={ cards: shuffle([...pick('단일어'),...pick('파생어'),...pick('합성어')]), sel:null, done:{}, right:0, tries:0 };
+  document.getElementById('bins').innerHTML = ['단일어','파생어','합성어'].map(k=>`<div class="bin" onclick="dropBin('${k}')"><h4>${k}</h4><div class="in" id="bin-${k}"></div></div>`).join('');
+  document.getElementById('sortMsg').textContent='';
+  drawSortCards();
+}
+function drawSortCards(){
+  document.getElementById('sortCards').innerHTML = sortState.cards.map(w=>`<button class="wchip${sortState.done[w.w]?' done':''}${sortState.sel===w.w?' on':''}" ${sortState.done[w.w]?'disabled':''} onclick="sortState.sel='${w.w}';drawSortCards()">${w.w}</button>`).join('');
+}
+function dropBin(k){
+  const S=sortState; if(!S.sel) { document.getElementById('sortMsg').textContent='먼저 낱말 카드를 누르세요.'; return; }
+  const w=WORDS.find(x=>x.w===S.sel); S.tries++;
+  const msg=document.getElementById('sortMsg');
+  if (kindOf(w)===k){ S.done[w.w]=1; S.right++; document.getElementById('bin-'+k).insertAdjacentHTML('beforeend',`<span>${w.w}</span>`); msg.innerHTML=`✅ ${w.w}: ${partsHtml(w)}`; }
+  else msg.innerHTML=`❌ ${w.w} — ${k}가 아니에요. 어근과 접사를 찾아보세요 (짜임을 볼 때 ${w.parts.filter(p=>p[1]!=='어미').length}조각이에요).`;
+  S.sel=null; drawSortCards();
+  if (Object.keys(S.done).length===S.cards.length) msg.innerHTML += `<br>🎉 모두 나눴어요! (${S.tries}번 만에)`;
+}
+
+/* 새말 탐구 */
+function renderNew(){
+  document.getElementById('newList').innerHTML = G.newWords.map(n=>`<div class="nwcard"><b>${n.w}</b> <span class="chip on" style="font-size:.72rem">${n.how}</span><div class="sub" style="margin:6px 0 0">${esc(n.parts)}<br>${esc(n.meaning)}</div></div>`).join('');
+}
+function makeNew(){
+  const v=id=>document.getElementById(id).value.trim();
+  const a=v('nwA'), b=v('nwB'), how=v('nwHow'), word=v('nwWord'), mean=v('nwMean');
+  const out=document.getElementById('nwOut');
+  if(!a||!b||!word){ out.innerHTML='<div class="warn">재료 두 개와 만든 새말을 적어 주세요.</div>'; return; }
+  out.innerHTML=`<div class="nwcard"><b>${esc(word)}</b> <span class="chip on" style="font-size:.72rem">${esc(how)}</span><div class="sub" style="margin:6px 0 0">${esc(a)} + ${esc(b)}<br>${esc(mean||'(뜻을 적어 보세요)')}</div></div>`;
+}
+
+/* 퀴즈 (자료에서 — AI 없음) */
+let wquiz=null;
+function makeWQuestions(){
+  const Q=[];
+  shuffle(WORDS).slice(0,5).forEach(w=>Q.push({ text:`<b>${w.w}</b> — 어떤 단어일까?`, ans:kindOf(w), opts:['단일어','파생어','합성어'], expl:explain(w).replace(/<[^>]+>/g,''), parts:w }));
+  shuffle(WORDS.filter(w=>kindOf(w)==='파생어')).slice(0,3).forEach(w=>{
+    const a=w.parts.find(p=>p[1]==='접두사'||p[1]==='접미사'); const show=a[1]==='접두사'?a[0]+'-':'-'+a[0];
+    const others=shuffle(WORDS.filter(x=>x!==w)).flatMap(x=>x.parts.filter(p=>p[1]!=='어미').map(p=>p[1]==='접두사'?p[0]+'-':p[1]==='접미사'?'-'+p[0]:p[0])).filter(x=>x!==show);
+    const root=w.parts.find(p=>p[1]==='어근')[0];
+    Q.push({ text:`'<b>${w.w}</b>'에 들어 있는 접사는?`, ans:show, opts:[show, root, ...[...new Set(others)].slice(0,2)], expl:explain(w).replace(/<[^>]+>/g,''), parts:w });
+  });
+  for(let i=0;i<2;i++){
+    const odd=shuffle(WORDS.filter(w=>kindOf(w)!=='파생어'))[0], der=shuffle(WORDS.filter(w=>kindOf(w)==='파생어')).slice(0,3);
+    Q.push({ text:'다음 중 <b>파생어가 아닌</b> 것은?', ans:odd.w, opts:[odd.w,...der.map(w=>w.w)], expl:`${odd.w}: ${kindOf(odd)}예요. 나머지는 어근에 접사가 붙은 파생어예요.`, parts:odd });
+  }
+  Q.forEach(q=>{ q.opts=shuffle([...new Set(q.opts)]); });
+  return shuffle(Q);
+}
+function newWQuiz(){ wquiz={ q:makeWQuestions(), i:0, right:0 }; drawWQ(); }
+function drawWQ(){
+  const q=wquiz.q[wquiz.i];
+  document.getElementById('wQuizBox').innerHTML = `<div class="qhead"><span>${wquiz.i+1} / ${wquiz.q.length}</span><span>맞힌 문제 ${wquiz.right}</span></div>
+    <div class="qtext">${q.text}</div>
+    <div class="opts">${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}" onclick="answerWQ(this)">${esc(o)}</button>`).join('')}</div>
+    <div class="expl" id="wExpl"></div>
+    <button class="btn" id="wNext" style="display:none;margin-top:12px;width:100%" onclick="nextWQ()">다음 →</button>`;
+}
+function answerWQ(btn){
+  const q=wquiz.q[wquiz.i], ok=btn.dataset.o===q.ans;
+  document.querySelectorAll('#wQuizBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===q.ans) b.classList.add('right'); });
+  if(!ok) btn.classList.add('wrong'); else wquiz.right++;
+  const ex=document.getElementById('wExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(q.ans)+'</b> ')+'<div style="margin:6px 0">'+partsHtml(q.parts)+'</div>'+esc(q.expl); ex.style.display='block';
+  const nb=document.getElementById('wNext'); nb.style.display='block'; nb.textContent = wquiz.i+1<wquiz.q.length ? '다음 →' : '결과 보기 →';
+}
+function nextWQ(){
+  wquiz.i++;
+  if(wquiz.i<wquiz.q.length) return drawWQ();
+  const KEY='eaim_korean_grammar_word_best'; let best=null; try{best=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  if(!best||wquiz.right>best.right){ best={right:wquiz.right,total:wquiz.q.length}; try{localStorage.setItem(KEY,JSON.stringify(best));}catch(e){} }
+  document.getElementById('wQuizBox').innerHTML = `<div class="score">${wquiz.right} / ${wquiz.q.length}</div><p style="text-align:center;color:var(--ink2);margin:6px 0 14px">이 기기 최고 기록: ${best.right} / ${best.total}</p><button class="btn" style="width:100%" onclick="newWQuiz()">새 문제로 다시</button>`;
+}
+renderWChips(); renderBlocks(); drawSlots(); renderNew();
+if (location.hash==='#u2') document.querySelector('.unit[data-u="2"]').click();
+
+/* ══════════ 3단원 품사 ══════════ */
+const POS=G.pos, posOf=p=>POS.find(x=>x.p===p);
+function posBtn(p, extra){ const c=posOf(p).color; return `<button class="posb" style="border-color:${c};color:${c}" ${extra||''}>${p}</button>`; }
+function renderPosConcept(){
+  const groups=Object.keys(G.posGroups);
+  document.getElementById('posGroups').innerHTML = groups.map(g=>`<div class="pgroup"><div class="gh">${g} <span>— ${G.posGroups[g]}</span></div>${POS.filter(x=>x.g===g).map(x=>posBtn(x.p,`onclick="showPos('${x.p}')"`)).join('')}</div>`).join('');
+  document.getElementById('posTips').innerHTML = G.posTips.map(t=>`<div class="tip">${esc(t)}</div>`).join('');
+}
+function showPos(p){
+  const x=posOf(p);
+  document.getElementById('posInfo').innerHTML=`<div class="txt"><b style="color:${x.color};font-size:1.2rem">${x.p}</b> · ${x.g} · ${x.form}<br>${esc(x.def)}<br><span style="color:var(--ink2)">예: ${esc(x.ex)}</span>${x.note?`<br><span style="color:var(--amber)">${esc(x.note)}</span>`:''}</div>`;
+}
+/* 품사 색칠 */
+let paint={ si:-1, order:[], sel:null, map:{} };
+function renderPalette(){
+  document.getElementById('palette').innerHTML = POS.map(x=>`<button class="posb${paint.sel===x.p?' on':''}" style="border-color:${x.color};color:${x.color};${paint.sel===x.p?'background:'+x.color:''}" onclick="paint.sel='${x.p}';renderPalette()">${x.p}</button>`).join('');
+}
+function nextSentence(){
+  if(!paint.order.length) paint.order=shuffle(G.sentences.map((_,i)=>i));
+  paint.si=paint.order.pop(); paint.map={}; drawSentence(); document.getElementById('paintMsg').textContent='';
+}
+function drawSentence(checked){
+  const S=G.sentences[paint.si]; let k=0;
+  document.getElementById('sentBox').innerHTML = S.map(ej=>`<div class="ej">${ej.map(([w,p])=>{ const i=k++, mine=paint.map[i], c=mine?posOf(mine).color:'';
+    const cls = checked ? (mine===p?' ok':' no') : '';
+    return `<button class="tok${cls}" style="${mine?`border-color:${c};color:${c}`:''}" onclick="paintTok(${i})">${esc(w)}<small>${checked&&mine!==p?`→ ${p}`:(mine||'')}</small></button>`; }).join('')}</div>`).join('');
+}
+function paintTok(i){ if(!paint.sel){ document.getElementById('paintMsg').textContent='먼저 위에서 품사 색을 고르세요.'; return; } paint.map[i]=paint.sel; drawSentence(); }
+function checkPaint(){
+  const toks=G.sentences[paint.si].flat(); const done=toks.filter((_,i)=>paint.map[i]).length;
+  if(done<toks.length){ document.getElementById('paintMsg').textContent=`아직 ${toks.length-done}개 단어를 칠하지 않았어요.`; return; }
+  const right=toks.filter(([w,p],i)=>paint.map[i]===p).length;
+  drawSentence(true);
+  document.getElementById('paintMsg').innerHTML = right===toks.length ? '🎉 모두 맞았어요!' : `${toks.length}개 중 ${right}개 맞았어요. 빨간 테두리 아래에 바른 품사를 적어 두었어요.`;
+}
+/* 동사·형용사 실험 */
+function renderLab(){
+  document.getElementById('labWords').innerHTML = shuffle(G.verbAdj).map(v=>`<button class="wchip" onclick="labTest('${v.w}',this)">${v.w}</button>`).join('');
+}
+function labTest(w, el){
+  const v=G.verbAdj.find(x=>x.w===w);
+  document.querySelectorAll('#labWords .wchip').forEach(b=>b.classList.toggle('on',b===el));
+  const heads=['-는다/-ㄴ다','-아라/-어라','-자'];
+  document.getElementById('labOut').innerHTML = `<table class="labt"><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr><tr>${v.forms.map(([f,ok])=>`<td class="${ok?'o':'x'}">${ok?'○':'×'} ${f}</td>`).join('')}</tr></table>
+    <div class="info"><div class="txt"><b style="color:${posOf(v.p).color}">${v.w} → ${v.p}</b><br>${v.p==='동사'?'세 가지 꼴로 모두 쓸 수 있어요 — 움직임을 나타내는 동사예요.':'세 가지 꼴로 쓰면 어색해요 — 성질이나 상태를 나타내는 형용사예요.'}</div></div>`;
+}
+/* 퀴즈 */
+let pquiz=null;
+function makePQuestions(){
+  const Q=[], names=POS.map(x=>x.p);
+  const pickTok=()=>{ const si=Math.floor(Math.random()*G.sentences.length), S=G.sentences[si], flat=S.flat(), ti=Math.floor(Math.random()*flat.length); return {S,ti,tok:flat[ti]}; };
+  for(let i=0;i<6;i++){
+    const {S,ti,tok}=pickTok(); let k=0;
+    const sent=S.map(ej=>ej.map(([w])=>{ const h=k++===ti?`<u style="text-decoration-thickness:3px;text-underline-offset:4px;color:var(--teal)">${esc(w)}</u>`:esc(w); return h; }).join('')).join(' ');
+    Q.push({ text:`${sent}<br><span style="font-size:.9rem;color:var(--ink2)">밑줄 친 '${esc(tok[0])}'의 품사는?</span>`, ans:tok[1], opts:[tok[1],...shuffle(names.filter(n=>n!==tok[1])).slice(0,3)], expl:`${tok[0]}: ${tok[1]} — ${posOf(tok[1]).def}.` });
+  }
+  for(let i=0;i<2;i++){
+    const want=i?'동사':'형용사', ans=shuffle(G.verbAdj.filter(v=>v.p===want))[0], others=shuffle(G.verbAdj.filter(v=>v.p!==want)).slice(0,3);
+    Q.push({ text:`다음 중 <b>${want}</b>는?`, ans:ans.w, opts:[ans.w,...others.map(v=>v.w)], expl:`${ans.w}: ${ans.forms.map(f=>(f[1]?'○ ':'× ')+f[0]).join(', ')} → ${want}.` });
+  }
+  for(let i=0;i<2;i++){
+    const gs=['체언','용언','수식언'], g=gs[Math.floor(Math.random()*gs.length)], inG=POS.filter(x=>x.g===g).map(x=>x.p), out=shuffle(POS.filter(x=>x.g!==g))[0].p;
+    Q.push({ text:`다음 중 <b>${g}</b>에 속하지 <b>않는</b> 품사는?`, ans:out, opts:[out,...inG].slice(0,4), expl:`${g}: ${inG.join('·')}. ${out}은(는) ${posOf(out).g}이에요.`.replace('은(는)',' →') });
+  }
+  Q.forEach(q=>{ q.opts=shuffle([...new Set(q.opts)]); });
+  return shuffle(Q);
+}
+function newPQuiz(){ pquiz={ q:makePQuestions(), i:0, right:0 }; drawPQ(); }
+function drawPQ(){
+  const q=pquiz.q[pquiz.i];
+  document.getElementById('pQuizBox').innerHTML = `<div class="qhead"><span>${pquiz.i+1} / ${pquiz.q.length}</span><span>맞힌 문제 ${pquiz.right}</span></div>
+    <div class="qtext">${q.text}</div><div class="opts">${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}" onclick="answerPQ(this)">${esc(o)}</button>`).join('')}</div>
+    <div class="expl" id="pExpl"></div><button class="btn" id="pNext" style="display:none;margin-top:12px;width:100%" onclick="nextPQ()">다음 →</button>`;
+}
+function answerPQ(btn){
+  const q=pquiz.q[pquiz.i], ok=btn.dataset.o===q.ans;
+  document.querySelectorAll('#pQuizBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===q.ans) b.classList.add('right'); });
+  if(!ok) btn.classList.add('wrong'); else pquiz.right++;
+  const ex=document.getElementById('pExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(q.ans)+'</b> ')+esc(q.expl); ex.style.display='block';
+  const nb=document.getElementById('pNext'); nb.style.display='block'; nb.textContent=pquiz.i+1<pquiz.q.length?'다음 →':'결과 보기 →';
+}
+function nextPQ(){
+  pquiz.i++; if(pquiz.i<pquiz.q.length) return drawPQ();
+  const KEY='eaim_korean_grammar_pos_best'; let best=null; try{best=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  if(!best||pquiz.right>best.right){ best={right:pquiz.right,total:pquiz.q.length}; try{localStorage.setItem(KEY,JSON.stringify(best));}catch(e){} }
+  document.getElementById('pQuizBox').innerHTML=`<div class="score">${pquiz.right} / ${pquiz.q.length}</div><p style="text-align:center;color:var(--ink2);margin:6px 0 14px">이 기기 최고 기록: ${best.right} / ${best.total}</p><button class="btn" style="width:100%" onclick="newPQuiz()">새 문제로 다시</button>`;
+}
+renderPosConcept(); renderPalette(); nextSentence(); renderLab();
+if (location.hash==='#u3') document.querySelector('.unit[data-u="3"]').click();
+
+/* ══════════ 4단원 문장의 짜임 ══════════ */
+const COMPS=G.comps, compOf=c=>COMPS.find(x=>x.c===c);
+function renderCompConcept(){
+  document.getElementById('compGroups').innerHTML=['주성분','부속 성분','독립 성분'].map(k=>`<div class="pgroup"><div class="gh">${k}</div>${COMPS.filter(x=>x.kind===k).map(x=>`<button class="posb" style="border-color:${x.color};color:${x.color}" onclick="showComp('${x.c}')">${x.c}</button>`).join('')}</div>`).join('');
+}
+function showComp(c){ const x=compOf(c); document.getElementById('compInfo').innerHTML=`<div class="txt"><b style="color:${x.color};font-size:1.2rem">${x.c}</b> · ${x.kind}<br>${esc(x.def)}</div>`; }
+let cpaint={ order:[], si:-1, sel:null, map:{} };
+function renderCPalette(){ document.getElementById('cPalette').innerHTML=COMPS.map(x=>`<button class="posb${cpaint.sel===x.c?' on':''}" style="border-color:${x.color};color:${x.color};${cpaint.sel===x.c?'background:'+x.color:''}" onclick="cpaint.sel='${x.c}';renderCPalette()">${x.c}</button>`).join(''); }
+function nextCSentence(){ if(!cpaint.order.length) cpaint.order=shuffle(G.compSentences.map((_,i)=>i)); cpaint.si=cpaint.order.pop(); cpaint.map={}; drawCSentence(); document.getElementById('cPaintMsg').textContent=''; }
+function drawCSentence(checked){
+  document.getElementById('cSentBox').innerHTML=G.compSentences[cpaint.si].map(([w,c],i)=>{ const m=cpaint.map[i], col=m?compOf(m).color:'';
+    return `<button class="tok${checked?(m===c?' ok':' no'):''}" style="${m?`border-color:${col};color:${col}`:''}" onclick="cPaintTok(${i})">${esc(w)}<small>${checked&&m!==c?'→ '+c:(m||'')}</small></button>`; }).join('');
+}
+function cPaintTok(i){ if(!cpaint.sel){ document.getElementById('cPaintMsg').textContent='먼저 위에서 성분 색을 고르세요.'; return; } cpaint.map[i]=cpaint.sel; drawCSentence(); }
+function checkCPaint(){
+  const S=G.compSentences[cpaint.si], done=S.filter((_,i)=>cpaint.map[i]).length;
+  if(done<S.length){ document.getElementById('cPaintMsg').textContent=`아직 ${S.length-done}개를 칠하지 않았어요.`; return; }
+  const right=S.filter(([w,c],i)=>cpaint.map[i]===c).length; drawCSentence(true);
+  document.getElementById('cPaintMsg').innerHTML= right===S.length?'🎉 모두 맞았어요!':`${S.length}개 중 ${right}개 맞았어요. 빨간 테두리 아래에 바른 성분을 적어 두었어요.`;
+}
+/* 홑·겹 */
+let st={ order:[], cur:null };
+const STYPES=['홑문장','대등하게 이어진문장','종속적으로 이어진문장','명사절을 안은문장','관형절을 안은문장','부사절을 안은문장','서술절을 안은문장','인용절을 안은문장'];
+function nextStruct(){
+  if(!st.order.length) st.order=shuffle(G.structSentences.slice()); st.cur=st.order.pop(); const x=st.cur;
+  const opts=x.type==='홑문장'?['홑문장',...shuffle(STYPES.slice(1)).slice(0,3)]:[x.type,'홑문장',...shuffle(STYPES.filter(t=>t!==x.type&&t!=='홑문장')).slice(0,2)];
+  document.getElementById('structBox').innerHTML=`<div class="sent" style="font-size:1.15rem;font-weight:700">${esc(x.s)}</div>
+    <div class="opts" style="margin-top:12px">${shuffle(opts).map(o=>`<button class="opt" data-o="${o}" onclick="answerStruct(this)">${o}</button>`).join('')}</div>
+    <div class="expl" id="stExpl"></div><button class="btn ghost" style="margin-top:10px" onclick="nextStruct()">다음 문장 →</button>`;
+}
+function answerStruct(btn){
+  const x=st.cur, ok=btn.dataset.o===x.type;
+  document.querySelectorAll('#structBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===x.type) b.classList.add('right'); }); if(!ok) btn.classList.add('wrong');
+  const ex=document.getElementById('stExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+x.type+'</b> ')+`<br>주어–서술어 짝 ${x.pairs.length}개: ${x.pairs.map(esc).join(' / ')}${x.why?'<br>'+esc(x.why):''}`; ex.style.display='block';
+}
+/* 문장 잇기 */
+let jn={ order:[], cur:null };
+function nextJoin(){
+  if(!jn.order.length) jn.order=shuffle(G.joins.slice()); jn.cur=jn.order.pop(); const x=jn.cur;
+  document.getElementById('joinBox').innerHTML=`<div class="sent" style="flex-direction:column;gap:6px;font-size:1.05rem"><div>① ${esc(x.a)}</div><div>② ${esc(x.b)}</div></div>
+    <div class="opts" style="grid-template-columns:1fr;margin-top:12px">${shuffle([x.ans,...x.wrong]).map(o=>`<button class="opt" style="text-align:left" data-o="${esc(o)}" onclick="answerJoin(this)">${esc(o)}</button>`).join('')}</div>
+    <div class="expl" id="jnExpl"></div><button class="btn ghost" style="margin-top:10px" onclick="nextJoin()">다음 →</button>`;
+}
+function answerJoin(btn){
+  const x=jn.cur, ok=btn.dataset.o===x.ans;
+  document.querySelectorAll('#joinBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===x.ans) b.classList.add('right'); }); if(!ok) btn.classList.add('wrong');
+  const ex=document.getElementById('jnExpl'); ex.innerHTML=(ok?'✅ 알맞아요! ':'❌ 알맞은 문장은 <b>'+esc(x.ans)+'</b> ')+'<br>'+esc(x.why); ex.style.display='block';
+}
+/* 퀴즈 */
+let squiz=null;
+function makeSQuestions(){
+  const Q=[], names=COMPS.map(x=>x.c);
+  for(let i=0;i<5;i++){ const S=shuffle(G.compSentences)[0], ti=Math.floor(Math.random()*S.length), [w,c]=S[ti];
+    Q.push({ text:S.map(([x],k)=>k===ti?`<u style="text-decoration-thickness:3px;text-underline-offset:4px;color:var(--teal)">${esc(x)}</u>`:esc(x)).join(' ')+`<br><span style="font-size:.9rem;color:var(--ink2)">밑줄 친 어절의 문장 성분은?</span>`, ans:c, opts:[c,...shuffle(names.filter(n=>n!==c)).slice(0,3)], expl:`${w}: ${c} — ${compOf(c).def}.` }); }
+  for(let i=0;i<3;i++){ const x=shuffle(G.structSentences)[0], simple=x.type==='홑문장';
+    Q.push({ text:`<b>${esc(x.s)}</b><br><span style="font-size:.9rem;color:var(--ink2)">홑문장일까, 겹문장일까?</span>`, ans:simple?'홑문장':'겹문장', opts:['홑문장','겹문장'], expl:`주어–서술어 짝 ${x.pairs.length}개: ${x.pairs.join(' / ')} → ${x.type}.` }); }
+  for(let i=0;i<2;i++){ const x=shuffle(G.structSentences.filter(y=>/안은문장/.test(y.type)))[0];
+    Q.push({ text:`<b>${esc(x.s)}</b><br><span style="font-size:.9rem;color:var(--ink2)">어떤 절을 안은문장일까?</span>`, ans:x.type.replace('을 안은문장',''), opts:['명사절','관형절','부사절','서술절','인용절'].filter(o=>o!==x.type.replace('을 안은문장','')).sort(()=>Math.random()-.5).slice(0,3).concat([x.type.replace('을 안은문장','')]), expl:x.why }); }
+  Q.forEach(q=>{ q.opts=shuffle([...new Set(q.opts)]); }); return shuffle(Q);
+}
+function newSQuiz(){ squiz={ q:makeSQuestions(), i:0, right:0 }; drawSQ(); }
+function drawSQ(){ const q=squiz.q[squiz.i];
+  document.getElementById('sQuizBox').innerHTML=`<div class="qhead"><span>${squiz.i+1} / ${squiz.q.length}</span><span>맞힌 문제 ${squiz.right}</span></div><div class="qtext">${q.text}</div>
+    <div class="opts">${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}" onclick="answerSQ(this)">${esc(o)}</button>`).join('')}</div><div class="expl" id="sExpl"></div>
+    <button class="btn" id="sNext" style="display:none;margin-top:12px;width:100%" onclick="nextSQ()">다음 →</button>`; }
+function answerSQ(btn){ const q=squiz.q[squiz.i], ok=btn.dataset.o===q.ans;
+  document.querySelectorAll('#sQuizBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===q.ans) b.classList.add('right'); }); if(!ok) btn.classList.add('wrong'); else squiz.right++;
+  const ex=document.getElementById('sExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(q.ans)+'</b> ')+esc(q.expl); ex.style.display='block';
+  const nb=document.getElementById('sNext'); nb.style.display='block'; nb.textContent=squiz.i+1<squiz.q.length?'다음 →':'결과 보기 →'; }
+function nextSQ(){ squiz.i++; if(squiz.i<squiz.q.length) return drawSQ();
+  const KEY='eaim_korean_grammar_sentence_best'; let best=null; try{best=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  if(!best||squiz.right>best.right){ best={right:squiz.right,total:squiz.q.length}; try{localStorage.setItem(KEY,JSON.stringify(best));}catch(e){} }
+  document.getElementById('sQuizBox').innerHTML=`<div class="score">${squiz.right} / ${squiz.q.length}</div><p style="text-align:center;color:var(--ink2);margin:6px 0 14px">이 기기 최고 기록: ${best.right} / ${best.total}</p><button class="btn" style="width:100%" onclick="newSQuiz()">새 문제로 다시</button>`; }
+renderCompConcept(); renderCPalette(); nextCSentence(); nextStruct(); nextJoin();
+if (location.hash==='#u4') document.querySelector('.unit[data-u="4"]').click();
+
+/* ══════════ 5단원 피동·인용 ══════════ */
+const HOWS=['-이-','-히-','-리-','-기-','-어지다','-되다'];
+document.getElementById('pvEffect').innerHTML=G.passiveEffect.map(e=>`<div class="tip"><b>${esc(e.s)}</b> ↔ ${esc(e.vs)}<br><span style="color:var(--ink2)">${esc(e.point)}</span></div>`).join('');
+document.getElementById('qtEffect').innerHTML=G.quoteEffect.map(t=>`<div class="tip">${esc(t)}</div>`).join('');
+/* 여러 탭이 같은 모양의 '보기 고르기' 카드를 쓴다 */
+function choiceCard(boxId, stem, ans, opts, why, onNext, wide){
+  const box=document.getElementById(boxId);
+  box.innerHTML=`<div class="sent" style="flex-direction:column;gap:6px;font-size:1.02rem">${stem}</div>
+    <div class="opts" style="margin-top:12px;${wide?'grid-template-columns:1fr':''}">${shuffle(opts).map(o=>`<button class="opt" style="${wide?'text-align:left':''}" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+    <div class="expl"></div><button class="btn ghost" style="margin-top:10px">다음 →</button>`;
+  box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ const ok=b.dataset.o===ans;
+    box.querySelectorAll('.opt').forEach(x=>{ x.disabled=true; if(x.dataset.o===ans) x.classList.add('right'); }); if(!ok) b.classList.add('wrong');
+    const ex=box.querySelector('.expl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(ans)+'</b><br>')+why; ex.style.display='block'; });
+  box.querySelector('.btn.ghost').onclick=onNext;
+}
+const bag=list=>{ let o=[]; return ()=>{ if(!o.length) o=shuffle(list.slice()); return o.pop(); }; };
+const nextPas=bag(G.passives), nextDbl=bag(G.doublePassive), nextQt=bag(G.quotes);
+function showVA(){ const x=nextPas(); choiceCard('vaBox', `<div><span class="chip">능동</span> ${esc(x.act)}</div><div><span class="chip on">피동</span> <b>${esc(x.pas)}</b></div>`, x.how,
+  [x.how,...shuffle(HOWS.filter(h=>h!==x.how)).slice(0,3)], `${esc(x.verb)} — '${esc(x.how)}'로 피동이 되었어요. 능동문의 목적어가 피동문의 주어가 되었어요.${x.note?'<br>'+esc(x.note):''}`, showVA); }
+function showVD(){ const x=nextDbl(); choiceCard('vdBox', '바르게 쓴 것은?', x.right, [x.right,x.wrong], `<b>${esc(x.wrong)}</b> → <b>${esc(x.right)}</b><br>${esc(x.why)}`, showVD, true); }
+function showVI(){ const x=nextQt(); choiceCard('viBox', `<div>${esc(x.direct)}</div><div style="font-size:.85rem;color:var(--ink3)">↓ 간접 인용으로</div>`, x.indirect, [x.indirect,...x.wrong], esc(x.why), showVI, true); }
+showVA(); showVD(); showVI();
+/* 퀴즈 */
+let vquiz=null;
+function makeVQuestions(){
+  const Q=[];
+  shuffle(G.passives).slice(0,4).forEach(x=>Q.push({ text:`${esc(x.act)}<br>→ <b>${esc(x.pas)}</b><br><span style="font-size:.9rem;color:var(--ink2)">피동문을 만든 방법은?</span>`, ans:x.how, opts:[x.how,...shuffle(HOWS.filter(h=>h!==x.how)).slice(0,3)], expl:`${x.verb}` }));
+  shuffle(G.doublePassive).slice(0,3).forEach(x=>Q.push({ text:'바르게 쓴 것은?', ans:x.right, opts:[x.right,x.wrong], expl:x.why, wide:true }));
+  shuffle(G.quotes).slice(0,3).forEach(x=>Q.push({ text:`${esc(x.direct)}<br><span style="font-size:.9rem;color:var(--ink2)">간접 인용으로 바르게 바꾼 것은?</span>`, ans:x.indirect, opts:[x.indirect,...x.wrong], expl:x.why, wide:true }));
+  Q.forEach(q=>q.opts=shuffle([...new Set(q.opts)])); return shuffle(Q);
+}
+function newVQuiz(){ vquiz={ q:makeVQuestions(), i:0, right:0 }; drawVQ(); }
+function drawVQ(){ const q=vquiz.q[vquiz.i];
+  document.getElementById('vQuizBox').innerHTML=`<div class="qhead"><span>${vquiz.i+1} / ${vquiz.q.length}</span><span>맞힌 문제 ${vquiz.right}</span></div><div class="qtext">${q.text}</div>
+    <div class="opts" style="${q.wide?'grid-template-columns:1fr':''}">${q.opts.map(o=>`<button class="opt" style="${q.wide?'text-align:left':''}" data-o="${esc(o)}" onclick="answerVQ(this)">${esc(o)}</button>`).join('')}</div><div class="expl" id="vExpl"></div>
+    <button class="btn" id="vNext" style="display:none;margin-top:12px;width:100%" onclick="nextVQ()">다음 →</button>`; }
+function answerVQ(btn){ const q=vquiz.q[vquiz.i], ok=btn.dataset.o===q.ans;
+  document.querySelectorAll('#vQuizBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===q.ans) b.classList.add('right'); }); if(!ok) btn.classList.add('wrong'); else vquiz.right++;
+  const ex=document.getElementById('vExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(q.ans)+'</b> ')+esc(q.expl); ex.style.display='block';
+  const nb=document.getElementById('vNext'); nb.style.display='block'; nb.textContent=vquiz.i+1<vquiz.q.length?'다음 →':'결과 보기 →'; }
+function nextVQ(){ vquiz.i++; if(vquiz.i<vquiz.q.length) return drawVQ();
+  const KEY='eaim_korean_grammar_voice_best'; let best=null; try{best=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  if(!best||vquiz.right>best.right){ best={right:vquiz.right,total:vquiz.q.length}; try{localStorage.setItem(KEY,JSON.stringify(best));}catch(e){} }
+  document.getElementById('vQuizBox').innerHTML=`<div class="score">${vquiz.right} / ${vquiz.q.length}</div><p style="text-align:center;color:var(--ink2);margin:6px 0 14px">이 기기 최고 기록: ${best.right} / ${best.total}</p><button class="btn" style="width:100%" onclick="newVQuiz()">새 문제로 다시</button>`; }
+if (location.hash==='#u5') document.querySelector('.unit[data-u="5"]').click();
+
+/* ══════════ 6단원 맞춤법의 원리 ══════════ */
+const FLOWER=[['꽃이','꼬치'],['꽃을','꼬츨'],['꽃만','꼰만'],['꽃도','꼳또']];
+document.getElementById('flowerBtns').innerHTML=FLOWER.map(([w,snd])=>`<button class="wchip" onclick="showFlower('${w}','${snd}',this)">${w}</button>`).join('');
+function showFlower(w,snd,el){ document.querySelectorAll('#flowerBtns .wchip').forEach(b=>b.classList.toggle('on',b===el));
+  document.getElementById('flowerInfo').innerHTML=`<div class="txt">소리대로 적으면 <b>[${snd}]</b> → '꽃'이 안 보여요.<br>어법에 맞게 적으면 <b style="color:var(--teal)">${w}</b> → 늘 '꽃'이 보여요.<br><span style="color:var(--ink2)">${FLOWER.map(f=>`[${f[1]}]`).join(' ')} 처럼 소리는 제각각이어도, 적을 때는 모두 '꽃'을 지켜요.</span></div>`; }
+const SS=G.soundSpell.filter(x=>x.wrong), nextSS=bag(SS);
+function showMS(){ const x=nextSS(); choiceCard('msBox', `<div style="font-size:1.5rem;font-weight:900;text-align:center">[${esc(x.sound)}]</div>`, x.spell, [x.spell,...x.wrong], esc(x.why), showMS); }
+showMS();
+/* 띄어쓰기 */
+let sp={ order:[], cur:null, on:new Set() };
+function nextSpacing(){
+  if(!sp.order.length) sp.order=shuffle(G.spacing.slice()); sp.cur=sp.order.pop(); sp.on=new Set();
+  drawSpacing(); document.getElementById('spMsg').textContent='';
+}
+function answerGaps(){ const g=new Set(); let n=0; sp.cur.words.forEach((w,i)=>{ n+=[...w].length; if(i<sp.cur.words.length-1) g.add(n-1); }); return g; }   // 이 글자 뒤에 띄움
+function drawSpacing(checked){
+  const chars=[...sp.cur.words.join('')], ans=answerGaps();
+  document.getElementById('spBox').innerHTML=chars.map((c,i)=>{ let cls=sp.on.has(i)?' on':'';
+    if(checked){ if(ans.has(i)&&!sp.on.has(i)) cls+=' miss'; if(!ans.has(i)&&sp.on.has(i)) cls+=' extra'; }
+    return `<span class="ch">${esc(c)}</span>${i<chars.length-1?`<button class="gap${cls}" aria-label="띄어쓰기" onclick="toggleGap(${i})"></button>`:''}`; }).join('');
+}
+function toggleGap(i){ sp.on.has(i)?sp.on.delete(i):sp.on.add(i); drawSpacing(); document.getElementById('spMsg').textContent=''; }
+function checkSpacing(){
+  const ans=answerGaps(); const miss=[...ans].filter(i=>!sp.on.has(i)).length, extra=[...sp.on].filter(i=>!ans.has(i)).length;
+  drawSpacing(true);
+  document.getElementById('spMsg').innerHTML=(miss+extra===0?'🎉 딱 맞았어요! ':`띄어야 할 곳 ${miss}군데를 빠뜨렸고, 붙여야 할 곳 ${extra}군데를 띄웠어요(빨간 칸). `)+`<br>바른 문장: <b>${esc(sp.cur.words.join(' '))}</b><br>${esc(sp.cur.rule)}`;
+}
+nextSpacing();
+/* 퀴즈 */
+let mquiz=null;
+function makeMQuestions(){
+  const Q=[];
+  shuffle(SS).slice(0,4).forEach(x=>Q.push({ text:`<span style="font-size:1.4rem">[${esc(x.sound)}]</span><br><span style="font-size:.9rem;color:var(--ink2)">바르게 적은 것은?</span>`, ans:x.spell, opts:[x.spell,...x.wrong], expl:x.why }));
+  shuffle(G.spacing).slice(0,4).forEach(x=>{ const r=x.words.join(' '); Q.push({ text:'띄어쓰기가 바른 문장은?', ans:r, opts:[r,...x.wrong], expl:x.rule, wide:true }); });
+  const p=shuffle(SS)[0];
+  Q.push({ text:`[${esc(p.sound)}]로 소리 나는데 '${esc(p.spell)}'로 적는 까닭은?`, ans:'뜻을 가진 부분의 모양을 밝혀 적어서(어법에 맞게)', opts:['뜻을 가진 부분의 모양을 밝혀 적어서(어법에 맞게)','소리 나는 그대로 적어서','외래어를 적는 방법이라서','띄어쓰기 원칙 때문에'], expl:p.why, wide:true });
+  const s0=shuffle(G.soundSpell.filter(x=>!x.wrong))[0];
+  Q.push({ text:`'${esc(s0.spell)}'처럼 소리와 표기가 같은 말은 어떤 원리로 적은 것일까?`, ans:'소리대로 적기', opts:['소리대로 적기','어법에 맞게 적기(모양 밝히기)','띄어 쓰기','외래어 표기'], expl:'소리 나는 그대로 적는 원리예요(한글 맞춤법 제1항의 앞부분).' });
+  Q.forEach(q=>q.opts=shuffle([...new Set(q.opts)])); return shuffle(Q);
+}
+function newMQuiz(){ mquiz={ q:makeMQuestions(), i:0, right:0 }; drawMQ(); }
+function drawMQ(){ const q=mquiz.q[mquiz.i];
+  document.getElementById('mQuizBox').innerHTML=`<div class="qhead"><span>${mquiz.i+1} / ${mquiz.q.length}</span><span>맞힌 문제 ${mquiz.right}</span></div><div class="qtext">${q.text}</div>
+    <div class="opts" style="${q.wide?'grid-template-columns:1fr':''}">${q.opts.map(o=>`<button class="opt" style="${q.wide?'text-align:left':''}" data-o="${esc(o)}" onclick="answerMQ(this)">${esc(o)}</button>`).join('')}</div><div class="expl" id="mExpl"></div>
+    <button class="btn" id="mNext" style="display:none;margin-top:12px;width:100%" onclick="nextMQ()">다음 →</button>`; }
+function answerMQ(btn){ const q=mquiz.q[mquiz.i], ok=btn.dataset.o===q.ans;
+  document.querySelectorAll('#mQuizBox .opt').forEach(b=>{ b.disabled=true; if(b.dataset.o===q.ans) b.classList.add('right'); }); if(!ok) btn.classList.add('wrong'); else mquiz.right++;
+  const ex=document.getElementById('mExpl'); ex.innerHTML=(ok?'✅ 맞아요! ':'❌ 정답은 <b>'+esc(q.ans)+'</b> ')+esc(q.expl); ex.style.display='block';
+  const nb=document.getElementById('mNext'); nb.style.display='block'; nb.textContent=mquiz.i+1<mquiz.q.length?'다음 →':'결과 보기 →'; }
+function nextMQ(){ mquiz.i++; if(mquiz.i<mquiz.q.length) return drawMQ();
+  const KEY='eaim_korean_grammar_spelling_best'; let best=null; try{best=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  if(!best||mquiz.right>best.right){ best={right:mquiz.right,total:mquiz.q.length}; try{localStorage.setItem(KEY,JSON.stringify(best));}catch(e){} }
+  document.getElementById('mQuizBox').innerHTML=`<div class="score">${mquiz.right} / ${mquiz.q.length}</div><p style="text-align:center;color:var(--ink2);margin:6px 0 14px">이 기기 최고 기록: ${best.right} / ${best.total}</p><button class="btn" style="width:100%" onclick="newMQuiz()">새 문제로 다시</button>`; }
+if (location.hash==='#u6') document.querySelector('.unit[data-u="6"]').click();
+</script>
+</body>
+</html>

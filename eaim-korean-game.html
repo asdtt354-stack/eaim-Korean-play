@@ -18,6 +18,7 @@
 <script src="lib/qrcode.min.js"></script>  <!-- 공통규칙 3번: QR은 저장소 안 라이브러리로 그린다 -->
 <script src="korean-ai.js"></script>  <!-- AI는 api/ai 중계 함수로 (공통규칙 6-1) -->
 <script src="vocab-data.js"></script>  <!-- 어휘 자료 (공통규칙 9번) -->
+<script src="teacher-quiz.js"></script>  <!-- 선생님용 AI 문제 세트 (국어 부록 6-2) -->
 <style>
 /* 공통규칙 3번: 한글 줄바꿈 — 단어 중간에서 끊기지 않게 (2026-09-25) */
 html,body{word-break:keep-all;overflow-wrap:break-word;}
@@ -248,7 +249,8 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 <div id="teacherPanel" class="ov" style="display:none">
   <div class="mb" style="text-align:left">
     <div style="font-family:'Nunito',sans-serif;font-size:1.15rem;font-weight:900;margin-bottom:12px;text-align:center">🎮 교사 대시보드</div>
-    <button class="btn bvio bfl" style="margin-bottom:14px" onclick="goGameAsTeacher()">🎮 게임 화면으로</button>
+    <button class="btn bvio bfl" style="margin-bottom:8px" onclick="goGameAsTeacher()">🎮 게임 화면으로</button>
+    <button class="btn bg2 bfl" style="margin-bottom:14px" onclick="openQuizSets()">🤖 AI 문제 세트 만들기</button>
     <div class="teacher-chip">
       <img class="teacher-avatar" src="" id="dashAvatar" onerror="this.style.display='none'">
       <div style="font-size:.8rem" id="dashProfile"></div>
@@ -315,7 +317,10 @@ main{max-width:800px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
     <div style="font-size:.74rem;color:rgba(255,255,255,.45);margin-bottom:12px">여러 개 골라도 돼요. 어휘는 게임할 때 나와요.</div>
     <div class="cat-tabs" id="cat-tabs"></div>
     <div id="sel-count" style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:10px"></div>
+    <a href="eaim-korean-dictionary.html" style="display:inline-block;margin-top:8px;font-size:.76rem;color:#A89CF8;text-decoration:none">📖 모르는 말은 낱말 창고에서 찾아봐요 →</a>
   </div>
+
+  <div id="tsetCard"></div>
 
   <div class="game-grid">
     <div class="game-card" onclick="startGame('ox')" style="border-color:rgba(34,197,94,.15)">
@@ -595,12 +600,14 @@ function teacherLogout(){
   enterPublicView();   // 로그아웃하면 공개 게임 화면으로
 }
 // ── 공개 게임 / 교사 오가기 (2026-09-25) ──
+// 세트 링크(?teacher=)로 들어온 공개 화면에서는 그 선생님 키로 AI를 부르지 않는다 — 수업 학생과 로그인한 교사만
+KoreanAI.setTeacher(()=> (isStudentMode || currentUser) ? (teacherUid||'') : '');
 let teacherInGame=false;
 function enterPublicView(){
   teacherInGame=false; stuName=''; stuClass=''; stuClassNo=''; stuNo=0; stuDisplay='';
-  enterMainApp(); initTerms(); loadRankings();
+  enterMainApp(); initTerms(); loadRankings(); qsOnEnter();   // 세트 링크(?teacher=&set=)로 들어왔으면 선생님 문제 카드
 }
-function goGameAsTeacher(){ teacherInGame=true; enterMainApp(); initTerms(); loadRankings(); }
+function goGameAsTeacher(){ teacherInGame=true; enterMainApp(); initTerms(); loadRankings(); showSetCard(); }
 function exitOrTeacher(){
   if(isStudentMode) return studentLogout();
   if(currentUser){ teacherInGame=false; return enterTeacherDashboard(); }
@@ -644,7 +651,7 @@ function sN(){
   document.getElementById('sni').value='';   // 이름 원문은 남기지 않음
   stuName=`${cn} ${no}번${stuDisplay?' '+stuDisplay:''}`; stuClass=c;
   enterMainApp();
-  initTerms();loadRankings();
+  initTerms();loadRankings(); qsOnEnter();   // 선생님이 '수업에 내기'한 세트가 있으면 카드로
 }
 
 function logToSheet(activity, title, detail){
@@ -695,13 +702,14 @@ function startGame(type){
   if(selectedTerms.length<2){alert('어휘를 2개 이상 선택해주세요!');return;}
   currentGame=type;
   gameState={type,score:0,correct:0,wrong:0,total:10,current:0};
+  if(type==='tset'){ if(!window.currentSet||!currentSet.items.length){alert('풀 수 있는 선생님 문제가 없어요.');return;} gameState.total=currentSet.items.length; }
   document.getElementById('lobby').style.display='none';
   document.getElementById('game-area').style.display='block';
   document.getElementById('result-area').style.display='none';
   totalScore=0;streak=0;updateHeader();
 
   const titles={ox:'⭕❌ OX 퀴즈',speed:'⏱️ 스피드 퀴즈',blank:'🔤 빈칸 채우기',
-    match:'🃏 카드 매칭',guess:'🎯 어휘 맞추기',random:'🎰 AI 랜덤',team:'🏆 팀 대항전',story:'📖 이야기 퀴즈'};
+    match:'🃏 카드 매칭',guess:'🎯 어휘 맞추기',random:'🎰 AI 랜덤',team:'🏆 팀 대항전',story:'📖 이야기 퀴즈',tset:'📝 선생님 문제'};
   document.getElementById('game-title').textContent=titles[type]||'🎮';
 
   if(type==='match')startMatchGame();
@@ -726,6 +734,7 @@ async function nextQ(){
   else if(gs.type==='guess')showGuess();
   else if(gs.type==='random')await showRandom();
   else if(gs.type==='story')await showStory();
+  else if(gs.type==='tset')showTSet();
 }
 
 function showOX(){

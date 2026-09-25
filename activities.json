@@ -181,5 +181,106 @@
     "ai": false,
     "summary": "짧은 상황 이야기를 읽고 알맞은 속담을 고르며 속담의 뜻과 쓰임을 익히는 활동",
     "makerNote": ""
+  },
+  {
+    "id": "korean/grammar-lab",
+    "title": "문법 탐구실 — 중학교 문법 6단원",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [
+      "음악"
+    ],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "simulation",
+    "minutes": 45,
+    "standards": [
+      "[9국04-01]",
+      "[9국04-02]",
+      "[9국04-03]",
+      "[9국04-04]",
+      "[9국04-05]",
+      "[9국04-06]"
+    ],
+    "tags": [
+      "음운",
+      "자음",
+      "모음",
+      "조음 위치",
+      "조음 방법",
+      "단모음",
+      "이중 모음",
+      "훈민정음",
+      "제자 원리",
+      "어근",
+      "접사",
+      "단일어",
+      "파생어",
+      "합성어",
+      "새말",
+      "품사",
+      "체언",
+      "용언",
+      "수식언",
+      "동사",
+      "형용사",
+      "관형사",
+      "조사",
+      "문장 성분",
+      "홑문장",
+      "겹문장",
+      "이어진문장",
+      "안은문장",
+      "문장 잇기",
+      "피동 표현",
+      "이중 피동",
+      "직접 인용",
+      "간접 인용",
+      "한글 맞춤법",
+      "총칙",
+      "띄어쓰기",
+      "의존 명사"
+    ],
+    "url": "eaim-korean-grammar.html",
+    "classroom": false,
+    "ai": false,
+    "summary": "음운 체계, 단어의 짜임과 새말, 9품사, 문장의 짜임, 피동·인용 표현, 한글 맞춤법의 원리를 손으로 탐구하는 활동(AI 없음)",
+    "makerNote": ""
+  },
+  {
+    "id": "korean/dictionary",
+    "title": "낱말 창고",
+    "platform": "korean",
+    "subjects": [
+      "국어"
+    ],
+    "fusion": [],
+    "grade": [
+      "중1",
+      "중2",
+      "중3"
+    ],
+    "target": "student",
+    "activityType": "reference",
+    "minutes": 10,
+    "standards": [],
+    "tags": [
+      "사전",
+      "어휘",
+      "속담",
+      "문법 용어",
+      "표준국어대사전"
+    ],
+    "url": "eaim-korean-dictionary.html",
+    "classroom": false,
+    "ai": false,
+    "summary": "국어 놀이터의 확인된 어휘·속담·문법 용어를 찾아보고, 없는 말은 표준국어대사전·우리말샘으로 이어 찾는 도구",
+    "makerNote": ""
   }
 ]

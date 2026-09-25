@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAIM 국어 — 낱말 창고</title>
+<link rel="icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- 낱말 창고 v1.0 (2026-09-25) — 누구나 로그인 없이. AI 없음.
+     ① 국어 앱들의 확인된 자료(vocab-data.js · proverb-cards.js · grammar-data.js)를 한곳에서 찾고
+     ② 없으면 국립국어원 표준국어대사전·우리말샘 검색으로 넘겨 준다(새 창). 국어 부록 5-3번. -->
+<script src="vocab-data.js"></script>
+<script src="proverb-cards.js"></script>
+<script src="grammar-data.js"></script>
+<style>
+html,body{word-break:keep-all;overflow-wrap:break-word;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F6F2EA;--card:#fff;--ink:#1D1A16;--ink2:#4D463C;--ink3:#8C8474;--line:#E2DACB;--accent:#8A3B12;--accent2:#F5E6DA}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 0 12px}
+.hub{font-size:.8rem;color:var(--ink2);text-decoration:none;border:1px solid var(--line);padding:6px 11px;border-radius:8px;background:var(--card)}
+h1{font-family:'Noto Serif KR',serif;font-weight:900;font-size:clamp(1.7rem,6vw,2.3rem);margin:10px 0 6px}
+.lead{color:var(--ink2);line-height:1.8;font-size:.92rem;margin-bottom:16px}
+.search{display:flex;gap:8px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.search input{flex:1;font-family:inherit;font-size:1.1rem;padding:13px 15px;border:2px solid var(--line);border-radius:12px;background:#fff}
+.search input:focus{outline:none;border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 12px}
+.chip{font-family:inherit;font-size:.78rem;font-weight:700;padding:6px 11px;border-radius:99px;border:1.5px solid var(--line);background:#fff;color:var(--ink2);cursor:pointer}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.count{font-size:.8rem;color:var(--ink3);margin-bottom:8px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.item .w{font-family:'Noto Serif KR',serif;font-weight:900;font-size:1.15rem}
+.item .cat{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--accent2);color:var(--accent);margin-left:6px;vertical-align:middle}
+.item .m{font-size:.9rem;line-height:1.7;color:var(--ink2);margin-top:4px}
+.item .go{font-size:.76rem;color:var(--accent);text-decoration:none;display:inline-block;margin-top:6px}
+.item.exact{border:2px solid var(--accent)}
+mark{background:#FDE7A8;color:inherit;border-radius:3px}
+.ext{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:14px;margin:14px 0}
+.ext p{font-size:.86rem;color:var(--ink2);line-height:1.7;margin-bottom:10px}
+.ext a{display:inline-block;font-weight:900;font-size:.9rem;text-decoration:none;padding:10px 14px;border-radius:10px;margin:0 6px 6px 0}
+.ext a.std{background:var(--ink);color:#fff}.ext a.urim{background:var(--accent2);color:var(--accent)}
+.more{display:block;width:100%;font-family:inherit;font-weight:700;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;cursor:pointer;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><a class="hub" href="index.html">🏠 허브</a><b>📖 낱말 창고</b><span style="width:60px"></span></header>
+  <h1>모르는 말, 여기서 찾아요</h1>
+  <p class="lead">국어 놀이터에 나오는 관용어·한자성어·순우리말·문학어휘·맞춤법·속담과 문법 용어를 한곳에서 찾아요. 선생님이 확인한 풀이예요. 여기에 없는 말은 아래 단추로 <b>표준국어대사전</b>에서 바로 찾을 수 있어요.</p>
+
+  <div class="search"><input id="q" placeholder="찾을 말이나 뜻 (예: 손, 노력, 파생어)" autocomplete="off" oninput="run()"></div>
+  <div class="chips" id="cats"></div>
+  <div class="count" id="count"></div>
+  <div id="list"></div>
+  <div class="ext" id="ext"></div>
+</div>
+
+<script>
+const esc = t => String(t||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const key = t => String(t||'').replace(/\(.*?\)/g,'').replace(/[\s\-~]/g,'');
+const V = window.EAIM_VOCAB || {}, G = window.EAIM_GRAMMAR || {}, P = window.PROVERB_CARDS || [];
+const CAT = { '관용어':'관용어', '한자':'한자성어', '순우리말':'순우리말', '문학':'문학어휘', '맞춤법':'맞춤법' };
+
+/* 모든 자료를 하나의 목록으로 */
+const ALL = [];
+Object.keys(V).forEach(c => V[c].forEach(t => ALL.push({ w:t.w, m:t.m, cat:CAT[c]||c, go:'eaim-korean-game.html', goName:'어휘 게임방' })));
+P.forEach(c => ALL.push({ w:c.p, m:c.m, cat:'속담', ex:c.s, go:'eaim-korean-proverb.html', goName:'속담 상황 카드' }));
+const gram = (w,m,u) => ALL.push({ w, m, cat:'문법 용어', go:'eaim-korean-grammar.html#u'+u, goName:'문법 탐구실 '+'①②③④⑤⑥'[u-1] });
+(G.glossary||[]).forEach(g => gram(g.w, g.m, g.u));
+(G.places||[]).forEach(p => gram(p.name, p.hint, 1));
+(G.manners||[]).forEach(m => gram(m.name, m.hint, 1));
+(G.pos||[]).forEach(p => gram(p.p, `${p.def} (${p.g}) — 예: ${p.ex}`, 3));
+(G.comps||[]).forEach(c => gram(c.c, `${c.def} (${c.kind})`, 4));
+(G.extraGloss||[]).forEach(g => gram(g.w, g.m, g.u));
+ALL.forEach(x => { x.kw = key(x.w); x.km = key(x.m); });
+
+const CATS = ['전체','관용어','한자성어','순우리말','문학어휘','맞춤법','속담','문법 용어'];
+let cat='전체', shown=30;
+document.getElementById('cats').innerHTML = CATS.map(c=>`<button class="chip${c===cat?' on':''}" data-c="${c}">${c}${c==='전체'?'':' '+ALL.filter(x=>x.cat===c).length}</button>`).join('');
+document.querySelectorAll('#cats .chip').forEach(b => b.onclick = () => { cat=b.dataset.c; shown=30; document.querySelectorAll('#cats .chip').forEach(x=>x.classList.toggle('on',x===b)); run(); });
+
+function hl(text, q){ if(!q) return esc(text); const i=text.indexOf(q); return i<0 ? esc(text) : esc(text.slice(0,i))+'<mark>'+esc(q)+'</mark>'+esc(text.slice(i+q.length)); }
+function run(){
+  const raw = document.getElementById('q').value.trim(), q = key(raw);
+  let res = ALL.filter(x => cat==='전체' || x.cat===cat);
+  if (q) {
+    res = res.filter(x => x.kw.includes(q) || x.km.includes(q))
+      .map(x => ({ x, s: x.kw===q ? 0 : x.kw.startsWith(q) ? 1 : x.kw.includes(q) ? 2 : 3 }))
+      .sort((a,b) => a.s-b.s || a.x.w.length-b.x.w.length).map(o => o.x);
+  }
+  document.getElementById('count').textContent = q ? `'${raw}' — ${res.length}개 찾음` : `${res.length}개 모두 보기 (찾을 말을 적어 보세요)`;
+  document.getElementById('list').innerHTML = res.slice(0, shown).map(x => `<div class="item${q && x.kw===q ? ' exact':''}">
+      <span class="w">${hl(x.w, raw)}</span><span class="cat">${x.cat}</span>
+      <div class="m">${hl(x.m, raw)}</div>${x.ex ? `<div class="m" style="color:var(--ink3)">이런 때: ${esc(x.ex)}</div>` : ''}
+      <a class="go" href="${x.go}">→ ${x.goName}에서 익히기</a></div>`).join('')
+    + (res.length > shown ? `<button class="more" onclick="shown+=30;run()">더 보기 (${res.length-shown}개 남음)</button>` : '');
+  const w = encodeURIComponent(raw);
+  document.getElementById('ext').innerHTML = raw
+    ? `<p>${res.some(x=>x.kw===q) ? '다른 뜻이나 자세한 풀이·예문이 궁금하면' : res.length ? `<b>${esc(raw)}</b> 낱말 자체는 낱말 창고에 없어요(들어간 말만 찾았어요). 뜻은 국립국어원 사전에서 찾아보세요.` : `<b>${esc(raw)}</b> — 낱말 창고에 없는 말이에요. 국립국어원 사전에서 찾아보세요.`}</p>
+       <a class="std" href="https://stdict.korean.go.kr/search/searchResult.do?pageSize=10&searchKeyword=${w}" target="_blank" rel="noopener">📚 표준국어대사전에서 찾기</a>
+       <a class="urim" href="https://opendict.korean.go.kr/search/searchResult?focus_name=query&query=${w}" target="_blank" rel="noopener">🌱 우리말샘에서 찾기</a>
+       <p style="margin:6px 0 0;font-size:.74rem;color:var(--ink3)">새 창으로 국립국어원 누리집이 열려요. 표준국어대사전은 표준어 사전, 우리말샘은 새말·지역말까지 담은 사전이에요.</p>`
+    : `<p>여기에 없는 말은 찾을 말을 적은 뒤 이 자리에 나오는 단추로 국립국어원 사전에서 바로 찾을 수 있어요.</p>`;
+}
+const q0 = new URLSearchParams(location.search).get('q');   // 다른 앱에서 ?q=낱말 로 열 수 있다
+if (q0) document.getElementById('q').value = q0;
+run();
+</script>
+</body>
+</html>

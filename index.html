@@ -290,6 +290,32 @@ body::before {
 .card-proverb .step-dot { background:#E4EEE8; color:#2F5D50; }
 .card-proverb .enter-btn { background: linear-gradient(135deg, #2F5D50, #24483E); color: #F4EEDF; box-shadow: 0 4px 14px rgba(47,93,80,.3); }
 .app-card:nth-child(5){ animation: cardIn .6s .52s ease both; }
+.card-grammar .card-head {
+  background: linear-gradient(135deg, #16211F 0%, #0E4F45 60%, #0E7C6B 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-grammar .card-head::before {
+  content: '音'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif; font-size: 6rem; color: rgba(226,242,238,.12); pointer-events: none;
+}
+.card-grammar .live-dot { background: #8EF0D8; box-shadow: 0 0 6px #8EF0D8; }
+.card-grammar .step-dot { background:#E2F2EE; color:#0E7C6B; font-size:.62rem; }
+.card-grammar .enter-btn { background: linear-gradient(135deg, #0E4F45, #0E7C6B); color: #E2F2EE; box-shadow: 0 4px 14px rgba(14,124,107,.3); }
+.app-card:nth-child(6){ animation: cardIn .6s .6s ease both; }
+.card-dict .card-head {
+  background: linear-gradient(135deg, #3B1D0C 0%, #6B2E10 60%, #8A3B12 100%);
+  padding: 30px 28px 24px; position: relative; overflow: hidden;
+}
+.card-dict .card-head::before {
+  content: '辭'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-family: 'Nanum Myeongjo', serif; font-size: 6rem; color: rgba(245,230,218,.12); pointer-events: none;
+}
+.card-dict .live-dot { background: #F5E6DA; box-shadow: 0 0 6px #F5E6DA; }
+.card-dict .step-dot { background:#F5E6DA; color:#8A3B12; font-size:.62rem; }
+.card-dict .enter-btn { background: linear-gradient(135deg, #6B2E10, #8A3B12); color: #F5E6DA; box-shadow: 0 4px 14px rgba(138,59,18,.3); }
+.app-card:nth-child(7){ animation: cardIn .6s .68s ease both; }
+
+
 
 .enter-btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -407,7 +433,7 @@ footer strong { color: var(--accent); }
     <div class="info-div"></div>
     <div class="info-item">
       <div class="info-icon">✍️</div>
-      <div class="info-val">5가지 앱</div>
+      <div class="info-val">7가지 앱</div>
       <div class="info-lbl">활동</div>
     </div>
   </div>
@@ -529,6 +555,47 @@ footer strong { color: var(--accent); }
     </div>
   </a>
 
+  <a href="eaim-korean-grammar.html" class="app-card card-grammar">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 문법 탐구실 · 로그인 없이 바로</div>
+      <h2>🔎 문법 탐구실
+        <small>Korean Grammar Lab</small>
+      </h2>
+      <p>① 음운 체계: 소리 나는 자음·모음표와 훈민정음 원리 · ② 단어의 짜임: 단어를 쪼개고 조립하며 새말이 생기는 원리를 · ③ 품사 · ④ 문장의 짜임 · ⑤ 피동·인용 표현 · ⑥ 맞춤법의 원리까지 — 중학교 문법 여섯 단원을 손으로 탐구해요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">🔊 소리 나는 자음·모음표</span>
+        <span class="feat-pill">✂️ 낱말 쪼개기</span>
+        <span class="feat-pill">📜 훈민정음 원리</span>
+        <span class="feat-pill">🧱 단어 조립실</span>
+        <span class="feat-pill">🎨 품사 색칠</span>
+        <span class="feat-pill">✅ 퀴즈</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots"><div class="step-dot">음운</div><div class="step-dot">단어</div><div class="step-dot">품사</div><div class="step-dot">문장</div><div class="step-dot">피동</div><div class="step-dot">맞춤법</div></div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
+  <a href="eaim-korean-dictionary.html" class="app-card card-dict">
+    <div class="card-head">
+      <div class="card-tag"><div class="live-dot"></div> 낱말 창고 · 로그인 없이 바로</div>
+      <h2>📖 낱말 창고
+        <small>Word Storehouse</small>
+      </h2>
+      <p>놀이터에 나오는 관용어·한자성어·순우리말·문학어휘·맞춤법·속담·문법 용어를 한곳에서 찾아요. 없는 말은 표준국어대사전·우리말샘으로 바로 이어 줘요.</p>
+      <div class="feature-row">
+        <span class="feat-pill">🔎 찾기</span>
+        <span class="feat-pill">✅ 확인된 풀이</span>
+        <span class="feat-pill">📚 표준국어대사전 연결</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="step-dots"><div class="step-dot">어휘</div><div class="step-dot">속담</div><div class="step-dot">문법</div></div>
+      <span class="enter-btn">입장하기 →</span>
+    </div>
+  </a>
+
   <div class="teacher-strip">
     <div class="teacher-strip-text">
       <h3>👩‍🏫 교사 전용 컨트롤</h3>
@@ -540,6 +607,8 @@ footer strong { color: var(--accent); }
       <a href="eaim-korean-news.html" class="t-btn t-btn-news">📰 신문</a>
       <a href="eaim-korean-game.html" class="t-btn t-btn-game">🎮 게임</a>
       <a href="eaim-korean-proverb.html" class="t-btn t-btn-writing">🗂️ 속담</a>
+      <a href="eaim-korean-grammar.html" class="t-btn t-btn-news">🔎 문법</a>
+      <a href="eaim-korean-dictionary.html" class="t-btn t-btn-poetry">📖 낱말 창고</a>
       <a href="korean-guide.html" class="t-btn t-btn-guide">📖 가이드</a>
     </div>
   </div>
