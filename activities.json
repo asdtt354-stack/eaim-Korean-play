@@ -17,6 +17,8 @@
     ],
     "target": "student",
     "activityType": "writing",
+    "scope": "lesson",
+    "sessions": 2,
     "minutes": 90,
     "standards": [
       "[9국05-01]",
@@ -55,6 +57,8 @@
     ],
     "target": "student",
     "activityType": "writing",
+    "scope": "lesson",
+    "sessions": 2,
     "minutes": 90,
     "standards": [
       "[9국03-01]",
@@ -97,6 +101,8 @@
     ],
     "target": "student",
     "activityType": "creation",
+    "scope": "project",
+    "sessions": 3,
     "minutes": 90,
     "standards": [
       "[9국03-02]",
@@ -132,6 +138,7 @@
     ],
     "target": "student",
     "activityType": "game",
+    "scope": "activity",
     "minutes": 20,
     "standards": [
       "[9국04-06]",
@@ -166,6 +173,7 @@
     ],
     "target": "student",
     "activityType": "game",
+    "scope": "activity",
     "minutes": 20,
     "standards": [
       "[6국04-03]"
@@ -199,6 +207,8 @@
     ],
     "target": "student",
     "activityType": "simulation",
+    "scope": "lesson",
+    "sessions": 6,
     "minutes": 45,
     "standards": [
       "[9국04-01]",
@@ -268,6 +278,7 @@
     ],
     "target": "student",
     "activityType": "reference",
+    "scope": "activity",
     "minutes": 10,
     "standards": [],
     "tags": [
